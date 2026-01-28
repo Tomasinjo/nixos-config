@@ -1,0 +1,17 @@
+# NixOS
+result
+result-*
+*.swp
+*.swo
+*~
+
+# Editor
+.vscode/
+.idea/
+
+# Secrets (unencrypted)
+secrets/decrypted/
+*.decrypted
+
+# Git-crypt key (NEVER commit this!)
+git-crypt-key
