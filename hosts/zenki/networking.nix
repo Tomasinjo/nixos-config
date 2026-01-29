@@ -47,7 +47,7 @@ in
       IPv6AcceptRA = true;
     };
     # DNS settings
-    networkConfig.DNS = [ "192.168.99.10" networkingSecrets.vlan10.ipv6DNS ];
+    networkConfig.DNS = [ "192.168.99.10" secrets.networking.zenki.vlan10.ipv6DNS ];
   };
 
   # Firewall

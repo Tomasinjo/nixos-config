@@ -5,5 +5,5 @@
     settings = {
     # Zenki specific Hyprland settings
     };
-  }
+  };
 }
