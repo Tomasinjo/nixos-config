@@ -8,6 +8,7 @@
     ../../modules/sudo.nix
     ../../modules/docker.nix
     ../../modules/utilities.nix
+    ../../modules/piper.nix
   ];
 
   networking.hostName = "lenko";
