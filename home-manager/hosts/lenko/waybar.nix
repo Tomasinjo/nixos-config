@@ -13,23 +13,21 @@
       };
 
       "custom/powerDraw" = {
+        align = 0;
+        justify = "left";
         format = "{}";
         interval = 1;
         exec = "~/.config/waybar/scripts/powerdraw.sh";
         return-type = "json";
       };
 
-      "custom/clipboard" = {
-        format = "";
-        on-click = "cliphist list | rofi -dmenu | cliphist decode | wl-copy";
-        interval = 86400;
-      };
-
       bluetooth = {
+        align = 0;
+        justify = "left";
         controller = "controller1";
         format = " {status}  ";
         format-disabled = "";
-        format-connected = " {num_connections} connected";
+        format-connected = " {num_connections}";
         tooltip-format = "{controller_alias}\t{controller_address}";
         tooltip-format-connected = "{controller_alias}\t{controller_address}\n\n{device_enumerate}";
         tooltip-format-enumerate-connected = "{device_alias}\t{device_address}";
@@ -37,12 +35,14 @@
       };
 
       network = {
+        align = 0;
+        justify = "left";
         format = "{ifname}";
-        format-wifi = "{essid} ({signalStrength}%)   ";
+        format-wifi = "  {signalStrength}%";
         format-ethernet = " ";
         format-disconnected = "";
         tooltip-format = "{ifname} via {gwaddr} 󰊗";
-        tooltip-format-wifi = "{ipaddr}/{cidr}";
+        tooltip-format-wifi = "{essid} - {ipaddr}/{cidr}";
         tooltip-format-ethernet = "{ipaddr}/{cidr}";
         tooltip-format-disconnected = "Disconnected";
         max-length = 50;
@@ -50,16 +50,18 @@
       };
 
       battery = {
+        align = 0;
+        justify = "left";
         interval = 1;
         states = {
           good = 95;
           warning = 30;
           critical = 20;
         };
-        format = "{capacity}%  {icon} ";
-        format-charging = "{capacity}% 󰂄 ";
-        format-plugged = "{capacity}% 󰂄 ";
-        format-alt = "{time} {icon}";
+        format = "{icon} {capacity}%";
+        format-charging = "󰂄 {capacity}%";
+        format-plugged = "󰂄 {capacity}%";
+        format-alt = "{icon} {time}";
         format-icons = [
           "󰁻"
           "󰁼"
@@ -71,8 +73,10 @@
       };
 
       backlight = {
+        align = 0;
+        justify = "left";
         device = "amdgpu_bl1";
-        format = "{percent}% {icon}   ";
+        format = "{icon} {percent}%";
         format-icons = [ "" "" ];
         on-scroll-up = "brightnessctl -q s 5%+";
         on-scroll-down = "brightnessctl -q s 5%-";
