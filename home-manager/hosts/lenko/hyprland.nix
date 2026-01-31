@@ -15,7 +15,7 @@
         "[workspace 6 silent] discord"
         "[workspace 5 silent] kitty yazi"
         "[workspace 5 silent] kitty"
-        "/usr/lib/kdeconnectd &"
+        "kdeconnect-indicator"
         "[workspace 1 silent] firefox"
         "dbus-update-activation-environment --all"
         "gnome-keyring-daemon --start --components=secrets"
@@ -43,7 +43,7 @@
 
       windowrule = [
         #"match:initial_class ^kitty$, match:initial_title ^kitty$, workspace 5"
-        "workspace 7, match:class ^discord$"  # discord ignores exec-one workspace
+        "workspace 6, match:class ^discord$"  # discord ignores exec-one workspace
         #"workspace 7, match:class ^org\.telegram\.desktop$"
       ];
       
