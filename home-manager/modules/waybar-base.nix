@@ -45,29 +45,22 @@ in
       settings = {
         main = ({
           layer = "top";
-          position = "top";
+          position = "left";
           modules-left = cfg.modulesLeft;
           modules-center = cfg.modulesCenter;
           modules-right = cfg.modulesRight;
           reload_style_on_change = true;
 
           "hyprland/workspaces" = {
-            format = "{icon}";
+            format = "{name}";
             on-click = "activate";
-            format-icons = {
-              active = "";
-              default = "";
-            };
             sort-by-number = true;
-            persistent-workspaces = {
-              "*" = [ 1 2 3 4 5 6 ];
-            };
           };
 
           clock = {
-            format = "{:%Y-%m-%d %H:%M:%S}";
+            format = "{:%d.%m.\n%H:%M}";
             interval = 1;
-            tooltip-format = "\n<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
+            tooltip-format = "<small>{:%H:%M:%S}</small>\n<tt><small>{calendar}</small></tt>";
             calendar-weeks-pos = "right";
             today-format = "<span color='#7645AD'><b><u>{}</u></b></span>";
             format-calendar = "<span color='#aeaeae'><b>{}</b></span>";
@@ -77,15 +70,19 @@ in
 
           disk = {
             interval = 300;
-            format = "DISK: {percentage_used}%   ";
+            format = "󰋊 {percentage_used}%";
             path = "/";
+            align = 0;
+            justify = "left";
           };
 
           cpu = {
-            format-critical = "<span color='#c20821'><b>CPU: {usage}%</b></span>";
-            format-high = "<span color='#bb5613'>CPU: {usage}%</span>";
-            format-medium = "<span color='#a58315'>CPU: {usage}%</span>";
-            format-low = "<span color='#6b9fa8'>CPU: {usage}%</span>";
+            align = 0;
+            justify = "left";
+            format-critical = "<span color='#c20821'><b>󰻠 {usage}%</b></span>";
+            format-high = "<span color='#bb5613'>󰻠 {usage}%</span>";
+            format-medium = "<span color='#a58315'>󰻠 {usage}%</span>";
+            format-low = "<span color='#6b9fa8'>󰻠 {usage}%</span>";
             interval = 3;
             states = {
               critical = 80;
@@ -93,14 +90,16 @@ in
               medium = 10;
               low = 0;
             };
-            on-click = "kitty htop";
+            on-click = "kitty btop";
           };
 
           memory = {
-            format-critical = "<span color='#c20821'><b>MEM: {percentage}%</b></span>";
-            format-high = "<span color='#bb5613'>MEM: {percentage}%</span>";
-            format-medium = "<span color='#a58315'>MEM: {percentage}%</span>";
-            format-low = "<span color='#6b9fa8'>MEM: {percentage}%</span>";
+            align = 0;
+            justify = "left";
+            format-critical = "<span color='#c20821'><b>󰍛 {percentage}%</b></span>";
+            format-high = "<span color='#bb5613'>󰍛 {percentage}%</span>";
+            format-medium = "<span color='#a58315'>󰍛 {percentage}%</span>";
+            format-low = "<span color='#6b9fa8'>󰍛 {percentage}%</span>";
             interval = 5;
             states = {
               critical = 80;
@@ -111,6 +110,8 @@ in
           };
 
           temperature = {
+            align = 0;
+            justify = "left";
             format = " {temperatureC}°C";
             format-critical = " {temperatureC}°C";
             interval = 5;
@@ -118,8 +119,10 @@ in
           };
 
           pulseaudio = {
-            format = "{volume}% {icon}  ";
-            format-bluetooth = "{volume}% {icon}  ";
+            align = 0;
+            justify = "left";
+            format = "{icon}  {volume}%";
+            format-bluetooth = "{icon}  {volume}%";
             format-muted = "";
             format-icons = {
               "alsa_output.pci-0000_00_1f.3.analog-stereo" = "";
@@ -139,17 +142,12 @@ in
           };
 
           jack = {
+            align = 0;
+            justify = "left";
             format = "{} 󱎔";
             format-xrun = "{xruns} xruns";
             format-disconnected = "DSP off";
             realtime = true;
-          };
-
-          upower = {
-            show-icon = false;
-            hide-if-empty = true;
-            tooltip = true;
-            tooltip-spacing = 20;
           };
         } // cfg.extraModules // cfg.extraSettings );
       };
@@ -159,41 +157,36 @@ in
             border: none;
             font-size: 14px;
             font-family: "JetBrainsMono Nerd Font,JetBrainsMono NF" ;
-            min-height: 25px;
+            min-width: 38px;
         }
 
         window#waybar {
           background: transparent;
-          margin: 5px;
          }
 
         #custom-logo {
-          padding: 0 10px;
+          padding: 10px 0;
           color: #5ea1ff;
         }
 
         .modules-right {
-          padding-left: 5px;
-          border-radius: 15px 0 0 15px;
-          margin-top: 2px;
+          padding-top: 5px;
+          border-radius: 15px 15px 0 0;
           background: #000000;
         }
 
         .modules-center {
-          padding: 0 15px;
-          margin-top: 2px;
+          padding: 15px 0;
           border-radius: 15px 15px 15px 15px;
           background: #000000;
         }
 
         .modules-left {
-          border-radius: 0 15px 15px 0;
-          margin-top: 2px;
+          border-radius: 0 0 15px 15px;
           background: #000000;
         }
 
         #battery,
-        #custom-clipboard,
         #custom-colorpicker,
         #custom-powerDraw,
         #bluetooth,
@@ -209,23 +202,49 @@ in
         #jack,
         #tray,
         #window,
-        #workspaces,
-        #clock {
-          padding: 0 5px;
+        #workspaces {
+          padding: 5px 0;
           color: #6b9fa8
         }
+        #workspaces button {
+        	margin-left: 0px;
+        	margin-right: 5px;
+
+        	padding-left: 10px;
+        	padding-right: 5px;
+        }
+
+        #workspaces button:hover {
+        	background-color: rgba(147, 154, 183, 0.2);
+        }
+
+        #workspaces button.empty {
+        	border: 0px;
+
+        	padding-right: 0px;
+        }
+
+        #workspaces button.visible {
+        	background-color: rgba(54, 58, 79, 0.9);
+
+        	border: 2px solid @overlay0;
+
+        	color: @blue;
+        }
+
+        #clock {
+          padding: 5px 0;
+          color: #758686;
+        }
+
         #pulseaudio {
-          padding-top: 3px;
+          padding-left: 3px;
         }
 
         #temperature.critical,
         #pulseaudio.muted {
           color: #c20821;
           padding-top: 0;
-        }
-
-        #clock{
-          color: #758686;
         }
 
         #battery.charging {
@@ -263,15 +282,15 @@ in
     ];
 
     xdg.configFile."waybar/scripts/powerdraw.sh".text = ''
-      #!/bin/bash
+      #!${pkgs.bash}/bin/bash
 
       if [ -f /sys/class/power_supply/BAT*/power_now ]; then
-        powerDraw="  $(($(cat /sys/class/power_supply/BAT*/power_now)/1000000))w"
+        powerDraw=" $(($(cat /sys/class/power_supply/BAT*/power_now)/1000000)) W"
       fi
 
 
       cat << EOF
-      { "text":"$powerDraw", "tooltip":"power Draw $powerDraw"}
+      { "text":"$powerDraw", "tooltip":"power Draw $powerDraw" }
       EOF
     '';
 
