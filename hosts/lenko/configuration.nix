@@ -9,6 +9,7 @@
     ../../modules/docker.nix
     ../../modules/utilities.nix
     ../../modules/piper.nix
+    ./mounts.nix
   ];
 
   networking.hostName = "lenko";
@@ -28,6 +29,7 @@
     hypridle
     ntfs3g
     dnsmasq
+    sshfs
   ];
 
   system.activationScripts.screenshotsDir = ''

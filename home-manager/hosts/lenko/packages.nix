@@ -5,7 +5,6 @@
     hyprshot
     pamixer
     telegram-desktop
-    sshfs
     esptool
     zoom-us
     filezilla
