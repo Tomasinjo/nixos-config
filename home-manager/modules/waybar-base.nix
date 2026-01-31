@@ -109,15 +109,6 @@ in
             };
           };
 
-          temperature = {
-            align = 0;
-            justify = "left";
-            format = " {temperatureC}°C";
-            format-critical = " {temperatureC}°C";
-            interval = 5;
-            critical-threshold = 65;
-          };
-
           pulseaudio = {
             align = 0;
             justify = "left";
