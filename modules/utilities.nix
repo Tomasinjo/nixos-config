@@ -7,5 +7,6 @@
     tcpdump
     netcat
     git-crypt # secrets encryption for nixos config
+    openssl
   ];
 }
