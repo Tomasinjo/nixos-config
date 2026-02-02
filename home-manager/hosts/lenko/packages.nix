@@ -18,5 +18,6 @@
     realvnc-vnc-viewer
     nextcloud-client
     arduino-ide
+    protonmail-desktop
   ];
 }
