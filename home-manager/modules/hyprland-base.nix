@@ -6,7 +6,10 @@ let
   cfg = config.wayland.hyprland;
 
   baseSettings = {
-    monitor = [ ",preferred,auto,auto" ];
+    monitor = [ 
+      "desc:LG Electronics LG ULTRAWIDE 0x01010101, 2560x1080@75, 0x0, 1"
+    ];
+
     "$terminal" = "kitty";
     "$fileManager" = "kitty yazi";
     "$menu" = "rofi -show drun";
@@ -130,6 +133,7 @@ in
         bindel = (baseSettings.bindel or []) ++ (cfg.settings.bindel or []);
         windowrule = (baseSettings.windowrule or []) ++ (cfg.settings.windowrule or []);
         workspace = (baseSettings.workspace or []) ++ (cfg.settings.workspace or []);
+	monitor =  (baseSettings.monitor or []) ++ (cfg.settings.monitor or []);
       };
     };
 
