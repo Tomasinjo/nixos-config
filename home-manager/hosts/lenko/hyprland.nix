@@ -5,7 +5,6 @@
     settings = {
       monitor = [
         "desc:LG Electronics LG ULTRAWIDE 0x00037CB8, 2560x1080@75, 2560x0, 1"
-        "desc:LG Electronics LG ULTRAWIDE 0x01010101, 2560x1080@75, 0x0, 1"
         "eDP-1, 1920x1080@60, 0x1080, 1"
       ];
       
