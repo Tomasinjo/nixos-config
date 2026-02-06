@@ -6,6 +6,7 @@
   environment.systemPackages = with pkgs; [
     intel-gpu-tools # intel_gpu_top
     libva-utils     # vainfo to verify transcoding
+    nvtopPackages.full  #nvtop
   ];
 
   hardware.graphics = {
