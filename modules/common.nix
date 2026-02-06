@@ -14,7 +14,7 @@
 
   # Keyboard layout
   services.xserver.xkb.layout = "si";
-  console.keyMap = "slovene";
+ console.keyMap = "slovene";
 
 
   nix.gc = {   # delete old generations
@@ -45,6 +45,14 @@
     enableCompletion = true;
     autosuggestions.enable = true;
     syntaxHighlighting.enable = true;
+    interactiveShellInit = ''
+      bindkey -e
+      bindkey '\e[3~' delete-char 
+      export HISTFILE=~/.histfile
+      export HISTSIZE=1000
+      export SAVEHIST=1000
+      setopt HIST_IGNORE_DUPS
+    '';
   };
   
   programs.starship = {
