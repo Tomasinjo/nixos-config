@@ -16,6 +16,7 @@
     ../../modules/cockpit.nix
     ../../modules/utilities.nix
     ../../modules/sudo.nix
+    ../../modules/vector.nix
   ];
 
   networking.hostId = "a8c00f0a";
