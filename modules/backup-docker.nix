@@ -3,7 +3,7 @@
 let
   backupScript = pkgs.writeShellScriptBin "docker-backup" ''
     # Make sure required tools are in the script's PATH
-    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.coreutils}/bin
+    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin
 
     containers=(
       "mongo-unifi"
