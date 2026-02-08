@@ -7,6 +7,7 @@
     extraGroups = [ 
       "docker"  # To read /var/run/docker.sock
       "adm"     # To read system logs/journal
+      "users"   # to read files
     ];
   };
   users.groups.vector = {}; # Create the group
