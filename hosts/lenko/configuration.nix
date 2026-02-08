@@ -9,6 +9,7 @@
     ../../modules/docker.nix
     ../../modules/utilities.nix
     ../../modules/piper.nix
+    ../../modules/printing.nix
     ./mounts.nix
   ];
 
