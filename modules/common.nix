@@ -4,7 +4,13 @@
   users.users.tom = {
     isNormalUser = true;
     description = "Tom";
-    extraGroups = [ "networkmanager" "wheel" "video" "audio" ];
+    extraGroups = [ 
+      "networkmanager" 
+      "wheel" 
+      "video" 
+      "audio" 
+      "dialout" # to access /dev/ttyUSB
+    ];
     shell = pkgs.zsh;
     uid = 1000;
   };
