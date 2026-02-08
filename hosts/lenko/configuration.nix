@@ -41,5 +41,7 @@
     "qtwebengine-5.15.19"   # for openshot
   ];
 
+  boot.kernelModules = [ "drivetemp" ];  # for reading HDD temps
+
   system.stateVersion = "25.11";
 }
