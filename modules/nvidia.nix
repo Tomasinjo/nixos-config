@@ -11,4 +11,8 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
   hardware.nvidia-container-toolkit.enable = true;
+
+
+  boot.kernelParams = [ "iomem=relaxed" ]; # for running gddr6-core-junction-vram-temps
+
 }
