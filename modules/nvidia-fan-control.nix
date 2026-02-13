@@ -9,8 +9,8 @@ let
     src = pkgs.fetchFromGitHub {
       owner = "ZanMax";
       repo = "nvidia-fan-control";
-      rev = "7f2315d3eb6af952f88c53168052bb5feed9e019"; # specific commit
-      sha256 = "sha256-eNb/H1cQvSXAv853Jkylj/Ew6YaTRsVUY/GzsPC+Evw="; 
+      rev = "refs/pull/12/head"; # my pull request, change when merged.
+      sha256 = "sha256-OeqbRvagxpWff/Ff3vWGayCcmJh6wKPh22TyP+lENQc="; 
     };
 
     vendorHash = "sha256-2558crqhdYW9PY5Nd2hskjBTiotR9nj0ZjAHyM/l/vo="; 
