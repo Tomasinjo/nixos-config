@@ -1,69 +1,58 @@
 { config, pkgs, lib, ... }:
 
 let
+  # Define the package from GitHub
   nvidia-fan-control = pkgs.buildGoModule rec {
     pname = "nvidia-fan-control";
-    version = "main";
+    version = "2026-02-06"; # date of commit
 
     src = pkgs.fetchFromGitHub {
       owner = "ZanMax";
       repo = "nvidia-fan-control";
-      rev = "main";
-      hash = "sha256-2558crqhdYW9PY5Nd2hskjBTiotR9nj0ZjAHyM/l/vo="; 
+      rev = "7f2315d3eb6af952f88c53168052bb5feed9e019"; # specific commit
+      sha256 = "sha256-eNb/H1cQvSXAv853Jkylj/Ew6YaTRsVUY/GzsPC+Evw="; 
     };
 
-    vendorHash = "sha256-2558crqhdYW9PY5Nd2hskjBTiotR9nj0ZjAHyM/l/vo=";
-    doCheck = false;
+    vendorHash = "sha256-2558crqhdYW9PY5Nd2hskjBTiotR9nj0ZjAHyM/l/vo="; 
 
-    # Using the modern hook
-    nativeBuildInputs = [ pkgs.addDriverRunpath ];
-
-
-    # Force compilation to look at your actual driver version
+    ldflags = [ "-extldflags=-Wl,-z,lazy" ];   # fix for error: undefined symbol: nvmlGpuInstanceGetComputeInstanceProfileInfoV
     buildInputs = [ config.hardware.nvidia.package ];
+    
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+
+    postInstall = ''
+      wrapProgram $out/bin/nvidia-fan-control \
+        --prefix LD_LIBRARY_PATH : "${config.hardware.nvidia.package}/lib"
+    '';
   };
 
-  fanConfig = {
+  fanConfig = builtins.toJSON {
     time_to_update = 5;
     temperature_ranges = [
-      { min_temperature = 0;   max_temperature = 40;  fan_speed = 30;  hysteresis = 3; }
-      { min_temperature = 40;  max_temperature = 60;  fan_speed = 40;  hysteresis = 3; }
-      { min_temperature = 60;  max_temperature = 80;  fan_speed = 70;  hysteresis = 3; }
-      { min_temperature = 80;  max_temperature = 100; fan_speed = 100; hysteresis = 3; }
-      { min_temperature = 100; max_temperature = 200; fan_speed = 100; hysteresis = 0; }
+      { min_temperature = 0; max_temperature = 35; fan_speed = 0; hysteresis = 3; }
+      { min_temperature = 35; max_temperature = 55; fan_speed = 30; hysteresis = 3; }
+      { min_temperature = 55; max_temperature = 400; fan_speed = 100; hysteresis = 5; }
     ];
   };
 
-  configFile = pkgs.writeText "config.json" (builtins.toJSON fanConfig);
-
 in {
+#  hardware.nvidia.enable = true;
+  environment.etc."nvidia-fan-control/config.json".text = fanConfig;
+
   systemd.services.nvidia-fan-control = {
     description = "NVIDIA Fan Control Service";
-    after = [ "network.target" "display-manager.service" ];
+    after = [ "network.target" "nvidia-persistenced.service" ];
     wantedBy = [ "multi-user.target" ];
 
     serviceConfig = {
-      # Use the direct path to the binary
+      Type = "simple";
       ExecStart = "${nvidia-fan-control}/bin/nvidia-fan-control";
-      
-      RuntimeDirectory = "nvidia_fan_control";
-      WorkingDirectory = "/run/nvidia_fan_control";
-      
-      ExecStartPre = pkgs.writeShellScript "setup-nvidia-fan-config" ''
-        ln -sf ${configFile} /run/nvidia_fan_control/config.json
-      '';
-
-      Restart = "always";
-      User = "root";
-
-      # LOGGING: Helps us see exactly what's failing
+      WorkingDirectory = "/etc/nvidia-fan-control";
       StandardOutput = "journal";
       StandardError = "journal";
-    };
-
-    # CRITICAL FIX: Tell the service EXACTLY where to find the real driver
-    environment = {
-      LD_LIBRARY_PATH = "/run/opengl-driver/lib:/run/opengl-driver-32/lib";
+      User = "root";
+      Group = "root";
+      Restart = "always";
     };
   };
 }
