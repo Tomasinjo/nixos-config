@@ -143,6 +143,7 @@ in
         windowrule = (baseSettings.windowrule or []) ++ (cfg.settings.windowrule or []);
         workspace = (baseSettings.workspace or []) ++ (cfg.settings.workspace or []);
 	monitor =  (baseSettings.monitor or []) ++ (cfg.settings.monitor or []);
+	env =  (baseSettings.env or []) ++ (cfg.settings.env or []);
       };
     };
 
