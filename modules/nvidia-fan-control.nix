@@ -26,24 +26,26 @@ let
     '';
   };
 
-  fanConfig = builtins.toJSON {
+  fanConfigData = {
     time_to_update = 5;
     temperature_ranges = [
-      { min_temperature = 0; max_temperature = 35; fan_speed = 0; hysteresis = 3; }
-      { min_temperature = 35; max_temperature = 55; fan_speed = 30; hysteresis = 3; }
+      { min_temperature = 0;  max_temperature = 35;  fan_speed = 0;   hysteresis = 3; }
+      { min_temperature = 35; max_temperature = 55;  fan_speed = 30;  hysteresis = 5; }
       { min_temperature = 55; max_temperature = 400; fan_speed = 100; hysteresis = 5; }
     ];
   };
 
+  # helper to use for both the file and the trigger
+  configFile = pkgs.writeText "nvidia-fan-config.json" (builtins.toJSON fanConfigData);
+
 in {
-#  hardware.nvidia.enable = true;
-  environment.etc."nvidia-fan-control/config.json".text = fanConfig;
+  environment.etc."nvidia-fan-control/config.json".source = configFile;
 
   systemd.services.nvidia-fan-control = {
     description = "NVIDIA Fan Control Service";
     after = [ "network.target" "nvidia-persistenced.service" ];
     wantedBy = [ "multi-user.target" ];
-
+    restartTriggers = [ configFile ];
     serviceConfig = {
       Type = "simple";
       ExecStart = "${nvidia-fan-control}/bin/nvidia-fan-control";
