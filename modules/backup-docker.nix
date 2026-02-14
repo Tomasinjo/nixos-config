@@ -1,6 +1,47 @@
 { config, pkgs, ... }:
 
 let
+
+  rsnapshotConf = pkgs.writeText "rsnapshot.conf" ''
+    config_version	1.2
+
+    snapshot_root	/hoarder-data/backup/
+
+    retain	daily	4
+    retain	weekly	6
+
+    cmd_cp	${pkgs.coreutils}/bin/cp
+    cmd_rm	${pkgs.coreutils}/bin/rm
+    cmd_rsync	${pkgs.rsync}/bin/rsync
+    cmd_logger	${pkgs.util-linux}/bin/logger
+    cmd_du	${pkgs.coreutils}/bin/du
+
+    rsync_long_args	-a	--delete
+    logfile	/home/tom/scripts/backups/rsnapshot.log
+
+    backup	/home/tom/apps/arrs/	apps/arrs/
+    backup	/home/tom/apps/blog/	apps/blog/
+    backup	/home/tom/apps/fafi/	apps/fafi/
+    backup	/home/tom/apps/ha/	apps/ha/	exclude=/esphome/config/.esphome/
+    backup	/home/tom/apps/immich/	apps/immich/
+    backup	/home/tom/apps/nextcloud/	apps/nextcloud/
+    backup	/home/tom/apps/nvr/	apps/nvr/
+    backup	/home/tom/apps/paperless/	apps/paperless/
+    backup	/home/tom/apps/samba/	apps/samba/
+    backup	/home/tom/apps/pgadmin/	apps/pgadmin/
+    backup	/home/tom/apps/searxng/	apps/searxng/
+    backup	/home/tom/apps/traefik/	apps/traefik/
+    backup	/home/tom/apps/trilium/	apps/trilium/
+    backup	/home/tom/apps/unifi/	apps/unifi/
+    backup	/home/tom/apps/vaultwarden/	apps/vaultwarden/
+
+    backup	/home/tom/apps/docker-compose.yml	apps/docker-compose.yml
+
+    backup	/home/tom/scripts/	scripts/
+    backup	/home/tom/certs/	certs/
+    backup	/home/tom/nixos-config/	nixos-config/
+  '';
+
   backupScript = pkgs.writeShellScriptBin "docker-backup" ''
     # Make sure required tools are in the script's PATH
     PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin
@@ -22,6 +63,9 @@ let
       "fafi_db"
       "metabase-db"
       "vaultwarden"
+      "db_ha"
+      "db-lightdash"
+      "nocodb"
     )
 
     echo "Stopping containers..."
@@ -30,12 +74,11 @@ let
     done
 
     echo "Backing up..."
-    # Note: Ensure this path is correct and accessible by root
-    rsnapshot -c /home/tom/scripts/backups/rsnapshot.conf daily
+    rsnapshot -c ${rsnapshotConf} daily
 
     # Run weekly on Sundays
     if [[ $(date +%w) -eq 0 ]]; then
-      rsnapshot -c /home/tom/scripts/backups/rsnapshot.conf weekly
+      rsnapshot -c ${rsnapshotConf} weekly
     fi
 
     echo "Starting containers..."
@@ -60,7 +103,6 @@ in
     };
   };
 
-  # 3. triger for service
   systemd.timers.docker-backup = {
     description = "Timer for Docker Container Backup";
     wantedBy = [ "timers.target" ];
