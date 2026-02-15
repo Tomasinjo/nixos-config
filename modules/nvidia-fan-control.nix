@@ -50,9 +50,29 @@ let
     name = "nvidia-pwm4-control";
     runtimeInputs = [ pkgs.jq config.hardware.nvidia.package pkgs.coreutils ];
     text = ''
+      # --- CONFIGURATION ---
+      TARGET_NAME="nct6798"
       CONFIG_PATH="/etc/nvidia-fan-control/config.json"
-      PWM_PATH="/sys/class/hwmon/hwmon10/pwm4"
-      ENABLE_PATH="/sys/class/hwmon/hwmon10/pwm4_enable"
+      
+      echo "Searching for hwmon device with name: $TARGET_NAME"
+      
+      HWMON_PATH=""
+      for dev in /sys/class/hwmon/hwmon*; do
+          if [[ -f "$dev/name" ]] && [[ "$(cat "$dev/name")" == "$TARGET_NAME" ]]; then
+              HWMON_PATH="$dev"
+              break
+          fi
+      done
+
+      if [[ -z "$HWMON_PATH" ]]; then
+          echo "Error: Could not find hwmon device for $TARGET_NAME"
+          exit 1
+      fi
+
+      PWM_PATH="$HWMON_PATH/pwm4"
+      ENABLE_PATH="$HWMON_PATH/pwm4_enable"
+      
+      echo "Found device at $HWMON_PATH"
 
       cleanup() {
           echo "Exiting: Restoring fan control to motherboard (fallback mode 5)..."
@@ -62,13 +82,15 @@ let
       trap cleanup EXIT SIGINT SIGTERM
 
       [[ ! -f "$CONFIG_PATH" ]] && echo "Config not found" && exit 1
+      
+      # Enable manual control (1)
       echo 1 > "$ENABLE_PATH"
 
       while true; do
           TEMP=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader 2>/dev/null || echo "error")
           
           if [[ "$TEMP" =~ ^[0-9]+$ ]]; then
-              # Use --argjson for numeric comparison
+              # Calculate fan speed from JSON
               FAN_VALUE=$(jq -r --argjson temp "$TEMP" '
                   .temperature_ranges[] | 
                   select($temp >= .min_temperature and $temp < .max_temperature) | 
@@ -76,6 +98,9 @@ let
               ' "$CONFIG_PATH" | head -n 1)
 
               if [ -n "$FAN_VALUE" ] && [ "$FAN_VALUE" != "null" ]; then
+                  # Map 0-100% to 0-255 PWM if your JSON uses percentages, 
+                  # but your current script assumes 0-255. 
+                  # Keeping your clamping logic:
                   [[ "$FAN_VALUE" -gt 255 ]] && FAN_VALUE=255
                   [[ "$FAN_VALUE" -lt 0 ]] && FAN_VALUE=0
                   echo "$FAN_VALUE" > "$PWM_PATH"
