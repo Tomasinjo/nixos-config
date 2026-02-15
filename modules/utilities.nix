@@ -9,5 +9,6 @@
     git-crypt # secrets encryption for nixos config
     openssl
     smartmontools  # smartctl
+    screen
   ];
 }
