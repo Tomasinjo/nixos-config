@@ -63,6 +63,7 @@ s
   '';
 
   backupScript = pkgs.writeShellScriptBin "docker-backup" ''
+    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin
     echo "Stopping containers: ${builtins.concatStringsSep " " containers}"
     docker stop ${builtins.concatStringsSep " " containers}
 

@@ -5,7 +5,7 @@
 # lsblk | grep 4.5T
 
 ### mount disk
-# sudo mount -t exfat /dev/sde2 /mnt/usb_backup/
+# sudo mount -t ext4 /dev/sdx /home/tom/mnt/
 
 ### go to screen
 # screen -S backup
@@ -19,12 +19,6 @@
 
 ### run rsnapshot
 # sudo backup-quarterly
-
-### monitor progress
-# sudo btop     <- must run as sudo to see disk rw
-# F4 to filter
-# filter by rsync 
-###########################
 
 let
   containers = [
@@ -52,7 +46,7 @@ let
   rsnapshotServicesConf = pkgs.writeText "rsnapshot-services.conf" ''
     config_version	1.2
 
-    snapshot_root	/mnt/usb_backup/services
+    snapshot_root	/home/tom/mnt/services
 
     retain	quarterly	4
 
@@ -65,7 +59,6 @@ let
     cmd_du	${pkgs.coreutils}/bin/du
 
     rsync_long_args	--archive --delete --numeric-ids
-    logfile	/home/tom/scripts/backups/external_disk_backups/rsnapshot.log
 
     backup	/home/tom/apps/arrs/	apps/arrs/
     backup	/home/tom/apps/blog/	apps/blog/
@@ -93,7 +86,7 @@ let
   rsnapshotImportantConf = pkgs.writeText "rsnapshot-important.conf" ''
     config_version	1.2
 
-    snapshot_root	/mnt/usb_backup/important-data
+    snapshot_root	/home/tom/mnt/important-data
 
     retain	quarterly	4
 
@@ -102,15 +95,19 @@ let
     cmd_rsync	${pkgs.rsync}/bin/rsync
     rsync_long_args	--archive --delete --numeric-ids
 
-    backup	/important-data/	important-data/
+    backup	/impo-data/	important-data/
   '';
 
   backupScript = pkgs.writeShellScriptBin "backup-quarterly" ''
+    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin
     echo "Stopping containers: ${builtins.concatStringsSep " " containers}"
     docker stop ${builtins.concatStringsSep " " containers}
 
-    echo "Running rsnapshot quarterly..."
+    echo "Running apps rsnapshot quarterly..."
     rsnapshot -c ${rsnapshotServicesConf} quarterly
+
+    echo "Running data rsnapshot quarterly..."
+    rsnapshot -c ${rsnapshotImportantConf} quarterly
 
     echo "Starting containers..."
     docker start ${builtins.concatStringsSep " " containers}
@@ -118,6 +115,7 @@ let
   '';
 in
 {
-  # This makes the 'backup-quarterly' command available in terminal
-  environment.systemPackages = [ backupScript ];
+  environment.systemPackages = [ 
+    backupScript  # This makes the 'backup-quarterly' command available in terminal
+  ];
 }
