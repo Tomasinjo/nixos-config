@@ -1,5 +1,31 @@
 { config, pkgs, ... }:
 
+### INSTRUCTIONS ###
+# najdes device
+# lsblk | grep 4.5T
+
+### mount disk
+# sudo mount -t exfat /dev/sde2 /mnt/usb_backup/
+
+### go to screen
+# screen -S backup
+
+### restore screen
+# screen -r backup
+
+# remove screen: ctrl + a + k
+# leave screen: ctrl + a + d
+# list screens: screen -ls
+
+### run rsnapshot
+# sudo backup-quarterly
+
+### monitor progress
+# sudo btop     <- must run as sudo to see disk rw
+# F4 to filter
+# filter by rsync 
+###########################
+
 let
   containers = [
     "mongo-unifi"
@@ -23,13 +49,14 @@ let
     "nocodb"
   ];
 
-  rsnapshotConf = pkgs.writeText "rsnapshot.conf" ''
+  rsnapshotServicesConf = pkgs.writeText "rsnapshot-services.conf" ''
     config_version	1.2
 
-    snapshot_root	/hoarder-data/backup/
+    snapshot_root	/mnt/usb_backup/services
 
-    retain	daily	4
-    retain	weekly	6
+    retain	quarterly	4
+
+    interval	quarterly	1
 
     cmd_cp	${pkgs.coreutils}/bin/cp
     cmd_rm	${pkgs.coreutils}/bin/rm
@@ -37,8 +64,9 @@ let
     cmd_logger	${pkgs.util-linux}/bin/logger
     cmd_du	${pkgs.coreutils}/bin/du
 
-    rsync_long_args	-a	--delete
-s
+    rsync_long_args	--archive --delete --numeric-ids
+    logfile	/home/tom/scripts/backups/external_disk_backups/rsnapshot.log
+
     backup	/home/tom/apps/arrs/	apps/arrs/
     backup	/home/tom/apps/blog/	apps/blog/
     backup	/home/tom/apps/fafi/	apps/fafi/
@@ -62,18 +90,27 @@ s
     backup	/home/tom/nixos-config/	nixos-config/
   '';
 
-  backupScript = pkgs.writeShellScriptBin "docker-backup" ''
+  rsnapshotImportantConf = pkgs.writeText "rsnapshot-important.conf" ''
+    config_version	1.2
+
+    snapshot_root	/mnt/usb_backup/important-data
+
+    retain	quarterly	4
+
+    interval	quarterly	1
+
+    cmd_rsync	${pkgs.rsync}/bin/rsync
+    rsync_long_args	--archive --delete --numeric-ids
+
+    backup	/important-data/	important-data/
+  '';
+
+  backupScript = pkgs.writeShellScriptBin "backup-quarterly" ''
     echo "Stopping containers: ${builtins.concatStringsSep " " containers}"
     docker stop ${builtins.concatStringsSep " " containers}
 
-    # Logic for weekly: If Sunday (0), run weekly
-    if [ "$(date +%w)" -eq 0 ]; then
-      echo "It's Sunday - Running rsnapshot weekly..."
-      rsnapshot -c ${rsnapshotConf} weekly
-    fi
-
-    echo "Running rsnapshot daily..."
-    rsnapshot -c ${rsnapshotConf} daily
+    echo "Running rsnapshot quarterly..."
+    rsnapshot -c ${rsnapshotServicesConf} quarterly
 
     echo "Starting containers..."
     docker start ${builtins.concatStringsSep " " containers}
@@ -81,25 +118,6 @@ s
   '';
 in
 {
-  # This makes the 'docker-backup' command available also in terminal
+  # This makes the 'backup-quarterly' command available in terminal
   environment.systemPackages = [ backupScript ];
-
-  # systemd service
-  systemd.services.docker-backup = {
-    description = "Docker Container Backup Service";
-    serviceConfig = {
-      Type = "oneshot";
-      User = "root";
-      ExecStart = "${backupScript}/bin/docker-backup";
-    };
-  };
-
-  systemd.timers.docker-backup = {
-    description = "Timer for Docker Container Backup";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "04:00";
-      Persistent = true;
-    };
-  };
 }
