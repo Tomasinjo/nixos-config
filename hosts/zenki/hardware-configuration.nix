@@ -10,7 +10,14 @@
 
   boot.initrd.availableKernelModules = [ "vmd" "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" "apex" "gasket" ];
+  boot.kernelModules = [ 
+    "kvm-intel" 
+    "apex" 
+    "gasket" 
+    "drivetemp" # HDD temps 
+    "coretemp"  # motherboard temps
+    "nct6775"   # pwm fan control
+  ];
   boot.extraModulePackages = [
     config.boot.kernelPackages.gasket
   ];

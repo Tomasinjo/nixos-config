@@ -33,7 +33,5 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.kernelModules = [ "drivetemp" ];  # for reading HDD temps
-
   system.stateVersion = "25.11";
 }
