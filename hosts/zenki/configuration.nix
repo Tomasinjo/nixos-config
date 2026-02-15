@@ -10,6 +10,7 @@
     ../../modules/intel-qsv.nix
     ../../modules/backup-zfs.nix
     ../../modules/backup-docker.nix
+    ../../modules/backup-quarterly.nix
     ../../modules/desktop.nix
     ../../modules/gaming.nix
     ../../modules/libvirt.nix
