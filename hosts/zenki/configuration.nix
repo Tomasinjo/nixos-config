@@ -19,6 +19,7 @@
     ../../modules/sudo.nix
     ../../modules/vector.nix
     ../../modules/nvidia-fan-control.nix
+    ../../modules/efficiency.nix
   ];
 
   networking.hostId = "a8c00f0a";

@@ -9,4 +9,13 @@
     ../../modules/gaming.nix
 
   ];
+
+  programs.zsh = {
+    enable = true;
+    shellAliases = {
+      set-eco = "echo 'power' | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference";
+      set-std = "echo 'balance_performance' | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference";
+      set-per = "echo 'performance' | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference";
+    };
+  };
 }
