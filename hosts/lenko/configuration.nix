@@ -31,6 +31,7 @@
     ntfs3g
     dnsmasq
     sshfs
+    wireguard-tools
   ];
 
   system.activationScripts.screenshotsDir = ''
