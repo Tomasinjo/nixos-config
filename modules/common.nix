@@ -79,10 +79,10 @@
     settings = {
       add_newline = false;
       line_break.disabled = true;
+      scan_timeout = 30;
       character = {
         success_symbol = "[➜](bold green)";
         error_symbol = "[➜](bold red)";
-      scan_timeout = 1000;
       };
     };
   };
