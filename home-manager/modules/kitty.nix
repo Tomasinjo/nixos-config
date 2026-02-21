@@ -10,9 +10,9 @@
 
     settings = {
       # Transparency
-      background_opacity = "0.8";
-      dynamic_background_opacity = "yes";
-      dim_opacity = "0.75";
+      #background_opacity = "0.8";
+      #dynamic_background_opacity = "yes";
+      #dim_opacity = "0.75";
 
       # Window appearance
       window_padding_width = "10";
