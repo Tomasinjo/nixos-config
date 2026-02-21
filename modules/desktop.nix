@@ -32,7 +32,6 @@
     waybar           # Status bar
     hyprlock         # Screen locker
     dunst            # Notifications
-    hyprpaper        # Wallpaper
     wl-clipboard     # Copy/Paste support
     brightnessctl    # Brightness control
     playerctl        # Media player control

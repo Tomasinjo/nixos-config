@@ -5,8 +5,10 @@
     # Import base modules
     ../../home-manager/modules/packages-base.nix
     ../../home-manager/modules/hyprland-base.nix
+    ../../home-manager/modules/hyprpaper.nix
     ../../home-manager/modules/waybar-base.nix
     ../../home-manager/modules/hyprlock.nix
+    ../../home-manager/modules/kitty.nix
     ../../home-manager/modules/yazi.nix
     ../../home-manager/modules/rofi.nix
     ../../home-manager/modules/git.nix
@@ -24,6 +26,7 @@
     EDITOR = "nvim";
   };
 
+  wayland.hyprpaper.enable = true;
   xdg.enable = true; # required by home manager
 }
 
