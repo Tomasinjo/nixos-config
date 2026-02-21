@@ -44,6 +44,11 @@
         #"match:initial_class ^kitty$, match:initial_title ^kitty$, workspace 5"
         "workspace 6, match:class ^discord$"  # discord ignores exec-one workspace
         #"workspace 7, match:class ^org\.telegram\.desktop$"
+        "match:class code, opacity 0.91"
+        "match:class discord, opacity 0.87"
+        "match:class ^org\.telegram\.desktop$, opacity 0.87"
+        "match:class firefox, opacity 0.94 0.94 1.00"
+        "match:class ^Proton\.Mail$, opacity 0.87"
       ];
       
       # overriding a base value instead of appending
