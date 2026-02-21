@@ -6,7 +6,7 @@
     enableZshIntegration = true;
 
     settings = {
-      manager = {
+      mgr = {
         linemode = "size_and_mtime";
         sort_by = "mtime";
         sort_reverse = true;
@@ -30,8 +30,8 @@
           { run = "hyprctl dispatch exec code \"$@\""; block = false; desc = "VScode"; }
         ];
 
-        image_viewer = [
-          { run = "hyprctl dispatch exec ImageViewer \"$@\""; block = false; desc = "ImageViewer"; }
+        imv = [
+          { run = "hyprctl dispatch exec imv %s %d"; block = false; desc = "imv"; }
         ];
 
         gimp = [
@@ -42,34 +42,23 @@
           { run = "hyprctl dispatch exec vlc \"$@\""; block = false; desc = "vlc"; }
         ];
 
-        libreoffice = [
-          { run = "hyprctl dispatch exec \"libreoffice --nologo $@\""; block = false; desc = "libreoffice"; }
+        okular = [
+          { run = "okular \"$@\""; block = false; desc = "Okular"; }
         ];
       };
 
       open = {
         prepend_rules = [
-	  { mime = "application/vnd.ms-excel"; use = ["libreoffice"]; }
-	  { mime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; use = ["libreoffice"]; }
-	  { mime = "application/msword"; use = ["libreoffice"]; }
-	  { mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"; use = ["libreoffice"]; }
-	  { mime = "application/vnd.ms-powerpoint"; use = ["libreoffice"]; }
-	  { mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation"; use = ["libreoffice"]; }
-	  { mime = "application/x-*"; use = [ "executable" ]; }
-          { mime = "image/*"; use = [ "image_viewer" "gimp" ]; }
+	        { mime = "application/x-*"; use = [ "executable" ]; }
+          { mime = "image/*"; use = [ "imv" "gimp" ]; }
           { mime = "video/*"; use = [ "vlc" ]; }
           { mime = "text/*"; use = [ "edit" "VScode" ]; }
+          { mime = "application/pdf"; use = [ "okular" ]; }
         ];
-	append_rules = [
-          { name = "*.xls"; use = [ "libreoffice" ]; }
-          { name = "*.xlsx"; use = [ "libreoffice" ]; }
-          { name = "*.doc"; use = [ "libreoffice" ]; }
-          { name = "*.docx"; use = [ "libreoffice" ]; }
-          { name = "*.ppt"; use = [ "libreoffice" ]; }
-          { name = "*.pptx"; use = [ "libreoffice" ]; }
+	      append_rules = [
           { name = "*.AppImage"; use = [ "appimage" ]; }
           { name = "*.appimage"; use = [ "appimage" ]; }
-	];
+	      ];
       };
     };
 
