@@ -9,7 +9,6 @@
       enable = true;
       settings = {
         flavour = "mocha";
-        transparent_background = true;
       };
     };
 
@@ -75,14 +74,6 @@
           },
         }
       end
-
-      -- Set opacity to 0.85
-      vim.cmd('highlight Normal guibg=NONE')
-      vim.cmd('highlight NormalNC guibg=NONE')
-      vim.cmd('highlight NonText guibg=NONE')
-      vim.cmd('highlight SignColumn guibg=NONE')
-      vim.cmd('highlight FoldColumn guibg=NONE')
-      vim.cmd('highlight EndOfBuffer guibg=NONE')
 
       -- Make line numbers brighter
       vim.cmd('highlight LineNr guifg=#9399b2 guibg=NONE')
