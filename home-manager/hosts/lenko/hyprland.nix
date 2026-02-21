@@ -29,15 +29,15 @@
       ];
 
       workspace = [
-        "1, monitor:desc:LG Electronics LG ULTRAWIDE 0x01010101, default:true"
-        "2, monitor:desc:LG Electronics LG ULTRAWIDE 0x01010101, default:true"
-        "3, monitor:desc:LG Electronics LG ULTRAWIDE 0x01010101, default:true"
-        "4, monitor:desc:LG Electronics LG ULTRAWIDE 0x00037CB8, default:true"
-        "5, monitor:desc:LG Electronics LG ULTRAWIDE 0x00037CB8, default:true"
-        "6, monitor:desc:LG Electronics LG ULTRAWIDE 0x00037CB8, default:true"
-        "7, monitor:eDP-1, default:true"
-        "8, monitor:eDP-1, default:true"
-        "9, monitor:eDP-1, default:true"
+        "1, monitor:desc:LG Electronics LG ULTRAWIDE 0x01010101, default:true, persistent:true"
+        "2, monitor:desc:LG Electronics LG ULTRAWIDE 0x01010101, persistent:true"
+        "3, monitor:desc:LG Electronics LG ULTRAWIDE 0x01010101, persistent:true"
+        "4, monitor:desc:LG Electronics LG ULTRAWIDE 0x00037CB8, default:true, persistent:true"
+        "5, monitor:desc:LG Electronics LG ULTRAWIDE 0x00037CB8, persistent:true"
+        "6, monitor:desc:LG Electronics LG ULTRAWIDE 0x00037CB8, persistent:true"
+        "7, monitor:eDP-1, default:true, persistent:true"
+        "8, monitor:eDP-1, persistent:true"
+        "9, monitor:eDP-1, persistent:true"
       ];
 
       windowrule = [
