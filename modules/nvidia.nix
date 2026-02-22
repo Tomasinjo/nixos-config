@@ -10,7 +10,8 @@
     powerManagement.enable = true;
 # the following two are disabled due to suspicion of causing high idle power
 #    powerManagement.finegrained = true; # allows deep sleep states
-#    open = true; 
+#    open = true;
+    open = false;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
     
     # the following allows running desktop with iGPU, while selectively offloading programs to nvidia. 
