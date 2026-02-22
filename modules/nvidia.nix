@@ -8,8 +8,9 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
-    powerManagement.finegrained = true; # allows deep sleep states
-    open = true; 
+# the following two are disabled due to suspicion of causing high idle power
+#    powerManagement.finegrained = true; # allows deep sleep states
+#    open = true; 
     package = config.boot.kernelPackages.nvidiaPackages.stable;
     
     # the following allows running desktop with iGPU, while selectively offloading programs to nvidia. 
