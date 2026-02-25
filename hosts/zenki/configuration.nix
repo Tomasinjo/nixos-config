@@ -13,8 +13,7 @@
     ../../modules/backup-quarterly.nix
     ../../modules/desktop.nix
     ../../modules/gaming.nix
-    ../../modules/libvirt.nix
-    ../../modules/cockpit.nix
+#    ../../modules/cockpit.nix
     ../../modules/utilities.nix
     ../../modules/sudo.nix
     ../../modules/vector.nix
