@@ -53,7 +53,16 @@
       lsp = {
         enable = true;
         servers = {
-          nil_ls.enable = true;    # Nix
+          nil_ls = {
+            enable = true;
+            settings = {
+              nix = {
+                flake = {
+                  autoArchive = true;
+                };
+              };
+            };
+          };
           lua_ls.enable = true;   # Lua
           pyright.enable = true;  # Python
           bashls.enable = true;   # Bash
