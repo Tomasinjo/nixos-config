@@ -38,7 +38,7 @@ let
     cmd_du	${pkgs.coreutils}/bin/du
 
     rsync_long_args	-a	--delete
-s
+
     backup	/home/tom/apps/arrs/	apps/arrs/
     backup	/home/tom/apps/blog/	apps/blog/
     backup	/home/tom/apps/fafi/	apps/fafi/
