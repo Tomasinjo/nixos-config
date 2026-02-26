@@ -19,6 +19,7 @@
     ../../modules/vector.nix
     ../../modules/nvidia-fan-control.nix
     ../../modules/efficiency.nix
+    ../../modules/libvirt.nix
   ];
 
   networking.hostId = "a8c00f0a";

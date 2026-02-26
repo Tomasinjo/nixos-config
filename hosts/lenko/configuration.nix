@@ -32,6 +32,7 @@
     dnsmasq
     sshfs
     wireguard-tools
+    virt-manager
   ];
 
   system.activationScripts.screenshotsDir = ''
