@@ -5,7 +5,7 @@ let
 in
 {
   fileSystems."/home/tom/zenki-home" = {
-    device = secrets.zenki.ssh.home;
+    device = secrets.zenki.ssh.home; # if it doesnt mount, run sudo ssh... to add it to root's known hosts
     fsType = "fuse.sshfs";
     options = [
       # Standard SSH options
@@ -27,7 +27,7 @@ in
       "x-systemd.automount" # Mount only when the directory is accessed
       "noauto"              # Don't mount immediately at boot
       "x-systemd.idle-timeout=600" # Unmount after 10 min of inactivity
-      "x-systemd.mount-timeout=10"
+      "x-systemd.mount-timeout=30"
     ];
   };
 
