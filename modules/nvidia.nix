@@ -8,10 +8,9 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
-# the following two are disabled due to suspicion of causing high idle power
-#    powerManagement.finegrained = true; # allows deep sleep states
-#    open = true;
+    powerManagement.finegrained = true; # allows deep sleep states
     open = false;
+    nvidiaPersistenced = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
     
     # the following allows running desktop with iGPU, while selectively offloading programs to nvidia. 
@@ -28,5 +27,5 @@
 
   hardware.nvidia-container-toolkit.enable = true;
   boot.kernelParams = [ "iomem=relaxed" ]; # for running gddr6-core-junction-vram-temps
-  systemd.services.nvidia-persistenced.enable = false;
+  #systemd.services.nvidia-persistenced.enable = true;
 }
