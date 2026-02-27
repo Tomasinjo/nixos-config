@@ -10,6 +10,7 @@
     ../../modules/utilities.nix
     ../../modules/piper.nix
     ../../modules/printing.nix
+    ../../modules/virt-manager.nix
     ./mounts.nix
   ];
 
@@ -32,7 +33,6 @@
     dnsmasq
     sshfs
     wireguard-tools
-    virt-manager
   ];
 
   system.activationScripts.screenshotsDir = ''
