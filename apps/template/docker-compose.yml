@@ -1,0 +1,100 @@
+
+# Load shared networks
+# Required for 
+#      - web services (to load traefik-net)
+#      - when service needs to access to shared network 
+# Select one based on path depth
+include:
+  - ../global-network.yml
+  - ../../global-network.yml
+
+# TIP: use docker compose config to see full configuration
+
+# Make sure to keep order of the keys!
+services:
+  service-app:
+    image: example-img
+    container_name: ${SERVICE_NAME}-app
+    # environment - always include all variables from .env read by container!
+    environment:
+      EXAMPLE: ${EXAMPLE}
+    # extends - load shared compose parts:
+    # base: set user 1111, basic hardening, time, restart policy
+    # web-base: healthcheck, basic traefik config, only use in special cases, better to use one of below
+    # web-base-exposed: traefik labels for internet facing service, needs public DNS entry
+    # web-base-internal: traefik labels for local only service, create TLS cert and local DNS override
+    # web-base-*-cuda/quicksync: same as above, but hardware acceleration, refer to global-compose.yml.
+    extends:
+      #file: ../../global-compose.yml
+      file: ../global-compose.yml
+      service: web-base-exposed
+    volumes:
+    # use bind mount
+    # must end with -data, -media, -cache, -plugins
+    # prefer standard app-data for main webapp, db-data for database
+    # update .gitignore if you have a valid usecase for new name 
+      - ./app-data:/config
+      - ./app-plugins:/plugins
+      - ./app-media:/media
+      - ./app-cache:/cache
+      - ./db-data:/postgres
+      - ./utilityservice-data:/data
+    # ports - usually not needed for web services, use traefik or macvlan
+    ports:
+      - 
+    # networks - notes:
+    # traefik-net is added automatically with extend web-base-* services.
+    # shared networks are defined in global-network.yml. Use them if service needs to talk with containers in other stacks.
+    # if stack contains utility services such as database, define internal service that can only be accessed by containers in this stack - additional isolation of database.
+    # always follow least privilege - use most limited network possible.
+    networks:
+      service-net:
+      # Use macvlan as alternative to host networking, typically required 
+      # for mdns and other multicast traffic.
+      macvlan-10:
+        ipv4_address: ${MACVLAN_IPV4}
+        ipv6_address: ${MACVLAN_IPV6}
+    depends_on:
+      - service-db
+    # labels - typically contain only traefik config.
+    # use them to append config not covered by global-compose.
+    labels:
+      - traefik.http.routers.srvice.middlewares=some_special_middleware@docker
+    #
+    # --- after this point, you can add any key in any order. --- 
+    #
+    # user - for images that dont support non-root/setting custom puid.
+    # it is defined in base service of global-compose.yml
+    # however, if you set it like this, it is overrided
+    user: "" # overwrites base compose, the image support non-root container by default
+    # healthcheck can be turned off if not supported for any reason
+    healthcheck:
+      test: [] # disabled because web server doesnt like it
+    # capabilities can be overriden from base service
+    # base global service drops NET_RAW - raw access to network stack
+    cap_drop: []
+
+
+  service-db:
+    image: 
+    container_name: ${SERVICE_NAME}-
+    environment:
+      EXAMPLE: ${EXAMPLE}
+    extends:
+      file: ../global-compose.yml
+      service: base
+    volumes:
+      - ./xxx:/xxx
+    ports:
+      - 
+    networks:
+      - service-net
+    depends_on:
+      - 
+    labels:
+      - 
+
+# define stack-level network. Use it only within this stack.
+networks:
+  service-net:
+    

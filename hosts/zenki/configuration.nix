@@ -5,15 +5,14 @@
     ./networking.nix
     ../../modules/common.nix
     ../../modules/nvidia.nix
-    ../../modules/docker.nix
+    ../../modules/docker/enable.nix
     ../../modules/ssh.nix
     ../../modules/intel-qsv.nix
     ../../modules/backup-zfs.nix
-    ../../modules/backup-docker.nix
+#    ../../modules/backup-docker.nix
     ../../modules/backup-quarterly.nix
     ../../modules/desktop.nix
     ../../modules/gaming.nix
-#    ../../modules/cockpit.nix
     ../../modules/utilities.nix
     ../../modules/sudo.nix
     ../../modules/vector.nix

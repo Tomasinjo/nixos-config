@@ -1,0 +1,13 @@
+networks:
+  traefik-net:
+    external: true
+  arr-net:
+    external: true
+  ha-net:
+    external: true
+  fafi-net:
+    external: true
+  llm-net:
+    external: true
+  macvlan-10:
+    external: True

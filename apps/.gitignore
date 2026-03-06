@@ -1,0 +1,24 @@
+# Ignore all files by default
+*
+
+# Un-ignore directories so Git can traverse the tree
+!*/
+
+# RE-IGNORE directories that are Docker volumes.
+# those are standard directory names
+*-data/
+*-media/
+*-cache/
+*-plugins/
+dev/
+
+# allow these files
+!.gitignore
+!**/docker-compose.yml
+!**/docker-compose.yaml
+!**/.env.example
+# frigate non-root setup
+!**/overrides/*
+# jupyter
+!**/Dockerfile
+!**/requirements.txt

@@ -1,0 +1,21 @@
+include:
+  - ../../global-network.yml
+
+services:
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    extends:
+      file: ../../global-compose.yml
+      service: web-base-internal
+    volumes:
+      - ./app-data:/config
+      - ${RDR_DOWNLOADS_PATH}:/Downloads
+      - ${RDR_MEDIA_PATH}:/media
+    networks:
+      - arr-net
+    user: ""  # overwrites base compose, the image support non-root container by default

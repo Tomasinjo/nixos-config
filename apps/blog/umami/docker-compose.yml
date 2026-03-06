@@ -1,0 +1,39 @@
+include:
+  - ../../global-network.yml
+
+services:
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      DATABASE_URL: ${DATABASE_TYPE}://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${SERVICE_NAME}-db:5432/${POSTGRES_DB}
+      APP_SECRET: ${APP_SECRET}
+    extends:
+      file: ../../global-compose.yml
+      service: web-base-internal
+    networks:
+      - umami-net
+    depends_on:
+      umami-db:
+        condition: service_healthy
+
+
+  umami-db:
+    image: postgres:15-alpine
+    container_name: ${SERVICE_NAME}-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - umami-net
+
+networks:
+  umami-net:

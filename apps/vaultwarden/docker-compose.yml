@@ -1,0 +1,17 @@
+include:
+  - ../global-network.yml
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      WEBSOCKET_ENABLED: ${WEBSOCKET_ENABLED}
+      SIGNUPS_ALLOWED: ${SIGNUPS_ALLOWED}
+      INVITATIONS_ALLOWED: ${INVITATIONS_ALLOWED}
+      TZ: ${TZ}
+    extends:
+      file: ../global-compose.yml
+      service: web-base-exposed
+    volumes:
+      - ./app-data:/data

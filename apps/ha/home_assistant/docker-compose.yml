@@ -1,0 +1,62 @@
+include:
+  - ../../global-network.yml
+
+services:
+  ha:
+    image: homeassistant/home-assistant:stable
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      PUID: ${PUID}
+      GUID: ${GUID}
+      TZ: ${TZ}
+    extends:
+      file: ../../global-compose.yml
+      service: web-base
+    volumes:
+      - ./app-data:/config
+      - ./app-media:/media
+      - /dev/serial/by-id:/dev/serial/by-id  # for zigbee
+    ports:
+      - 192.168.10.15:5683:5683/udp  # shelly em3 CoIoT
+    networks:
+      - ha-net
+    labels:
+      - traefik.http.routers.${SERVICE_NAME}.service=ha_service@file
+      - traefik.http.routers.${SERVICE_NAME}.tls.certresolver=fikus_resolver
+      - traefik.http.routers.${SERVICE_NAME}.tls.options=fikus_mtls@file
+    user: ""  # override base compose, it is set by env vars
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0 # for zigbee
+    cap_drop: []
+
+
+  ha-db:
+    image: postgres:16.9-bookworm
+    container_name: ${SERVICE_NAME}-db
+    extends:
+      file: ../../global-compose.yml
+      service: base
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /data/postgres
+    volumes:
+       - ./db-data:/data/postgres
+    networks:
+      - ha-net
+    shm_size: 50g
+
+
+  mqtt:
+    image: eclipse-mosquitto
+    container_name: ${SERVICE_NAME}-mqtt
+    extends:
+      file: ../../global-compose.yml
+      service: base
+    volumes:
+      - ./mqtt-data/:/mosquitto/
+    networks:
+      - ha-net
+    ports:
+      - 192.168.10.15:1883:1883

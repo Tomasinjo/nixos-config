@@ -1,0 +1,16 @@
+include:
+  - ../global-network.yml
+
+services:
+  jupyter:
+    build: .
+    container_name: ${SERVICE_NAME}-app
+    environment: {}
+    extends:
+      file: ../global-compose.yml
+      service: web-base-internal
+    volumes:
+      - ./app-data:/home/jovyan
+    networks:
+      - fafi-net
+    cpuset: '12-19' # use only E-cores
