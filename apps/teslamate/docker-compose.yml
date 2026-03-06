@@ -1,0 +1,65 @@
+include:
+  - ../../global-network.yml
+
+services:
+  teslamate:
+    image: teslamate/teslamate:latest
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASS: ${DATABASE_PASS}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_HOST: ${DATABASE_HOST}
+      MQTT_HOST: ${MQTT_HOST}
+      MQTT_USERNAME: ${MQTT_USERNAME}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+    extends:
+      file: ../global-compose.yml
+      service: base
+    #ports:  # webui, uncomment if you need it, mostly useless after it is setup
+    #  - 192.168.10.15:4000:4000
+    networks: 
+      - ha-net
+      - tesla-net
+    depends_on:
+      - teslamate-db
+
+
+  teslamate-db:
+    image: postgres:16
+    container_name: ${SERVICE_NAME}-db
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+      POSTGRES_DB: ${DATABASE_NAME}
+    extends:
+      file: ../global-compose.yml
+      service: base
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    networks: 
+      - tesla-net
+
+
+  grafana-teslamate:
+    image: teslamate/grafana:latest
+    container_name: ${SERVICE_NAME}-grafana
+    environment:
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASS: ${DATABASE_PASS}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_HOST: ${DATABASE_HOST}
+    extends:
+      file: ../global-compose.yml
+      service: web-base-internal
+    volumes:
+      - ./app-data:/var/lib/grafana
+    networks: 
+      - tesla-net
+    depends_on:
+      - teslamate-db
+
+
+networks:
+  tesla-net:

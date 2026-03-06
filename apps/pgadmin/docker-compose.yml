@@ -1,0 +1,24 @@
+include:
+  - ../global-network.yml
+
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      MFA_ENABLED: ${MFA_ENABLED}
+      TZ: ${TZ}
+    extends:
+      file: ../global-compose.yml
+      service: web-base-internal
+    volumes:
+      - ./app-data:/var/lib/pgadmin
+    networks:
+      - fafi-net
+      - ha-net
+    user: ""  # overrides base compose, does not support changing uids, runs with uid 5050
+    #healthcheck:
+    #  test: [] # image has wget, but does not respond on port 5050 even tho it should
+

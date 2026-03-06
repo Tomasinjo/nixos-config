@@ -1,0 +1,26 @@
+include:
+  - ../../global-network.yml
+
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+      WEBUI_PORT: ${SERVICE_PORT}
+      TORRENTING_PORT: ${TORRENTING_PORT}
+    extends:
+      file: ../../global-compose.yml
+      service: web-base-internal
+    volumes:
+      - ./app-data:/config
+      - ${QBT_MEDIA_PATH}:/media
+      - ${QBT_GAMES_PATH}:/games
+    ports:
+      - ${HOST_INTERFACE}:${TORRENTING_PORT}:${TORRENTING_PORT}/tcp
+      - ${HOST_INTERFACE}:${TORRENTING_PORT}:${TORRENTING_PORT}/udp
+    networks:
+      - arr-net
+    user: "" # overwrites base compose, the image support non-root container by default

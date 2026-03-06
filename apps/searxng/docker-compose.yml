@@ -1,0 +1,17 @@
+include:
+  - ../global-network.yml
+
+services:
+  searxng:
+    image: docker.io/searxng/searxng:latest
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      SEARXNG_BASE_URL: https://${SERVICE_FQDN}/
+      SEARXNG_BIND_ADDRESS: ${SEARXNG_BIND_ADDRESS}
+      SEARXNG_SECRET: ${SEARXNG_SECRET}
+    extends:
+      file: ../global-compose.yml
+      service: web-base-exposed
+    volumes:
+      - ./app-data:/etc/searxng:rw
+    user: ""  # overwrites base compose, the image runs as non-root by default (uid 977)

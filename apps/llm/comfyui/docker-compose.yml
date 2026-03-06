@@ -1,0 +1,19 @@
+include:
+  - ../../global-network.yml
+
+services:
+  comfyui:
+    image: yanwk/comfyui-boot:cu129-slim
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      CLI_ARGS: --highvram
+    extends:
+      file: ../../global-compose.yml
+      service: web-base-internal-cuda
+    volumes:
+      - ./app-data:/root
+    networks:
+      - llm-net
+    user: ""  # does not support non-root 
+    restart: no
+

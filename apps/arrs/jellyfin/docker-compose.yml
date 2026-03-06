@@ -1,0 +1,28 @@
+include:
+  - ../../global-network.yml
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      JELLYFIN_PublishedServerUrl: https://${SERVICE_FQDN}
+    extends:
+      file: ../../global-compose.yml
+      service: web-base-exposed-quicksync
+    volumes:
+      - ./app-data:/config
+      - ./app-cache:/cache
+      - ${JF_MEDIA_PATH}:/media
+    labels:
+      - 'traefik.http.routers.${SERVICE_NAME}.middlewares=jellyfin-mw,dynamic-whitelist@file' # overrides the one specified in global-compose
+      - 'traefik.http.middlewares.jellyfin-mw.headers.customResponseHeaders.X-Robots-Tag=noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex'
+      - 'traefik.http.middlewares.jellyfin-mw.headers.STSSeconds=315360000'
+      - 'traefik.http.middlewares.jellyfin-mw.headers.STSIncludeSubdomains=true'
+      - 'traefik.http.middlewares.jellyfin-mw.headers.STSPreload=true'
+      - 'traefik.http.middlewares.jellyfin-mw.headers.forceSTSHeader=true'
+      - 'traefik.http.middlewares.jellyfin-mw.headers.frameDeny=true'
+      - 'traefik.http.middlewares.jellyfin-mw.headers.contentTypeNosniff=true'
+      - 'traefik.http.middlewares.jellyfin-mw.headers.customresponseheaders.X-XSS-PROTECTION=0'
+      - "traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue='allow-from https://${SERVICE_FQDN}'"
+      - 'traefik.http.services.${SERVICE_NAME}.loadBalancer.passHostHeader=true'

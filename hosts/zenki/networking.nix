@@ -20,13 +20,13 @@ in
     linkConfig.RequiredForOnline = "no";
     networkConfig.LinkLocalAddressing = "no";
     # Attach VLAN
-    vlan = [ "eth10g.10" ];
+    vlan = [ secrets.networking.zenki.vlan10.interface_name ];
   };
 
   # Configure VLAN 10 Interface
   systemd.network.netdevs."10-vlan10" = {
     netdevConfig = {
-      Name = "eth10g.10";
+      Name = secrets.networking.zenki.vlan10.interface_name;
       Kind = "vlan";
     };
     vlanConfig.Id = 10;
@@ -34,20 +34,22 @@ in
 
   # IP Configuration for VLAN 10
   systemd.network.networks."20-vlan10" = {
-    matchConfig.Name = "eth10g.10";
+    matchConfig.Name = secrets.networking.zenki.vlan10.interface_name;
     address = [
-      "192.168.10.15/24"
+      secrets.networking.zenki.vlan10.ipv4Address
       secrets.networking.zenki.vlan10.ipv6Address
     ];
     routes = [
-      { Gateway = "192.168.10.1"; }
+      { Gateway = secrets.networking.zenki.vlan10.ipv4Gateway; }
       { Gateway = secrets.networking.zenki.vlan10.ipv6Gateway; }
     ];
     networkConfig = {
       IPv6AcceptRA = true;
     };
     # DNS settings
-    networkConfig.DNS = [ "192.168.99.10" secrets.networking.zenki.vlan10.ipv6DNS ];
+    networkConfig.DNS = [ secrets.networking.zenki.vlan10.ipv4DNS 
+			  secrets.networking.zenki.vlan10.ipv6DNS 
+    ];
   };
 
   # Firewall

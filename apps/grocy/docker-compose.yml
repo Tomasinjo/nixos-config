@@ -1,0 +1,18 @@
+include:
+  - ../global-network.yml
+
+services:
+  grocy:
+    image: lscr.io/linuxserver/grocy:latest
+    container_name: ${SERVICE_NAME}-app
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+    extends:
+      file: ../global-compose.yml
+      service: web-base-internal
+    volumes:
+      - ./app-data:/config
+    restart: no
+    user: "" # overwrites base compose, the image support non-root container by default

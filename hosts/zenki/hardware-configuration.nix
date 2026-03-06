@@ -21,9 +21,8 @@
   boot.extraModulePackages = [
     config.boot.kernelPackages.gasket
   ];
-  #services.udev.extraRules = ''
-  #  SUBSYSTEM=="apex", MODE="0660", GROUP="docker"
-  #'';
+  hardware.coral.pcie.enable = true;
+  users.groups.coral.gid = 989;
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/987089a7-616c-4e41-8727-9718ee05f247";
