@@ -2,7 +2,11 @@
 
 let
   dockerAutodeployScript = pkgs.writeShellScriptBin "docker-auto-deploy" ''
-    # Go to your repo
+    if [ "$(date +%w)" -ne 0 ]; then
+        echo "Not Sunday, skipping deployment."
+        exit 0
+    fi
+
     cd /home/tom/nixos-config || exit 1
 
     # Fetch latest changes from remote
@@ -43,9 +47,9 @@ in
   environment.systemPackages = [ dockerAutodeployScript ];
 
   systemd.services.docker-auto-deploy = {
-    description = "Auto pull and deploy Docker Compose updates";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
+    description = "Auto pull and deploy Docker Compose updates after backup";
+    wantedBy = [ "docker-backup.service" ]; # triggered after backup is finished
+    after = [ "docker-backup.service" ];    # but after it is completed
     serviceConfig = {
       Type = "oneshot";
       User = "tom";
@@ -55,13 +59,4 @@ in
     path = with pkgs; [ git docker docker-compose openssh ];
   };
 
-  systemd.timers.docker-auto-deploy = {
-    description = "Timer to auto deploy Docker Compose updates";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnBootSec = "5m";
-      OnUnitActiveSec = "60m"; # run every hour
-      Unit = "docker-auto-deploy.service";
-    };
-  };
 }

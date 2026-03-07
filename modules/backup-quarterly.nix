@@ -21,28 +21,6 @@
 # sudo backup-quarterly
 
 let
-  containers = [
-    "mongo-unifi"
-    "db_paperless"
-    "compreface-postgres-db"
-    "double-take"
-    "frigate"
-    "nextcloud-db"
-    "immich_postgres"
-    "teslamate-db"
-    "grafana-teslamate"
-    "music-assistant"
-    "jellyfin"
-    "radarr"
-    "db-umami"
-    "fafi_db"
-    "metabase-db"
-    "vaultwarden"
-    "db_ha"
-    "db-lightdash"
-    "nocodb"
-  ];
-
   rsnapshotServicesConf = pkgs.writeText "rsnapshot-services.conf" ''
     config_version	1.2
 
@@ -59,24 +37,6 @@ let
     cmd_du	${pkgs.coreutils}/bin/du
 
     rsync_long_args	--archive --delete --numeric-ids
-
-    backup	/home/tom/apps/arrs/	apps/arrs/
-    backup	/home/tom/apps/blog/	apps/blog/
-    backup	/home/tom/apps/fafi/	apps/fafi/
-    backup	/home/tom/apps/ha/	apps/ha/	exclude=/esphome/config/.esphome/
-    backup	/home/tom/apps/immich/	apps/immich/
-    backup	/home/tom/apps/nextcloud/	apps/nextcloud/
-    backup	/home/tom/apps/nvr/	apps/nvr/
-    backup	/home/tom/apps/paperless/	apps/paperless/
-    backup	/home/tom/apps/samba/	apps/samba/
-    backup	/home/tom/apps/pgadmin/	apps/pgadmin/
-    backup	/home/tom/apps/searxng/	apps/searxng/
-    backup	/home/tom/apps/traefik/	apps/traefik/
-    backup	/home/tom/apps/trilium/	apps/trilium/
-    backup	/home/tom/apps/unifi/	apps/unifi/
-    backup	/home/tom/apps/vaultwarden/	apps/vaultwarden/
-
-    backup	/home/tom/apps/docker-compose.yml	apps/docker-compose.yml
 
     backup	/home/tom/scripts/	scripts/
     backup	/home/tom/certs/	certs/
@@ -99,9 +59,17 @@ let
   '';
 
   backupScript = pkgs.writeShellScriptBin "backup-quarterly" ''
-    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin
-    echo "Stopping containers: ${builtins.concatStringsSep " " containers}"
-    docker stop ${builtins.concatStringsSep " " containers}
+    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin
+    
+    # Get a list of currently running containers that end with "-db"
+    DB_CONTAINERS=$(docker ps --format '{{.Names}}' | grep '\-db$' || true)
+
+    if [ -n "$DB_CONTAINERS" ]; then
+      echo "Stopping containers: $(echo $DB_CONTAINERS)"
+      docker stop $DB_CONTAINERS
+    else
+      echo "No running '-db' containers found to stop."
+    fi
 
     echo "Running apps rsnapshot quarterly..."
     rsnapshot -c ${rsnapshotServicesConf} quarterly
@@ -109,8 +77,11 @@ let
     echo "Running data rsnapshot quarterly..."
     rsnapshot -c ${rsnapshotImportantConf} quarterly
 
-    echo "Starting containers..."
-    docker start ${builtins.concatStringsSep " " containers}
+    if [ -n "$DB_CONTAINERS" ]; then
+      echo "Starting containers: $(echo $DB_CONTAINERS)"
+      docker start $DB_CONTAINERS
+    fi
+    
     echo "Backup and restart completed."
   '';
 in

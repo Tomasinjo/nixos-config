@@ -14,7 +14,7 @@ include:
 services:
   service-app:
     # always specify version name.
-    image: example-img:2.0.5
+    image: hello-world:nanoserver-ltsc2025
     container_name: ${SERVICE_NAME}-app
     # environment - always include all variables from .env read by container, even tho it is technically not needed.
     environment:
