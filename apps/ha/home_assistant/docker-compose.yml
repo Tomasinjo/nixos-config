@@ -31,7 +31,7 @@ services:
 
 
   ha-db:
-    image: postgres:16.9-bookworm
+    image: postgres:16.13-bookworm
     container_name: ${SERVICE_NAME}-db
     extends:
       file: ../../global-compose.yml
