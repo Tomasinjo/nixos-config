@@ -15,7 +15,7 @@ services:
 
 
   db_paperless:
-    image: docker.io/library/postgres:15
+    image: docker.io/library/postgres:18
     container_name: ${SERVICE_NAME}-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
