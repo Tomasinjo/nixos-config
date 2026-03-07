@@ -3,7 +3,7 @@ include:
 
 services:
   vaultwarden:
-    image: vaultwarden/server:latest
+    image: vaultwarden/server:1.35.4
     container_name: ${SERVICE_NAME}-app
     environment:
       WEBSOCKET_ENABLED: ${WEBSOCKET_ENABLED}

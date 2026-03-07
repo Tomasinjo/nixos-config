@@ -3,7 +3,7 @@ include:
 
 services:
   ha:
-    image: homeassistant/home-assistant:stable
+    image: homeassistant/home-assistant:2026.2.3
     container_name: ${SERVICE_NAME}-app
     environment:
       PUID: ${PUID}
@@ -49,7 +49,7 @@ services:
 
 
   mqtt:
-    image: eclipse-mosquitto
+    image: eclipse-mosquitto:2.0
     container_name: ${SERVICE_NAME}-mqtt
     extends:
       file: ../../global-compose.yml

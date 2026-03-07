@@ -3,7 +3,7 @@ include:
 
 services:
   prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
+    image: lscr.io/linuxserver/prowlarr:2.3.0.5236-ls137
     container_name: ${SERVICE_NAME}-app
     environment:
       PUID: ${PUID}

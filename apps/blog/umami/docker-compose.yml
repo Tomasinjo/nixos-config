@@ -3,7 +3,7 @@ include:
 
 services:
   umami:
-    image: ghcr.io/umami-software/umami:postgresql-latest
+    image: ghcr.io/umami-software/umami:3.0.3
     container_name: ${SERVICE_NAME}-app
     environment:
       DATABASE_URL: ${DATABASE_TYPE}://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${SERVICE_NAME}-db:5432/${POSTGRES_DB}

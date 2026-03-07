@@ -21,7 +21,7 @@ services:
 
 
   nextcloud-app:
-    image: nextcloud
+    image: nextcloud:33.0
     container_name: ${SERVICE_NAME}-app
     environment:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}

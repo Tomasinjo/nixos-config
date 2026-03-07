@@ -3,7 +3,7 @@ include:
 
 services:
   searxng:
-    image: docker.io/searxng/searxng:latest
+    image: docker.io/searxng/searxng:2026.2.28-a2108ce2e
     container_name: ${SERVICE_NAME}-app
     environment:
       SEARXNG_BASE_URL: https://${SERVICE_FQDN}/

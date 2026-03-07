@@ -3,7 +3,7 @@ include:
 
 services:
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:9.13
     container_name: ${SERVICE_NAME}-app
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}

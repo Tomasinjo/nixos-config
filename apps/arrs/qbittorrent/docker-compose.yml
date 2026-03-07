@@ -3,7 +3,7 @@ include:
 
 services:
   qbittorrent:
-    image: lscr.io/linuxserver/qbittorrent:latest
+    image: lscr.io/linuxserver/qbittorrent:5.1.4-r2-ls442
     container_name: ${SERVICE_NAME}-app
     environment:
       PUID: ${PUID}

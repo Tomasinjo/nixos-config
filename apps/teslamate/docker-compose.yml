@@ -1,5 +1,5 @@
 include:
-  - ../../global-network.yml
+  - ../global-network.yml
 
 services:
   teslamate:

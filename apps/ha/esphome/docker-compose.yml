@@ -3,7 +3,7 @@ include:
 
 services:
   esphome:
-    image: esphome/esphome:stable
+    image: esphome/esphome:2026.2.2
     container_name: ${SERVICE_NAME}-app
     environment:
       USERNAME: ${USERNAME}

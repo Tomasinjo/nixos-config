@@ -3,7 +3,7 @@ include:
 
 services:
   pinchflat:
-    image: keglin/pinchflat:latest
+    image: keglin/pinchflat:v2025.6.6
     container_name: ${SERVICE_NAME}-app
     environment:
       TZ: ${TZ}
