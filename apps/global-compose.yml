@@ -26,6 +26,30 @@ services:
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+
+  base-postgres:
+    extends: { service: base }
+    container_name: ${SERVICE_NAME}-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PGDATA: /data/postgres
+    shm_size: 256mb 
+    stop_grace_period: 1m  # wait a minute before force shutdown, default 10s
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 1m
+      timeout: 5s
+      retries: 5
+      start_period: 10s # wait before attempting a healthcheck after start
+
 
   web-base:  # typically unused, use exposed or internal
     extends: { service: base }
@@ -42,6 +66,7 @@ services:
           fi
       interval: 1m
       timeout: 10s
+      start_period: 15s
     networks:
       - 'traefik-net'
     labels:

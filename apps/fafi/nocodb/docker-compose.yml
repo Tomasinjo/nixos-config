@@ -20,21 +20,33 @@ services:
       - fafi_db
 
 
+#  fafi_db:
+#    container_name: fafi_db
+#    image: postgres:16.12
+#    environment:
+#      POSTGRES_USER: ${POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#      POSTGRES_DB: ${POSTGRES_DB}
+#      PGDATA: /data/postgres
+#    extends:
+#      file: ../../global-compose.yml
+#      service: base
+#    volumes:
+#       - ./db-data:/data/postgres
+#    ports:
+#      - ${INTERFACE_IP}:4432:5432
+#    networks: 
+#      - fafi-net
+
   fafi_db:
+    image: postgres:16.12
     container_name: fafi_db
-    image: postgres:16.4-bullseye
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      PGDATA: /data/postgres
     extends:
       file: ../../global-compose.yml
-      service: base
+      service: base-postgres
     volumes:
        - ./db-data:/data/postgres
     ports:
       - ${INTERFACE_IP}:4432:5432
     networks: 
       - fafi-net
-

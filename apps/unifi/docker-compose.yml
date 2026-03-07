@@ -41,7 +41,7 @@ services:
       test: []
 
   unifi-db:
-    image: mongo:8
+    image: mongo:8.2
     container_name: ${SERVICE_NAME}-db
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}

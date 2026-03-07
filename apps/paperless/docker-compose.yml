@@ -3,7 +3,7 @@ include:
 
 services:
   broker_paperless:
-    image: docker.io/library/redis:7
+    image: docker.io/library/redis:7.4.8
     container_name: ${SERVICE_NAME}-broker
     extends:
       file: ../global-compose.yml
@@ -15,17 +15,12 @@ services:
 
 
   db_paperless:
-    image: docker.io/library/postgres:15
-    container_name: ${SERVICE_NAME}-db
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    image: postgres:16.12
     extends:
       file: ../global-compose.yml
-      service: base
+      service: base-postgres
     volumes:
-      - ./db-data:/var/lib/postgresql/data
+       - ./db-data:/data/postgres
     networks:
       - paperless-net
 
