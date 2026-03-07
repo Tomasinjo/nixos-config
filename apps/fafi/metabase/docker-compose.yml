@@ -25,7 +25,7 @@ services:
 
       
   metabase-db:
-    image: postgres:16.4-bullseye
+    image: postgres:17.5-bullseye
     container_name: ${SERVICE_NAME}-db
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
