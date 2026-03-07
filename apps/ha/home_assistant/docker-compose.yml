@@ -3,7 +3,7 @@ include:
 
 services:
   ha:
-    image: homeassistant/home-assistant:2026.2.3
+    image: homeassistant/home-assistant:2026.3.1
     container_name: ${SERVICE_NAME}-app
     environment:
       PUID: ${PUID}
