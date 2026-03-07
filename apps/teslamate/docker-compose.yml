@@ -27,7 +27,7 @@ services:
 
 
   teslamate-db:
-    image: postgres:16
+    image: postgres:18
     container_name: ${SERVICE_NAME}-db
     environment:
       POSTGRES_USER: ${DATABASE_USER}

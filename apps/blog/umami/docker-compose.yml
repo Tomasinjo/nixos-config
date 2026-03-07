@@ -19,7 +19,7 @@ services:
 
 
   umami-db:
-    image: postgres:15-alpine
+    image: postgres:18-alpine
     container_name: ${SERVICE_NAME}-db
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
