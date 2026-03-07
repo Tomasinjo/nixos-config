@@ -6,11 +6,11 @@
     ../../modules/common.nix
     ../../modules/desktop.nix
     ../../modules/sudo.nix
-    ../../modules/docker.nix
+    ../../modules/docker/init_base.nix
     ../../modules/utilities.nix
     ../../modules/piper.nix
     ../../modules/printing.nix
-    ../../modules/virt-manager.nix
+    ../../modules/virtual-machines/virt-manager.nix
     ./mounts.nix
   ];
 
