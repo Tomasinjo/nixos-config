@@ -3,7 +3,7 @@ include:
 
 services:
   victoriametrics:
-    image: docker.io/victoriametrics/victoria-logs:v1.45.0
+    image: docker.io/victoriametrics/victoria-logs:v1.47.0
     container_name: ${SERVICE_NAME}-app
     extends:
       file: ../global-compose.yml
