@@ -3,7 +3,7 @@ include:
 
 services:
   hugo-papermodx:
-    image: hugomods/hugo:exts-0.128.1 # leavemealone
+    image: hugomods/hugo:exts-0.128.1 # renovate: disable
     container_name: hugo-papermodx
     command: hugo -s /src/${SI_NAME}
     volumes:

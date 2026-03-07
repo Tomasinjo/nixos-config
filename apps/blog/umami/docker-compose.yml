@@ -14,24 +14,16 @@ services:
     networks:
       - umami-net
     depends_on:
-      umami-db:
-        condition: service_healthy
+      - umami-db
 
 
   umami-db:
-    image: postgres:15-alpine
-    container_name: ${SERVICE_NAME}-db
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    image: postgres:16.12
+    extends:
+      file: ../../global-compose.yml
+      service: base-postgres
     volumes:
-      - ./db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+       - ./db-data:/data/postgres
     networks:
       - umami-net
 

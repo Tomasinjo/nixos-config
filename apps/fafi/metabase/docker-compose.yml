@@ -25,18 +25,12 @@ services:
 
       
   metabase-db:
-    image: postgres:16.4-bullseye
-    container_name: ${SERVICE_NAME}-db
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      PGDATA: /data/postgres
+    image: postgres:16.12
     extends:
       file: ../../global-compose.yml
-      service: base
+      service: base-postgres
     volumes:
-      - ./db-data:/data/postgres
+       - ./db-data:/data/postgres
     networks:
       - metabase-net
 

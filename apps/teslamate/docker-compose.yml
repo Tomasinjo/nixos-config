@@ -3,14 +3,14 @@ include:
 
 services:
   teslamate:
-    image: teslamate/teslamate:latest
+    image: teslamate/teslamate:3.0
     container_name: ${SERVICE_NAME}-app
     environment:
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_PASS: ${DATABASE_PASS}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASS: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_HOST: teslamate-db
       MQTT_HOST: ${MQTT_HOST}
       MQTT_USERNAME: ${MQTT_USERNAME}
       MQTT_PASSWORD: ${MQTT_PASSWORD}
@@ -27,29 +27,24 @@ services:
 
 
   teslamate-db:
-    image: postgres:16
-    container_name: ${SERVICE_NAME}-db
-    environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASS}
-      POSTGRES_DB: ${DATABASE_NAME}
+    image: postgres:16.12
     extends:
       file: ../global-compose.yml
-      service: base
+      service: base-postgres
     volumes:
-      - ./db-data:/var/lib/postgresql/data
+       - ./db-data:/data/postgres
     networks: 
       - tesla-net
 
 
   grafana-teslamate:
-    image: teslamate/grafana:latest
+    image: teslamate/grafana:3.0.0
     container_name: ${SERVICE_NAME}-grafana
     environment:
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_PASS: ${DATABASE_PASS}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASS: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: ${POSTGRES_DB}
+      DATABASE_HOST: teslamate-db
     extends:
       file: ../global-compose.yml
       service: web-base-internal
