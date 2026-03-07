@@ -3,7 +3,7 @@ include:
 
 services:
   jellyfin:
-    image: jellyfin/jellyfin
+    image: jellyfin/jellyfin:10.11.6
     container_name: ${SERVICE_NAME}-app
     environment:
       JELLYFIN_PublishedServerUrl: https://${SERVICE_FQDN}

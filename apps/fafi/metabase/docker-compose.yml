@@ -3,7 +3,7 @@ include:
 
 services:
   metabase:
-    image: metabase/metabase:latest
+    image: metabase/metabase:v0.58.x
     container_name: ${SERVICE_NAME}-app
     environment:
       MB_DB_TYPE: postgres

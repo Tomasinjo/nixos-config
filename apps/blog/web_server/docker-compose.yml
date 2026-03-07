@@ -3,7 +3,7 @@ include:
 
 services:
   hugo-papermodx:
-    image: hugomods/hugo:exts-0.128.1
+    image: hugomods/hugo:exts-0.128.1 # leavemealone
     container_name: hugo-papermodx
     command: hugo -s /src/${SI_NAME}
     volumes:
@@ -16,7 +16,7 @@ services:
 
 
   web-server-blog:
-    image: joseluisq/static-web-server:2-alpine
+    image: joseluisq/static-web-server:2.37.0
     container_name: web-server-blog
     environment:
       - SERVER_CONFIG_FILE=/etc/config.toml

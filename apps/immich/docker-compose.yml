@@ -4,7 +4,7 @@ include:
 
 services:
   immich-server:
-    image: ghcr.io/immich-app/immich-server:release
+    image: ghcr.io/immich-app/immich-server:v2.5.6
     container_name: ${SERVICE_NAME}-server
     environment:
       DB_HOSTNAME: ${SERVICE_NAME}-db
@@ -58,7 +58,7 @@ services:
 
 
   immich-machine-learning:
-    image: ghcr.io/immich-app/immich-machine-learning:release-cuda
+    image: ghcr.io/immich-app/immich-machine-learning:v2.5.6-cuda
     container_name: ${SERVICE_NAME}-machine-learning
     environment:
       MACHINE_LEARNING_MODEL_TTL: ${MACHINE_LEARNING_MODEL_TTL}

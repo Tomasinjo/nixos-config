@@ -3,7 +3,7 @@ include:
 
 services:
   ollama:
-    image: ollama/ollama:latest
+    image: ollama/ollama:0.17.7
     container_name: ${SERVICE_NAME}-ollama
     environment:
       OLLAMA_KEEP_ALIVE: 24h
@@ -21,7 +21,7 @@ services:
 
 
   ollama-webui:
-    image: ghcr.io/open-webui/open-webui:main
+    image: ghcr.io/open-webui/open-webui:0.8-slim
     container_name: ${SERVICE_NAME}-app
     environment:
       OLLAMA_BASE_URLS: http://ollama:11434

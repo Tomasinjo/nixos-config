@@ -3,7 +3,7 @@ include:
 
 services:
   unifi-app:
-    image: lscr.io/linuxserver/unifi-network-application:latest
+    image: lscr.io/linuxserver/unifi-network-application:10.1.85-ls118
     container_name: ${SERVICE_NAME}-app
     environment:
       - PUID=${PUID}

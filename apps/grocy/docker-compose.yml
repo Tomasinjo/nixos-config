@@ -3,7 +3,7 @@ include:
 
 services:
   grocy:
-    image: lscr.io/linuxserver/grocy:latest
+    image: lscr.io/linuxserver/grocy:v4.5.0-ls316
     container_name: ${SERVICE_NAME}-app
     environment:
       PUID: ${PUID}
