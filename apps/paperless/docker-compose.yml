@@ -3,7 +3,7 @@ include:
 
 services:
   broker_paperless:
-    image: docker.io/library/redis:7
+    image: docker.io/library/redis:8
     container_name: ${SERVICE_NAME}-broker
     extends:
       file: ../global-compose.yml
