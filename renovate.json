@@ -5,11 +5,16 @@
     ":dependencyDashboard"
   ],
   "docker-compose": {
-    "fileMatch": ["(^|/)apps/.*docker-compose\\.ya?ml$"]
+    "managerFilePatterns": [
+      "/(^|/)apps/.*docker-compose\\.ya?ml$/"
+    ]
   },
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
       "automerge": false
     }
   ]
