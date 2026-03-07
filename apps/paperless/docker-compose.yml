@@ -31,7 +31,7 @@ services:
 
 
   paperless_app:
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.20.9
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.20.10
     container_name: ${SERVICE_NAME}_app
     environment:
       PAPERLESS_REDIS: redis://${SERVICE_NAME}-broker:6379
