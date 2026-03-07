@@ -3,7 +3,7 @@ include:
 
 services:
   music-assistant:
-    image: ghcr.io/music-assistant/server:2.3.5
+    image: ghcr.io/music-assistant/server:2.7.10
     container_name: ${SERVICE_NAME}-app
     environment:
       LOG_LEVEL: ${LOG_LEVEL}
