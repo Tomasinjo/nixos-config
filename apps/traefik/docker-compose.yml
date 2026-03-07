@@ -4,7 +4,7 @@ include:
 services:
   traefik:
     container_name: ${SERVICE_NAME}-app
-    image: traefik:v3.6.9
+    image: traefik:v3.6.10
     extends:
       file: ../global-compose.yml
       service: base
