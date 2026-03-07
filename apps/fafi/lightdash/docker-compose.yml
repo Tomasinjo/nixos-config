@@ -24,7 +24,7 @@ services:
 
 
   lightdash:
-    image: lightdash/lightdash:0.2569.0
+    image: lightdash/lightdash:0.2582.0
     container_name: ${SERVICE_NAME}-app
     environment:
       PGHOST: ${PGHOST}
