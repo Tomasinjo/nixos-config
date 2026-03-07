@@ -13,9 +13,10 @@ include:
 # Make sure to keep order of the keys!
 services:
   service-app:
-    image: example-img
+    # always specify version name.
+    image: example-img:2.0.5
     container_name: ${SERVICE_NAME}-app
-    # environment - always include all variables from .env read by container!
+    # environment - always include all variables from .env read by container, even tho it is technically not needed.
     environment:
       EXAMPLE: ${EXAMPLE}
     # extends - load shared compose parts:
@@ -75,24 +76,20 @@ services:
     cap_drop: []
 
 
+# standard postgres deployment for services that need db.
+# base-postgres extension will set healthchecks, load variables and good practices for db
+# volume is defined here because relative paths apply to current file - DO NOT CHANGE, target path is set statically in env variables!
+# image is set here because auto deploy script will only attempt to deploy from compose files that were modified.
+# make sure to set variables in .env file, they are read by global compose.
   service-db:
-    image: 
-    container_name: ${SERVICE_NAME}-
-    environment:
-      EXAMPLE: ${EXAMPLE}
+    image: postgres:16.12
     extends:
-      file: ../global-compose.yml
-      service: base
+      file: ../../global-compose.yml
+      service: base-postgres
     volumes:
-      - ./xxx:/xxx
-    ports:
-      - 
+       - ./db-data:/data/postgres
     networks:
       - service-net
-    depends_on:
-      - 
-    labels:
-      - 
 
 # define stack-level network. Use it only within this stack.
 networks:

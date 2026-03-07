@@ -28,5 +28,6 @@
 
   imports = [
     ./network.nix
+    ./auto-deploy.nix
   ];
 }

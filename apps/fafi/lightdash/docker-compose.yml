@@ -27,11 +27,11 @@ services:
     image: lightdash/lightdash:0.2582.0
     container_name: ${SERVICE_NAME}-app
     environment:
-      PGHOST: ${PGHOST}
-      PGPORT: ${PGPORT}
-      PGUSER: ${PGUSER}
-      PGPASSWORD: ${PGPASSWORD}
-      PGDATABASE: ${PGDATABASE}
+      PGHOST: db-lightdash
+      PGPORT: 5432
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
       SECURE_COOKIES: ${SECURE_COOKIES}
       TRUST_PROXY: ${TRUST_PROXY}
       LIGHTDASH_SECRET: ${LIGHTDASH_SECRET}
@@ -68,17 +68,12 @@ services:
 
 
   db-lightdash:
-    image: postgres:15.4
-    container_name: ${SERVICE_NAME}-db
-    environment:
-      POSTGRES_PASSWORD: ${PGPASSWORD}
-      POSTGRES_USER: ${PGUSER}
-      POSTGRES_DB: ${PGDATABASE}
+    image: postgres:16.12
     extends:
       file: ../../global-compose.yml
-      service: base
+      service: base-postgres
     volumes:
-      - ./db:/var/lib/postgresql/data
+       - ./db-data:/data/postgres
     networks:
       - lightdash-net
 
