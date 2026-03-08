@@ -39,4 +39,13 @@ in
       end = "${gameEnd}/bin/game-end";
     };
   };
+
+  security.sudo.extraRules = [
+    {
+      users = [ "tom" ];
+      commands = [
+	      { command = "/run/current-system/sw/bin/tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference"; options = [ "NOPASSWD" ]; }  # this allows changing the file without password for user tom
+      ];
+    }
+  ];
 }

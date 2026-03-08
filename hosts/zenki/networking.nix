@@ -4,6 +4,7 @@ let
   secrets = import ../../secrets.nix;
 in
 {
+  networking.hostName = "zenki";
   networking.useNetworkd = true;
   networking.useDHCP = false;
 
@@ -69,5 +70,6 @@ in
       trustedInterfaces = [ "docker0" ];
   
       checkReversePath = "loose";
-    };
+  };
+  users.users.tom.extraGroups = [ "networkmanager" ];
 }

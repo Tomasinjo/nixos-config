@@ -1,6 +1,10 @@
 { pkgs, ... }:
 
 {
+  environment.systemPackages = with pkgs; [ 
+    ripgrep # required for Telescope live_grep
+  ];
+  
   programs.nixvim = {
     enable = true;
     defaultEditor = true;

@@ -18,16 +18,15 @@
 # list screens: screen -ls
 
 ### run rsnapshot
-# sudo backup-quarterly
+# sudo backup-services-quarterly
 
 let
-  rsnapshotServicesConf = pkgs.writeText "rsnapshot-services.conf" ''
+  rsnapshotServicesQuarterly = pkgs.writeText "rsnapshot-services-quarterly.conf" ''
     config_version	1.2
 
     snapshot_root	/home/tom/mnt/services
 
     retain	quarterly	4
-
     interval	quarterly	1
 
     cmd_cp	${pkgs.coreutils}/bin/cp
@@ -43,22 +42,7 @@ let
     backup	/home/tom/nixos-config/	nixos-config/
   '';
 
-  rsnapshotImportantConf = pkgs.writeText "rsnapshot-important.conf" ''
-    config_version	1.2
-
-    snapshot_root	/home/tom/mnt/important-data
-
-    retain	quarterly	4
-
-    interval	quarterly	1
-
-    cmd_rsync	${pkgs.rsync}/bin/rsync
-    rsync_long_args	--archive --delete --numeric-ids
-
-    backup	/impo-data/	important-data/
-  '';
-
-  backupScript = pkgs.writeShellScriptBin "backup-quarterly" ''
+  backupScriptServicesQuarterly = pkgs.writeShellScriptBin "backup-services-quarterly" ''
     PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin
     
     # Get a list of currently running containers that end with "-db"
@@ -72,10 +56,7 @@ let
     fi
 
     echo "Running apps rsnapshot quarterly..."
-    rsnapshot -c ${rsnapshotServicesConf} quarterly
-
-    echo "Running data rsnapshot quarterly..."
-    rsnapshot -c ${rsnapshotImportantConf} quarterly
+    rsnapshot -c ${rsnapshotServicesQuarterly} quarterly
 
     if [ -n "$DB_CONTAINERS" ]; then
       echo "Starting containers: $(echo $DB_CONTAINERS)"
@@ -87,6 +68,7 @@ let
 in
 {
   environment.systemPackages = [ 
-    backupScript  # This makes the 'backup-quarterly' command available in terminal
+    backupScriptServicesQuarterly  # This makes the 'backup-services-quarterly' command available in terminal
+    pkgs.rsync
   ];
 }

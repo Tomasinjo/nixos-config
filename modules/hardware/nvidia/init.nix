@@ -28,4 +28,7 @@
   hardware.nvidia-container-toolkit.enable = true;
   boot.kernelParams = [ "iomem=relaxed" ]; # for running gddr6-core-junction-vram-temps
   #systemd.services.nvidia-persistenced.enable = true;
+  imports = [
+    ./nvidia-fan-control.nix
+  ];
 }

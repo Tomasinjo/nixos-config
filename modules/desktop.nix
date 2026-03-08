@@ -1,6 +1,11 @@
 { config, pkgs, inputs, ... }:
 
 {
+  users.users.tom.extraGroups = [ 
+      "video"
+      "audio"
+    ];
+
   programs.hyprland = {
     enable = true;
     package = inputs.hyprland.packages.${pkgs.system}.hyprland;
@@ -36,7 +41,6 @@
     brightnessctl    # Brightness control
     playerctl        # Media player control
   ];
-
 
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
