@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 {
   # Sanoid (Snapshot Management)
@@ -31,7 +31,7 @@
         useTemplate = [ "production" ];
         recursive = true;
       };
-      "hoarder-data/backups-impo-data" = {
+      "${vars.dir.hoarder_data}/backups-impo-data" = {
         useTemplate = [ "backup" ];
         recursive = true;
       };

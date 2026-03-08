@@ -1,55 +1,53 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
-let
-  secrets = import ../../secrets.nix;
-in
 {
-  networking.hostName = "zenki";
+  networking.hostName = vars.networking.zenki.hostname;
   networking.useNetworkd = true;
   networking.useDHCP = false;
 
   # Rename Interface based on MAC
-  systemd.network.links."10-persistent-eth10g" = {
-    matchConfig.MACAddress = "f4:52:14:87:bd:20";
-    linkConfig.Name = "eth10g";
+  systemd.network.links."10-persistent-${vars.networking.zenki.interface_name}" = {
+    matchConfig.MACAddress = vars.networking.zenki.interface_mac;
+    linkConfig.Name = vars.networking.zenki.interface_name;
   };
 
   # Configure Physical Interface (Trunk for VLANs)
-  systemd.network.networks."10-eth10g" = {
-    matchConfig.Name = "eth10g";
+  systemd.network.networks."10-${vars.networking.zenki.interface_name}" = {
+    matchConfig.Name = vars.networking.zenki.interface_name;
     # Ensure link is up
     linkConfig.RequiredForOnline = "no";
     networkConfig.LinkLocalAddressing = "no";
     # Attach VLAN
-    vlan = [ secrets.networking.zenki.vlan10.interface_name ];
+    vlan = [ vars.networking.zenki.vlan10.interface_name ];
   };
 
   # Configure VLAN 10 Interface
-  systemd.network.netdevs."10-vlan10" = {
+  systemd.network.netdevs."10-vlan${toString vars.networking.zenki.vlan10.tag}" = {
     netdevConfig = {
-      Name = secrets.networking.zenki.vlan10.interface_name;
+      Name = vars.networking.zenki.vlan10.interface_name;
       Kind = "vlan";
     };
-    vlanConfig.Id = 10;
+    vlanConfig.Id = vars.networking.zenki.vlan10.tag;
   };
 
   # IP Configuration for VLAN 10
-  systemd.network.networks."20-vlan10" = {
-    matchConfig.Name = secrets.networking.zenki.vlan10.interface_name;
+  systemd.network.networks."20-vlan${toString vars.networking.zenki.vlan10.tag}" = {
+    matchConfig.Name = vars.networking.zenki.vlan10.interface_name;
     address = [
-      secrets.networking.zenki.vlan10.ipv4Address
-      secrets.networking.zenki.vlan10.ipv6Address
+      vars.networking.zenki.vlan10.ipv4Address
+      vars.networking.zenki.vlan10.ipv6Address
     ];
     routes = [
-      { Gateway = secrets.networking.zenki.vlan10.ipv4Gateway; }
-      { Gateway = secrets.networking.zenki.vlan10.ipv6Gateway; }
+      { Gateway = vars.networking.vlan10.ipv4.gateway; }
+      { Gateway = vars.networking.vlan10.ipv6.gateway; }
     ];
     networkConfig = {
       IPv6AcceptRA = true;
     };
     # DNS settings
-    networkConfig.DNS = [ secrets.networking.zenki.vlan10.ipv4DNS 
-			  secrets.networking.zenki.vlan10.ipv6DNS 
+    networkConfig.DNS = [ 
+      vars.networking.ipv4DNS 
+			vars.networking.ipv6DNS 
     ];
   };
 
@@ -63,7 +61,7 @@ in
       allowedUDPPorts = [ ];
   
       # allowed ports for system services
-      interfaces."eth10g.10" = {
+      interfaces."${vars.networking.zenki.vlan10.interface_name}" = {
         allowedTCPPorts = [ 22 ]; # SSH
       };
   
@@ -71,5 +69,5 @@ in
   
       checkReversePath = "loose";
   };
-  users.users.tom.extraGroups = [ "networkmanager" ];
+  users.users.${vars.username}.extraGroups = [ "networkmanager" ];
 }

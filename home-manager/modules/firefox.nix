@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 
 {
   programs.firefox = {
@@ -15,9 +15,9 @@
         engines = {
           "Fikus" = {
             urls = [{ 
-              template = "https://search.fikus.si/search?q={searchTerms}"; 
+              template = "https://search.${vars.networking.domain}/search?q={searchTerms}"; 
             }];
-            icon = "https://search.fikus.si/favicon.ico";
+            icon = "https://search.${vars.networking.domain}/favicon.ico";
             updateInterval = 24 * 60 * 60 * 1000; # daily update
             definedAliases = [ "@s" ];
           };

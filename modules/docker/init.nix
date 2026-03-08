@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 
 {
   users.users.docker-user = {
@@ -7,7 +7,7 @@
     uid = 1111;
   };
   users.groups.docker-user.gid = 1111;
-  users.users.tom.extraGroups = [ "docker-user" ];
+  users.users.${vars.username}.extraGroups = [ "docker-user" ];
 
   boot.kernel.sysctl."kernel.perf_event_paranoid" = 0;  # CAP_MON requires this, frigate container  
 

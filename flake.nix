@@ -15,11 +15,14 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixvim, nur, home-manager, hyprland, ... }@inputs: {
+  outputs = { self, nixpkgs, nixvim, nur, home-manager, hyprland, ... }@inputs: let
+    # Import shared variables
+    vars = import ./vars.nix;
+  in {
     nixosConfigurations = {
       zenki = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs vars; };
         modules = [
           ./hosts/zenki/configuration.nix
           nixvim.nixosModules.nixvim
@@ -29,25 +32,25 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.tom = ./home-manager/users/tom.nix;
-            home-manager.extraSpecialArgs = { inherit inputs hyprland; hostName = "zenki"; };
+            home-manager.extraSpecialArgs = { inherit inputs hyprland vars; hostName = "zenki"; };
           }
         ];
       };
 
       lenko = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs vars; };
         modules = [
           ./hosts/lenko/configuration.nix
           nixvim.nixosModules.nixvim
           ./modules/nixvim.nix
           home-manager.nixosModules.home-manager
           nur.modules.nixos.default
-	  {
+         {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.tom = ./home-manager/users/tom.nix;
-            home-manager.extraSpecialArgs = { inherit inputs hyprland; hostName = "lenko"; };
+            home-manager.extraSpecialArgs = { inherit inputs hyprland vars; hostName = "lenko"; };
           }
         ];
       };

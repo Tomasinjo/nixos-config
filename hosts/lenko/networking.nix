@@ -1,7 +1,7 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 {
-  networking.hostName = "lenko";
+  networking.hostName = vars.networking.lenko.hostname;
   networking.networkmanager.enable = true;
 
   networking.firewall = {
@@ -10,5 +10,5 @@
     allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];  # kde connect
     allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];  # kde connect
   };
-  users.users.tom.extraGroups = [ "networkmanager" ];
+  users.users.${vars.username}.extraGroups = [ "networkmanager" ];
 }

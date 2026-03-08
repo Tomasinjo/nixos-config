@@ -1,7 +1,5 @@
-{ config, pkgs, ... }:
-let
-  secrets = import ../../secrets.nix;
-in
+{ config, pkgs, vars, ... }:
+
 {
   virtualisation = {
     libvirtd = {
@@ -18,7 +16,7 @@ in
 
   programs.virt-manager.enable = true;
 
-  users.users.tom.extraGroups = [ "libvirtd" "kvm" ];
+  users.users.${vars.username}.extraGroups = [ "libvirtd" "kvm" ];
 
   environment.systemPackages = with pkgs; [
     virt-viewer
@@ -51,7 +49,7 @@ in
 
       # 6. Allow specific external IPs
       iptables -A RESTRICTED_VM -d 1.1.1.1 -j ACCEPT
-      iptables -A RESTRICTED_VM -d ${secrets.vps_ip} -j ACCEPT
+      iptables -A RESTRICTED_VM -d ${vars.networking.vps.ipv4Address} -j ACCEPT
 
       # 7. Default Policy: DROP everything else originating from the VM
       iptables -A RESTRICTED_VM -j DROP

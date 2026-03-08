@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 {
   security.sudo = {
@@ -8,6 +8,6 @@
       Defaults timestamp_timeout=30  # minutes until sudo timeout
     '';
   };
-  users.users.tom.extraGroups = [ "wheel" ];
+  users.users.${vars.username}.extraGroups = [ "wheel" ];
 }
 

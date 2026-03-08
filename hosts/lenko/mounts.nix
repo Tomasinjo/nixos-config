@@ -1,15 +1,12 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
-let
-  secrets = import ../../secrets.nix;
-in
 {
-  fileSystems."/home/tom/zenki-home" = {
-    device = secrets.zenki.ssh.home; # if it doesnt mount, run sudo ssh... to add it to root's known hosts
+  fileSystems."${vars.dir.home}/${vars.networking.zenki.hostname}-home" = {
+    device = "${vars.username}@${vars.networking.zenki.fqdn}:${vars.dir.home}/"; # if it doesnt mount, run sudo ssh... to add it to root's known hosts
     fsType = "fuse.sshfs";
     options = [
       # Standard SSH options
-      "identityfile=/home/tom/.ssh/id_ed25519"
+      "identityfile=${vars.dir.home}/.ssh/id_ed25519"
       "allow_other"         # Allows user access to the root-owned mount
       "default_permissions"
       
@@ -35,8 +32,8 @@ in
   programs.fuse.userAllowOther = true;
 
   system.activationScripts.zenkiMountDir = ''
-    mkdir -p /home/tom/zenki-home
-    chown tom:users /home/tom/zenki-home
+    mkdir -p${vars.dir.home}/${vars.networking.zenki.hostname}-home
+    chown ${vars.username}:users ${vars.dir.home}/${vars.networking.zenki.hostname}-home
   '';
 
 }

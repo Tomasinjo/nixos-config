@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 
 {
   virtualisation.docker = {
@@ -6,7 +6,7 @@
     autoPrune.enable = true;
     
     daemon.settings = {
-      data-root = "/home/tom/docker";
+      data-root = vars.dir.docker_root;
       default-address-pools = [
         {
           base = "172.17.0.0/12";
@@ -17,5 +17,5 @@
   };
 
   environment.systemPackages = [ pkgs.docker-compose pkgs.ctop ];
-  users.users.tom.extraGroups = [ "docker" ];
+  users.users.${vars.username}.extraGroups = [ "docker" ];
 }
