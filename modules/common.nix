@@ -1,9 +1,9 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 {
-  users.users.tom = {
+  users.users.${vars.username} = {
     isNormalUser = true;
-    description = "Tom";
+    description = vars.fullName;
     shell = pkgs.zsh;
     uid = 1000;
   };
@@ -13,7 +13,6 @@
 
   services.xserver.xkb.layout = "si";
   console.keyMap = "slovene";
-
 
   nix.gc = {   # delete old generations
     automatic = true;

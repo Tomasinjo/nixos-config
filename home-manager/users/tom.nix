@@ -1,4 +1,4 @@
-{ hostName, config, pkgs, inputs, ... }:
+{ hostName, config, pkgs, inputs, vars, ... }:
 
 {
   imports = [
@@ -18,8 +18,8 @@
     ../../home-manager/hosts/${hostName}/default.nix
   ];
 
-  home.username = "tom";
-  home.homeDirectory = "/home/tom";
+  home.username = vars.username;
+  home.homeDirectory = vars.dir.home;
   home.stateVersion = "25.11";
 
   home.sessionVariables = {

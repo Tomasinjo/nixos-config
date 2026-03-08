@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 ### INSTRUCTIONS ###
 # najdes device
@@ -24,7 +24,7 @@ let
   rsnapshotImportantConf = pkgs.writeText "rsnapshot-quarterly-important.conf" ''
     config_version	1.2
 
-    snapshot_root	/home/tom/mnt/important-data
+    snapshot_root	${vars.dir.usb_mountpoint}/important-data
 
     retain	quarterly	4
     interval	quarterly	1
@@ -32,7 +32,7 @@ let
     cmd_rsync	${pkgs.rsync}/bin/rsync
     rsync_long_args	--archive --delete --numeric-ids
 
-    backup	/impo-data/	important-data/
+    backup	${vars.dir.impo_data}/	important-data/
   '';
 
   backupScriptImportant = pkgs.writeShellScriptBin "backup-important-quarterly" ''

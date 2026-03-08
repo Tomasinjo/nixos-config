@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, vars, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -35,8 +35,8 @@
   ];
 
   system.activationScripts.screenshotsDir = ''
-    mkdir -p /home/tom/screenshots
-    chown tom:users /home/tom/screenshots
+    mkdir -p ${vars.dir.home}/screenshots
+    chown ${vars.username}:users ${vars.dir.home}/screenshots
   '';
 
   nixpkgs.config.permittedInsecurePackages = [

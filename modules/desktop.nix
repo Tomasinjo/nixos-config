@@ -1,7 +1,7 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, vars, ... }:
 
 {
-  users.users.tom.extraGroups = [ 
+  users.users.${vars.username}.extraGroups = [ 
       "video"
       "audio"
     ];
@@ -18,7 +18,7 @@
     settings = rec {
       initial_session = {
         command = "start-hyprland";
-        user = "tom";
+        user = vars.username;
       };
     default_session = initial_session;
     };

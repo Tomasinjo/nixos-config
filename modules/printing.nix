@@ -1,5 +1,5 @@
 
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 {
   services.printing = {
@@ -21,7 +21,7 @@
     openFirewall = true;
   };
 
-  users.users.tom = {
+  users.users.${vars.username} = {
     extraGroups = [ "lp" "scanner" ];
   };
 

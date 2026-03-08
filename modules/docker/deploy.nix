@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, vars, ... }:
 
 let
   dockerAutodeployScript = pkgs.writeShellScriptBin "docker-auto-deploy" ''
@@ -7,7 +7,7 @@ let
         exit 0
     fi
 
-    cd /home/tom/nixos-config || exit 1
+    cd ${vars.dir.nixos_config} || exit 1
 
     # Fetch latest changes from remote
     git fetch origin master
@@ -52,8 +52,8 @@ in
     after = [ "docker-backup.service" ];    # but after it is completed
     serviceConfig = {
       Type = "oneshot";
-      User = "tom";
-      WorkingDirectory = "/home/tom/nixos-config";
+      User = vars.username;
+      WorkingDirectory = vars.dir.nixos_config;
       ExecStart = "${dockerAutodeployScript}/bin/docker-auto-deploy";
     };
     path = with pkgs; [ git docker docker-compose openssh ];

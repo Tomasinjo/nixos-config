@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 let
   # Script to run when game starts
@@ -42,9 +42,9 @@ in
 
   security.sudo.extraRules = [
     {
-      users = [ "tom" ];
+      users = [ vars.username ];
       commands = [
-	      { command = "/run/current-system/sw/bin/tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference"; options = [ "NOPASSWD" ]; }  # this allows changing the file without password for user tom
+	      { command = "/run/current-system/sw/bin/tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference"; options = [ "NOPASSWD" ]; }  # this allows changing the file without password for user
       ];
     }
   ];

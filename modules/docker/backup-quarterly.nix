@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 ### INSTRUCTIONS ###
 # najdes device
@@ -24,7 +24,7 @@ let
   rsnapshotServicesQuarterly = pkgs.writeText "rsnapshot-services-quarterly.conf" ''
     config_version	1.2
 
-    snapshot_root	/home/tom/mnt/services
+    snapshot_root	${vars.dir.usb_mountpoint}/services
 
     retain	quarterly	4
     interval	quarterly	1
@@ -37,9 +37,9 @@ let
 
     rsync_long_args	--archive --delete --numeric-ids
 
-    backup	/home/tom/scripts/	scripts/
-    backup	/home/tom/certs/	certs/
-    backup	/home/tom/nixos-config/	nixos-config/
+    backup	${vars.dir.scripts}/	scripts/
+    backup	${vars.dir.certs}/	certs/
+    backup	${vars.dir.nixos_config}/	nixos-config/
   '';
 
   backupScriptServicesQuarterly = pkgs.writeShellScriptBin "backup-services-quarterly" ''

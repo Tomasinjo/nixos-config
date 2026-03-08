@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 {
   users.users.vector = {
@@ -8,6 +8,7 @@
       "docker"  # To read /var/run/docker.sock
       "adm"     # To read system logs/journal
       "users"   # to read files
+      "docker-user"
     ];
   };
   users.groups.vector = {}; # Create the group
@@ -31,8 +32,8 @@
         local_files = {
           type = "file";
           include = [ 
-      	      "/home/tom/apps/ha/appdaemon/logs/appdaemon.log"
-      	      "/home/tom/apps/ha/appdaemon/logs/error.log"
+      	      "${vars.dir.nixos_config}/apps/ha/appdaemon/app-data/logs/appdaemon.log"
+      	      "${vars.dir.nixos_config}/apps/ha/appdaemon/app-data/logs/error.log"
 	  ];
         };
 

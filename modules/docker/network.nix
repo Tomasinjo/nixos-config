@@ -1,9 +1,5 @@
-{ pkgs, ... }: 
+{ pkgs, vars, ... }: 
 
-
-let
-  secrets = import ../../secrets.nix;
-in
 {
   systemd.services.init-docker-networks = {
     description = "Create global Docker networks";
@@ -22,12 +18,12 @@ in
       if ! ${pkgs.docker}/bin/docker network inspect macvlan-10 >/dev/null 2>&1; then
         ${pkgs.docker}/bin/docker network create \
 	  -d macvlan \
-          -o parent=${secrets.networking.zenki.vlan10.interface_name} \
-          --subnet=${secrets.networking.zenki.vlan10.ipv4Subnet} \
-          --gateway=${secrets.networking.zenki.vlan10.ipv4Gateway} \
+          -o parent=${vars.networking.zenki.vlan10.interface_name} \
+          --subnet=${vars.networking.vlan10.ipv4.subnet} \
+          --gateway=${vars.networking.vlan10.ipv4.gateway} \
           --ipv6 \
-          --subnet=${secrets.networking.zenki.vlan10.ipv6Subnet} \
-          --gateway=${secrets.networking.zenki.vlan10.ipv6Gateway} \
+          --subnet=${vars.networking.vlan10.ipv6.subnet} \
+          --gateway=${vars.networking.vlan10.ipv6.gateway} \
           macvlan-10
       fi
     '';

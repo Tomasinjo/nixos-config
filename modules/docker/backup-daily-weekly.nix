@@ -1,10 +1,10 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 let
   rsnapshotServicesConfDaily = pkgs.writeText "rsnapshot-services-daily.conf" ''
     config_version	1.2
 
-    snapshot_root	/hoarder-data/backup/
+    snapshot_root	${vars.dir.hoarder_data}/backup/
 
     retain	daily	4
     retain	weekly	6
@@ -17,9 +17,9 @@ let
 
     rsync_long_args	-a	--delete
 
-    backup	/home/tom/scripts/	scripts/
-    backup	/home/tom/certs/	certs/
-    backup	/home/tom/nixos-config/	nixos-config/
+    backup	${vars.dir.scripts}/	scripts/
+    backup	${vars.dir.certs}/	certs/
+    backup	${vars.dir.nixos_config}/	nixos-config/
   '';
 
 backupScriptServicesDaily = pkgs.writeShellScriptBin "backup-services-daily" ''

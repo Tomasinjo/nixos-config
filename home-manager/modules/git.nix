@@ -1,15 +1,12 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, vars, ... }:
 
-let
-  secrets = import ../../secrets.nix;
-in
 {
   programs.git = {
     enable = true;
     settings = {
       user = {
         name = "Tomasinjo";
-        email = secrets.email.tom;
+        email = vars.email.tom;
       };
     };
   };
