@@ -19,11 +19,11 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub.useOSProber = true;
+
   # Gnome keyring daemon for secrets management
   services.gnome.gnome-keyring.enable = true;
 
   hardware.bluetooth.enable = true;
-  
   programs.kdeconnect.enable = true;
 
   environment.systemPackages = with pkgs; [

@@ -6,7 +6,7 @@
     protontricks
     (lutris.override {
       extraPkgs = pkgs: [
-        wineWowPackages.stable
+        wineWow64Packages.stable
         winetricks
       ];
     })
