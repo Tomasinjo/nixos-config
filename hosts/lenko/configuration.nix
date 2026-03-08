@@ -4,17 +4,16 @@
     ./hardware-configuration.nix
     ./networking.nix
     ../../modules/common.nix
+    ../../modules/shell.nix
     ../../modules/desktop.nix
     ../../modules/sudo.nix
     ../../modules/docker/init_base.nix
     ../../modules/utilities.nix
-    ../../modules/piper.nix
     ../../modules/printing.nix
     ../../modules/virtual-machines/virt-manager.nix
     ./mounts.nix
   ];
 
-  networking.hostName = "lenko";
 
   # Boot configuration
   boot.loader.systemd-boot.enable = true;
@@ -45,6 +44,7 @@
   ];
 
   boot.kernelModules = [ "drivetemp" ];  # for reading HDD temps
+  users.users.tom.extraGroups = [ "dialout" ];
 
   system.stateVersion = "25.11";
 }

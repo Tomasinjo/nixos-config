@@ -17,5 +17,5 @@
   };
 
   environment.systemPackages = [ pkgs.docker-compose pkgs.ctop ];
-  users.users.tom.extraGroups = [ "docker" "docker-user" ];
+  users.users.tom.extraGroups = [ "docker" ];
 }

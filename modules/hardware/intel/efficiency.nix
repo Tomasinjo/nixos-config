@@ -2,7 +2,7 @@
 
 {
   systemd.services.set-cpu-efficiency = {
-    description = "Set CPU Energy Performance Preference to balance_power";
+    description = "Set CPU Energy Performance Preference to power (lowest power consumption)";
     serviceConfig = {
       Type = "oneshot";
       ExecStart = "${pkgs.bash}/bin/bash -c 'for f in /sys/devices/system/cpu/cpufreq/policy*/energy_performance_preference; do echo power > \"$f\"; done'";

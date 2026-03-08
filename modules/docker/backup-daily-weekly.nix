@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  rsnapshotConf = pkgs.writeText "rsnapshot.conf" ''
+  rsnapshotServicesConfDaily = pkgs.writeText "rsnapshot-services-daily.conf" ''
     config_version	1.2
 
     snapshot_root	/hoarder-data/backup/
@@ -22,7 +22,7 @@ let
     backup	/home/tom/nixos-config/	nixos-config/
   '';
 
-backupScript = pkgs.writeShellScriptBin "docker-backup" ''
+backupScriptServicesDaily = pkgs.writeShellScriptBin "backup-services-daily" ''
     PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin
     
     # Get a list of currently running containers that end with "-db"
@@ -37,11 +37,11 @@ backupScript = pkgs.writeShellScriptBin "docker-backup" ''
 
     if [ "$(date +%w)" -eq 0 ]; then
       echo "It's Sunday - Running rsnapshot weekly..."
-      rsnapshot -c ${rsnapshotConf} weekly
+      rsnapshot -c ${rsnapshotServicesConfDaily} weekly
     fi
 
     echo "Running rsnapshot daily..."
-    rsnapshot -c ${rsnapshotConf} daily
+    rsnapshot -c ${rsnapshotServicesConfDaily} daily
 
     if [ -n "$DB_CONTAINERS" ]; then
       echo "Starting containers: $(echo $DB_CONTAINERS)"
@@ -52,8 +52,11 @@ backupScript = pkgs.writeShellScriptBin "docker-backup" ''
   '';
 in
 {
-  # This makes the 'docker-backup' command available also in terminal
-  environment.systemPackages = [ backupScript ];
+  # This makes the 'backup-services-daily' command available also in terminal
+  environment.systemPackages = [ 
+    backupScriptServicesDaily 
+    pkgs.rsync
+  ];
 
   # systemd service
   systemd.services.docker-backup = {
@@ -61,7 +64,7 @@ in
     serviceConfig = {
       Type = "oneshot";
       User = "root";
-      ExecStart = "${backupScript}/bin/docker-backup";
+      ExecStart = "${backupScriptServicesDaily}/bin/docker-backup";
     };
   };
 

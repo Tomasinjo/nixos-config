@@ -2,6 +2,12 @@
 
 {
   environment.systemPackages = with pkgs; [
+    wget
+    curl
+    btop
+    tree
+    pciutils
+    p7zip
     less
     usbutils
     tcpdump
