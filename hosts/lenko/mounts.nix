@@ -32,7 +32,7 @@
   programs.fuse.userAllowOther = true;
 
   system.activationScripts.zenkiMountDir = ''
-    mkdir -p${vars.dir.home}/${vars.networking.zenki.hostname}-home
+    mkdir -p ${vars.dir.home}/${vars.networking.zenki.hostname}-home
     chown ${vars.username}:users ${vars.dir.home}/${vars.networking.zenki.hostname}-home
   '';
 

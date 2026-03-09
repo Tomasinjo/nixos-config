@@ -4,7 +4,7 @@
   home.packages = with pkgs; [
     hyprshot
     pamixer
-    telegram-desktop
+    #telegram-desktop
     esptool
     zoom-us
     filezilla
