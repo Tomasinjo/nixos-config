@@ -31,6 +31,7 @@
     dnsmasq
     sshfs
     wireguard-tools
+    wireshark
   ];
 
   system.activationScripts.screenshotsDir = ''
