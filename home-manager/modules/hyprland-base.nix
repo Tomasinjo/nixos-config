@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, hyprland, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
 with lib;
 
@@ -51,7 +51,7 @@ let
       "$mainMod,V,exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
       "$mainMod,R,exec,$menu"
       "$mainMod,P,pseudo,"
-      "$mainMod,J,togglesplit,"
+ #     "$mainMod,J,togglesplit,"
       "$mainMod,left,movefocus,l"
       "$mainMod,right,movefocus,r"
       "$mainMod,up,movefocus,u"
@@ -137,8 +137,6 @@ in
   config = mkIf cfg.enable {
     wayland.windowManager.hyprland = {
       enable = true;
-      package = hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-      
       settings = recursiveUpdate baseSettings cfg.settings // {
         # recursiveUpdate merges sets, but it overwrites lists.
         # So we manually concatenate the important lists:

@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
-    hyprland.url = "github:hyprwm/Hyprland";
     nixvim = {
       url = "github:nix-community/nixvim/nixos-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -15,8 +14,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixvim, nur, home-manager, hyprland, ... }@inputs: let
-    # Import shared variables
+  outputs = { self, nixpkgs, nixvim, nur, home-manager, ... }@inputs: let
     vars = import ./vars.nix;
   in {
     nixosConfigurations = {
@@ -32,7 +30,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.tom = ./home-manager/users/tom.nix;
-            home-manager.extraSpecialArgs = { inherit inputs hyprland vars; hostName = "zenki"; };
+            home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "zenki"; };
           }
         ];
       };
@@ -50,7 +48,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.tom = ./home-manager/users/tom.nix;
-            home-manager.extraSpecialArgs = { inherit inputs hyprland vars; hostName = "lenko"; };
+            home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "lenko"; };
           }
         ];
       };
