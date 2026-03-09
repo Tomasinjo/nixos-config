@@ -26,7 +26,7 @@ in {
   networking = {
     domain = secrets.networking.domain;
     ipv4DNS = secrets.networking.ipv4DNS;
-    ipv6DNS = secrets.networking.ipv4DNS;
+    ipv6DNS = secrets.networking.ipv6DNS;
 
     vlan10 = {
       ipv4 = {
