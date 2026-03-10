@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 {
   wayland.hyprland = {
@@ -21,7 +21,7 @@
       ];
 
       bind = [
-        ", PRINT, exec, hyprshot -m region -o ~/screenshots/"
+        ", PRINT, exec, hyprshot -m region -o ${vars.dir.home}/screenshots/"
         ", XF86MonBrightnessUp, exec, brightnessctl set 5%+"
         ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
         ", XF86AudioMicMute, exec, pamixer --default-source --toggle-mute"
@@ -42,13 +42,13 @@
 
 
       windowrulev2 = [
-	"workspace 6, class:^discord$"
-	"opacity 0.93, class:^(code)$"
-	"opacity 0.87, class:^(discord)$"
-	"opacity 0.87, class:^(org\.telegram\.desktop)$"
-	"opacity 0.94 0.94 1.00, class:^(firefox)$"
-	"opacity 0.87, class:^(Proton\.Mail)$"
-	"opacity 0.80, class:^(kitty)$"
+	      "workspace 6, class:^discord$"
+	      "opacity 0.93, class:^(code)$"
+	      "opacity 0.87, class:^(discord)$"
+	      "opacity 0.87, class:^(org\.telegram\.desktop)$"
+	      "opacity 0.94 0.94 1.00, class:^(firefox)$"
+	      "opacity 0.87, class:^(Proton\.Mail)$"
+	      "opacity 0.80, class:^(kitty)$"
       ];
 
 ### NEWER VERSION, KEPT for future
