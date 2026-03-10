@@ -10,11 +10,6 @@
       "allow_other"         # Allows user access to the root-owned mount
       "default_permissions"
       
-      # one or more cause issues. This was attempt to better handle instable network
-#      "_netdev"              # Marks it as a network device (prevents hangs during boot/shutdown)
-#      "intr"                 # Allows operations to be interrupted if they hang
-#      "ConnectTimeout=5"     # Don't wait forever to establish connection
-
       # Connection reliability
       "reconnect"
       "ServerAliveInterval=15"

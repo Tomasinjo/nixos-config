@@ -1,5 +1,9 @@
 { config, pkgs, ... }:
 {
+  home.packages = with pkgs; [
+    brightnessctl
+  ];
+  
   wayland.waybar = {
     modulesLeft = [ "custom/logo" "clock" "cpu" "memory" "disk" "temperature" "custom/powerDraw" ];
     modulesCenter = [ "hyprland/workspaces" ];
@@ -93,8 +97,4 @@
       };
     };
   };
-
-  home.packages = with pkgs; [
-    brightnessctl
-  ];
 }
