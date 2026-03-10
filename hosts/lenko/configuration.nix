@@ -26,21 +26,11 @@
   programs.kdeconnect.enable = true;
 
   environment.systemPackages = with pkgs; [
-    hypridle
     ntfs3g
     dnsmasq
     sshfs
     wireguard-tools
     wireshark
-  ];
-
-  system.activationScripts.screenshotsDir = ''
-    mkdir -p ${vars.dir.home}/screenshots
-    chown ${vars.username}:users ${vars.dir.home}/screenshots
-  '';
-
-  nixpkgs.config.permittedInsecurePackages = [
-    "qtwebengine-5.15.19"   # for openshot
   ];
 
   boot.kernelModules = [ "drivetemp" ];  # for reading HDD temps

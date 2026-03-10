@@ -2,7 +2,6 @@
 
 {
   home.packages = with pkgs; [
-    hyprshot
     pamixer
     #telegram-desktop
     esptool

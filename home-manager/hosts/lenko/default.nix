@@ -8,5 +8,6 @@
     ../../modules/firefox.nix
     ../../modules/hypridle.nix
     ../../modules/vscode.nix
+    ../../modules/hyprshot.nix
   ];
 }
