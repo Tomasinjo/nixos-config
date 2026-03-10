@@ -31,8 +31,35 @@
     globals.mapleader = " ";
     keymaps = [
       { mode = "n"; key = "<leader>ff"; action = "<cmd>Telescope find_files<CR>"; }
-      { mode = "n"; key = "<leader>fg"; action = "<cmd>Telescope live_grep<CR>"; }
       { mode = "n"; key = "<leader>e";  action = "<cmd>Oil<CR>"; } # file explorer
+      {
+        mode = "n";
+        key = "<leader>fg";
+        action.__raw = '' 
+          function()
+            local path
+            local ok, oil = pcall(require, "oil")
+
+            -- Try to get path from Oil
+            if ok and vim.bo.filetype == "oil" then
+              path = oil.get_current_dir()
+            else
+              -- Try to get directory of current file
+              path = vim.fn.expand("%:p:h")
+            end
+
+            -- Fallback to CWD if path is empty or invalid (e.g. empty buffer)
+            if path == "" or path == "." then
+              path = vim.fn.getcwd()
+            end
+
+            require("telescope.builtin").live_grep({
+              cwd = path,
+            })
+          end
+        '';
+        options = { desc = "Grep in current directory, oil or file directory"; };
+      }
     ];
 
     # Plugins
