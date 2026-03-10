@@ -11,7 +11,6 @@
     xwayland.enable = true;
   };
 
-  # greetd Login Manager
   services.greetd = {
     enable = true;
     settings = rec {
@@ -33,12 +32,8 @@
   };
 
   environment.systemPackages = with pkgs; [
-    waybar           # Status bar
-    hyprlock         # Screen locker
     dunst            # Notifications
     wl-clipboard     # Copy/Paste support
-    brightnessctl    # Brightness control
-    playerctl        # Media player control
   ];
 
   fonts.packages = with pkgs; [
