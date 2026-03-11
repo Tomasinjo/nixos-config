@@ -1,6 +1,11 @@
 { config, pkgs, vars, ... }:
 
 {
+  imports = [
+    ./waybar.nix
+    ../../modules/desktop/hypridle.nix
+    ../../modules/desktop/hyprshot.nix
+  ];
   wayland.hyprland = {
     settings = {
       monitor = [

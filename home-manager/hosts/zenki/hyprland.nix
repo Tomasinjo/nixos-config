@@ -1,7 +1,9 @@
 
 { config, pkgs, inputs, ... }:
 {
-  
+  imports = [
+    ./waybar.nix
+  ];
   # create symlink to both gpus. This is to avoid using colons in AQ_DRM_DEVICE env which confuses hyprland when two or more gpus are defined. 
   xdg.configFile."hypr/igpu".source = config.lib.file.mkOutOfStoreSymlink "/dev/dri/by-path/pci-0000:00:02.0-card";
   xdg.configFile."hypr/dgpu".source = config.lib.file.mkOutOfStoreSymlink "/dev/dri/by-path/pci-0000:01:00.0-card";

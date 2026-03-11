@@ -13,7 +13,7 @@ in
     };
     wallpaper = mkOption {
       type = types.path;
-      default = ../../wallpapers/forest.png;
+      default = ../../../wallpapers/forest.png;
     };
   };
 

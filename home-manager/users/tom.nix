@@ -4,10 +4,6 @@
   imports = [
     # Import base modules
     ../../home-manager/modules/packages-base.nix
-    ../../home-manager/modules/hyprland-base.nix
-    ../../home-manager/modules/hyprpaper.nix
-    ../../home-manager/modules/waybar-base.nix
-    ../../home-manager/modules/hyprlock.nix
     ../../home-manager/modules/kitty.nix
     ../../home-manager/modules/yazi.nix
     ../../home-manager/modules/rofi.nix
