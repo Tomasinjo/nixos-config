@@ -25,7 +25,7 @@ services:
       service: base
     volumes:
       - ./app-data/src/${SI_NAME}/public:/var/www/${SI_NAME}/
-      - ./web-data/config.toml:/etc/config.toml
+      - ./app-data/config.toml:/etc/config.toml
     networks:
       - traefik-net
     labels:
