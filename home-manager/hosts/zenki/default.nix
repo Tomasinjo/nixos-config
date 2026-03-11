@@ -2,9 +2,8 @@
 
 {
   imports = [
-    ./hyprland.nix
-    ./waybar.nix
     ./packages.nix
+    ../../modules/desktop/hyprland-base.nix
     ../../modules/gaming.nix
   ];
 

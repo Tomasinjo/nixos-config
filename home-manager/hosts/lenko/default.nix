@@ -2,12 +2,9 @@
 
 {
   imports = [
-    ./hyprland.nix
-    ./waybar.nix
     ./packages.nix
     ../../modules/firefox.nix
-    ../../modules/hypridle.nix
     ../../modules/vscode.nix
-    ../../modules/hyprshot.nix
+    ../../modules/desktop/hyprland-base.nix
   ];
 }

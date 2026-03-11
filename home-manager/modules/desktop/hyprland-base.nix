@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, inputs, hostName, ... }:
 
 with lib;
 
@@ -121,6 +121,13 @@ let
 
 in
 {
+  imports = [
+    ./waybar-base.nix
+    ./hyprlock.nix
+    ./cursor.nix
+    ./hyprpaper.nix
+    ../../hosts/${hostName}/hyprland.nix
+  ];
   options.wayland.hyprland = {
     enable = mkOption {
       type = types.bool;
