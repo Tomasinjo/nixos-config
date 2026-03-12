@@ -1,6 +1,7 @@
 { pkgs, vars, ... }:
 
 {
+  virtualisation.oci-containers.backend = "docker";
   users.users.docker-user = {
     isSystemUser = true;
     group = "docker-user";
@@ -18,5 +19,6 @@
     ./backup-quarterly.nix
     ./deploy.nix
     ./vector.nix
+    ../../apps/grocy/service.nix
   ];
 }

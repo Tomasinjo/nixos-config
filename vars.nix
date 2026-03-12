@@ -23,6 +23,12 @@ in {
     tom = secrets.email.tom;
   };
 
+  dockerUser = {
+    name = "docker-user";
+    uid = 1111;
+    gid = 1111;
+  };
+
   networking = {
     domain = secrets.networking.domain;
     ipv4DNS = secrets.networking.ipv4DNS;
