@@ -7,6 +7,14 @@
   "nix": {
     "enabled": true
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["\\.nix$"],
+      "matchStrings": ["image\\s*=\\s*\"(?<depName>[^\"]+):(?<currentValue>[^\"]+)\";"],
+      "datasourceTemplate": "docker"
+    }
+  ],
   "docker-compose": {
     "managerFilePatterns": [
       "/(^|/)apps/.*docker-compose\\.ya?ml$/"
