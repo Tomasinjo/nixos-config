@@ -8,6 +8,9 @@
         name = "Tomasinjo";
         email = vars.email.tom;
       };
+      push = {
+        autoSetupRemote = true;
+      };
     };
   };
 }
