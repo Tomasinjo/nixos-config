@@ -39,7 +39,7 @@ services:
 #      - fafi-net
 
   fafi_db:
-    image: postgres:16.12
+    image: postgres:16.13
     container_name: fafi_db
     extends:
       file: ../../global-compose.yml
