@@ -76,7 +76,7 @@ services:
 
 
   redis:    
-    image: docker.io/valkey/valkey:9@sha256:546304417feac0874c3dd576e0952c6bb8f06bb4093ea0c9ca303c73cf458f63  # renovate: disable
+    image: docker.io/valkey/valkey:9@sha256:3eeb09785cd61ec8e3be35f8804c8892080f3ca21934d628abc24ee4ed1698f6  # renovate: disable
     container_name: ${SERVICE_NAME}-redis
     extends:
       file: ../global-compose.yml
