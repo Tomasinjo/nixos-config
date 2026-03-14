@@ -68,7 +68,7 @@ services:
 
 
   db-lightdash:
-    image: postgres:16.12
+    image: postgres:16.13
     extends:
       file: ../../global-compose.yml
       service: base-postgres

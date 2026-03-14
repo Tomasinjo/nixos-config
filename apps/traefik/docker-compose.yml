@@ -24,7 +24,7 @@ services:
 
 
   dockerproxy:
-    image: wollomatic/socket-proxy:1.11.3
+    image: wollomatic/socket-proxy:1.11.4
     container_name: ${SERVICE_NAME}-dockerproxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro

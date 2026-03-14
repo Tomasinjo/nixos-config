@@ -82,7 +82,7 @@ services:
 # image is set here because auto deploy script will only attempt to deploy from compose files that were modified.
 # make sure to set variables in .env file, they are read by global compose.
   service-db:
-    image: postgres:16.12
+    image: postgres:16.13
     extends:
       file: ../../global-compose.yml
       service: base-postgres
