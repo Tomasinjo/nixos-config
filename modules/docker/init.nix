@@ -19,7 +19,7 @@
     ./network.nix
     ./backup-daily-weekly.nix
     ./backup-quarterly.nix
-    # ./deploy.nix # temporary disable during migration to oci-containers
+    ./deploy.nix
     ./vector.nix
     ../../apps/arrs/jellyfin/service.nix
     ../../apps/arrs/pinchflat/service.nix

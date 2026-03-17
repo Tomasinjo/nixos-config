@@ -1,7 +1,8 @@
 { pkgs, vars, ... }:
 
 let
-  dockerAutodeployScript = pkgs.writeShellScriptBin "docker-auto-deploy" ''
+  nixosAutodeployScript = pkgs.writeShellScriptBin "nixos-auto-deploy" ''
+    # Only run on Sunday (0)
     if [ "$(date +%w)" -ne 0 ]; then
         echo "Not Sunday, skipping deployment."
         exit 0
@@ -12,12 +13,13 @@ let
     # Fetch latest changes from remote
     git fetch origin master
 
-    # Compare local main with remote main
+    # Compare local branch with remote branch
     LOCAL=$(git rev-parse HEAD)
     REMOTE=$(git rev-parse origin/master)
 
     # If they match, nothing to do!
     if [ "$LOCAL" = "$REMOTE" ]; then
+        echo "System is up to date."
         exit 0
     fi
 
@@ -28,35 +30,27 @@ let
         exit 1
     }
 
-    # Find exactly which docker-compose files changed between the old and new commits
-    CHANGED_FILES=$(git diff --name-only "$LOCAL" "$REMOTE" | grep "docker-compose.y*ml" || true)
-
-    # Loop through changed files and deploy them
-    for file in $CHANGED_FILES; do
-        if [ -f "$file" ]; then
-            echo "--> Updating container for: $file"
-            docker compose -f "$file" up -d --remove-orphans
-        fi
-    done
+    echo "--> Rebuilding NixOS..."
+    
+    # Run the rebuild. (Add `--flake .` or `--flake .#hostname` if you use flakes)
+    sudo nixos-rebuild switch
 
     echo "Deployment complete."
   '';
 in
 {
-  # Available in terminal as `docker-auto-deploy`
-  environment.systemPackages = [ dockerAutodeployScript ];
+  environment.systemPackages = [ nixosAutodeployScript ];
 
-  systemd.services.docker-auto-deploy = {
-    description = "Auto pull and deploy Docker Compose updates after backup";
+  systemd.services.nixos-auto-deploy = {
+    description = "Auto pull and rebuild NixOS after backup";
     wantedBy = [ "docker-backup.service" ]; # triggered after backup is finished
     after = [ "docker-backup.service" ];    # but after it is completed
     serviceConfig = {
       Type = "oneshot";
       User = vars.username;
       WorkingDirectory = vars.dir.nixos_config;
-      ExecStart = "${dockerAutodeployScript}/bin/docker-auto-deploy";
+      ExecStart = "${nixosAutodeployScript}/bin/nixos-auto-deploy";
     };
-    path = with pkgs; [ git docker docker-compose openssh ];
+    path = with pkgs; [ git openssh sudo nix ];
   };
-
 }
