@@ -34,8 +34,8 @@
   systemd.network.networks."20-vlan${toString vars.networking.zenki.vlan10.tag}" = {
     matchConfig.Name = vars.networking.zenki.vlan10.interface_name;
     address = [
-      vars.networking.zenki.vlan10.ipv4Address
-      vars.networking.zenki.vlan10.ipv6Address
+      "${vars.networking.zenki.vlan10.ipv4Address}/${vars.networking.vlan10.ipv4.mask}"
+      "${vars.networking.zenki.vlan10.ipv6Address}/${vars.networking.vlan10.ipv6.mask}"
     ];
     routes = [
       { Gateway = vars.networking.vlan10.ipv4.gateway; }
