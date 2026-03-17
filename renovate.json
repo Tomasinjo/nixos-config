@@ -7,11 +7,19 @@
   "nix": {
     "enabled": true
   },
-  "docker-compose": {
-    "managerFilePatterns": [
-      "/(^|/)apps/.*docker-compose\\.ya?ml$/"
-    ]
-  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": [
+        "(^|/)service\\.nix$",
+        "(^|/)oci-framework\\.nix$"
+      ],
+      "matchStrings": [
+        "image\\s*=\\s*\"(?<depName>[^\"]+):(?<currentValue>[^\"]+)\";"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
   "packageRules": [
     {
       "description": "Weekly PR for Nix updates (grouped)",
@@ -22,7 +30,7 @@
     },
     {
       "description": "Weekly automerge of Docker images - patches (grouped)",
-      "matchManagers": ["docker-compose", "dockerfile"],
+      "matchManagers": ["custom.regex"],
       "matchUpdateTypes": ["patch", "digest"],
       "groupName": "Docker Patch Updates",
       "schedule": ["before 8pm on Friday"],
@@ -30,14 +38,14 @@
     },
     {
       "description": "Weekly PRs for Docker images - minor/major",
-      "matchManagers": ["docker-compose", "dockerfile"],
+      "matchManagers": ["custom.regex"],
       "matchUpdateTypes": ["minor", "major"],
       "schedule": ["before 8pm on Friday"],
       "automerge": false
     },
     {
       "description": "Weekly automerge of trusted Docker images - minor/patch (grouped)",
-      "matchManagers": ["docker-compose"],
+      "matchManagers": ["custom.regex"],
       "matchPackageNames": ["postgres", "mongo", "redis", "wollomatic/socket-proxy", "eclipse-mosquitto"],
       "matchUpdateTypes": ["minor", "patch", "digest"],
       "groupName": "Trusted Service Updates",
@@ -46,7 +54,7 @@
     },
     {
       "description": "Ignore major updates for trusted Docker images",
-      "matchManagers": ["docker-compose"],
+      "matchManagers": ["custom.regex"],
       "matchPackageNames": ["postgres", "mongo", "redis", "wollomatic/socket-proxy", "eclipse-mosquitto"],
       "matchUpdateTypes": ["major"],
       "enabled": false
