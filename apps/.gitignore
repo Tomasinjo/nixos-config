@@ -14,12 +14,6 @@ dev/
 
 # allow these files
 !.gitignore
-!**/docker-compose.yml
-!**/docker-compose.yaml
-!**/.env.example
 !**/service.nix
 # frigate non-root setup
 !**/overrides/*
-# jupyter
-!**/Dockerfile
-!**/requirements.txt
