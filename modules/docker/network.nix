@@ -12,6 +12,14 @@
       ${pkgs.docker}/bin/docker network create arr-net || true
       ${pkgs.docker}/bin/docker network create fafi-net || true
       ${pkgs.docker}/bin/docker network create llm-net || true
+      ${pkgs.docker}/bin/docker network create umami-net || true
+      ${pkgs.docker}/bin/docker network create lightdash-net || true
+      ${pkgs.docker}/bin/docker network create metabase-net || true
+      ${pkgs.docker}/bin/docker network create immich-net || true
+      ${pkgs.docker}/bin/docker network create paperless-net || true
+      ${pkgs.docker}/bin/docker network create tesla-net || true
+      ${pkgs.docker}/bin/docker network create unifi-net || true
+      ${pkgs.docker}/bin/docker network create dockerproxy-net || true
 
       # Macvlan Network
       # check if it exists first because macvlan settings are immutable
