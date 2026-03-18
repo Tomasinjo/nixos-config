@@ -23,6 +23,7 @@
         "[workspace 1 silent] firefox"
         "dbus-update-activation-environment --all"
         "gnome-keyring-daemon --start --components=secrets"
+        "opencloud"
       ];
 
       bind = [
