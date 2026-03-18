@@ -1,25 +1,5 @@
 { config, pkgs, vars, ... }:
 
-### INSTRUCTIONS ###
-# najdes device
-# lsblk | grep 4.5T
-
-### mount disk
-# sudo mount -t ext4 /dev/sdx /home/tom/mnt/
-
-### go to screen
-# screen -S backup
-
-### restore screen
-# screen -r backup
-
-# remove screen: ctrl + a + k
-# leave screen: ctrl + a + d
-# list screens: screen -ls
-
-### run rsnapshot
-# sudo backup-services-quarterly
-
 let
   rsnapshotServicesQuarterly = pkgs.writeText "rsnapshot-services-quarterly.conf" ''
     config_version	1.2
@@ -43,14 +23,15 @@ let
   '';
 
   backupScriptServicesQuarterly = pkgs.writeShellScriptBin "backup-services-quarterly" ''
-    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin
+    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:${pkgs.systemd}/bin:${pkgs.gawk}/bin
     
     # Get a list of currently running containers that end with "-db"
     DB_CONTAINERS=$(docker ps --format '{{.Names}}' | grep '\-db$' || true)
 
     if [ -n "$DB_CONTAINERS" ]; then
-      echo "Stopping containers: $(echo $DB_CONTAINERS)"
-      docker stop $DB_CONTAINERS
+      DB_SERVICES=$(echo "$DB_CONTAINERS" | awk '{print "docker-"$1".service"}')
+      echo "Stopping services: $(echo $DB_SERVICES)"
+      systemctl stop $DB_SERVICES
     else
       echo "No running '-db' containers found to stop."
     fi
@@ -59,8 +40,8 @@ let
     rsnapshot -c ${rsnapshotServicesQuarterly} quarterly
 
     if [ -n "$DB_CONTAINERS" ]; then
-      echo "Starting containers: $(echo $DB_CONTAINERS)"
-      docker start $DB_CONTAINERS
+      echo "Starting services: $(echo $DB_SERVICES)"
+      systemctl start $DB_SERVICES
     fi
     
     echo "Backup and restart completed."

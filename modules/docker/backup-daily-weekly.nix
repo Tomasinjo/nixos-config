@@ -23,14 +23,15 @@ let
   '';
 
 backupScriptServicesDaily = pkgs.writeShellScriptBin "backup-services-daily" ''
-    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin
+    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:${pkgs.systemd}/bin:${pkgs.gawk}/bin
     
     # Get a list of currently running containers that end with "-db"
     DB_CONTAINERS=$(docker ps --format '{{.Names}}' | grep '\-db$' || true)
 
     if [ -n "$DB_CONTAINERS" ]; then
-      echo "Stopping containers: $(echo $DB_CONTAINERS)"
-      docker stop $DB_CONTAINERS
+      DB_SERVICES=$(echo "$DB_CONTAINERS" | awk '{print "docker-"$1".service"}')
+      echo "Stopping services: $(echo $DB_SERVICES)"
+      systemctl stop $DB_SERVICES
     else
       echo "No running '-db' containers found to stop."
     fi
@@ -44,8 +45,8 @@ backupScriptServicesDaily = pkgs.writeShellScriptBin "backup-services-daily" ''
     rsnapshot -c ${rsnapshotServicesConfDaily} daily
 
     if [ -n "$DB_CONTAINERS" ]; then
-      echo "Starting containers: $(echo $DB_CONTAINERS)"
-      docker start $DB_CONTAINERS
+      echo "Starting services: $(echo $DB_SERVICES)"
+      systemctl start $DB_SERVICES
     fi
     
     echo "Backup and restart completed."
@@ -64,7 +65,7 @@ in
     serviceConfig = {
       Type = "oneshot";
       User = "root";
-      ExecStart = "${backupScriptServicesDaily}/bin/docker-backup";
+      ExecStart = "${backupScriptServicesDaily}/bin/backup-services-daily";
     };
   };
 
