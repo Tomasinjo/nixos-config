@@ -76,7 +76,7 @@ let
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23";#noupdate
+      image = "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23";
       
       environment = {
         "POSTGRES_PASSWORD" = dbPass;
@@ -102,7 +102,7 @@ let
   redisContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "docker.io/valkey/valkey:9@sha256:546304417feac0874c3dd576e0952c6bb8f06bb4093ea0c9ca303c73cf458f63";#noupdate
+      image = "docker.io/valkey/valkey:9@sha256:546304417feac0874c3dd576e0952c6bb8f06bb4093ea0c9ca303c73cf458f63";
       
       environment = {};
       
