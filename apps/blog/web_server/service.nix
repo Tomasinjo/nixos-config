@@ -10,7 +10,7 @@ let
   hugoContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "hugomods/hugo:exts-0.128.1";
+      image = "hugomods/hugo:exts-0.128.1";#noupdate
 
       environment = {};
 
