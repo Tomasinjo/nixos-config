@@ -32,7 +32,7 @@
       "description": "Weekly automerge of Docker images - patches (grouped)",
       "matchManagers": ["custom.regex"],
       "matchUpdateTypes": ["patch", "digest"],
-      "groupName": "Docker Patches",
+      "groupName": "Docker Patch Updates",
       "schedule": ["before 8pm on Friday"],
       "automerge": true
     },
@@ -48,7 +48,7 @@
       "matchManagers": ["custom.regex"],
       "matchPackageNames": ["postgres", "mongo", "redis", "wollomatic/socket-proxy", "eclipse-mosquitto"],
       "matchUpdateTypes": ["minor", "patch", "digest"],
-      "groupName": "Trusted Service",
+      "groupName": "Trusted Service Updates",
       "automerge": true,
       "schedule": ["before 8pm on Friday"]
     },
