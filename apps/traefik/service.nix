@@ -110,8 +110,8 @@ let
         "traefik.enable" = "true";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.address" = "http://gatekeeper:5000/verify_share_request?protocol=http&container_name_port=immich-app:2283";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.trustForwardHeader" = "true";
-        "traefik.http.middlewares.gatekeeper_nextcloud_share.forwardauth.address" = "http://gatekeeper:5000/verify_share_request?protocol=http&container_name_port=nextcloud-app:80";
-        "traefik.http.middlewares.gatekeeper_nextcloud_share.forwardauth.trustForwardHeader" = "true";
+        #"traefik.http.middlewares.gatekeeper_nextcloud_share.forwardauth.address" = "http://gatekeeper:5000/verify_share_request?protocol=http&container_name_port=nextcloud-app:80";
+        #"traefik.http.middlewares.gatekeeper_nextcloud_share.forwardauth.trustForwardHeader" = "true";
       };
       dependsOn = [];
     }
