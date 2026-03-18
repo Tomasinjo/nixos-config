@@ -31,7 +31,6 @@
     sshfs
     wireguard-tools
     wireshark
-    opencloud-desktop
   ];
 
   boot.kernelModules = [ "drivetemp" ];  # for reading HDD temps
