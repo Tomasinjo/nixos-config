@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort; })
     {
-      image = "quay.io/jupyter/scipy-notebook";
+      image = "quay.io/jupyter/scipy-notebook:x86_64-notebook-7.0.6";
 
       environment = {};
 
