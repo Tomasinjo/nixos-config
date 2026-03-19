@@ -34,7 +34,6 @@ let
       ];
       
       labels = {};
-      dependsOn = [ "fafi-db" ];
     }
   ];
 

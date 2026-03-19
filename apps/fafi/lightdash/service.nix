@@ -89,11 +89,6 @@ let
       
       labels = {};
 
-      dependsOn = [
-        "${serviceName}-db"
-        "${serviceName}-minio"
-      ];
-
       user = "";  # the thing doesnt run without root
     }
   ];

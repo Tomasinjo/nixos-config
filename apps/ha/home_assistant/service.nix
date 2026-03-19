@@ -40,8 +40,6 @@ let
         "traefik.http.routers.${serviceHostname}.service" = "ha_service@file";
       };
 
-      dependsOn = [ "${serviceName}-db" ];
-
       user = ""; # it is set by env vars
 
       devices = [

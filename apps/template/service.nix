@@ -41,7 +41,7 @@ let
       
       labels = {};
       dependsOn = [];
-      #dependsOn = [ "${serviceName}-db" ];
+      #dependsOn = [ "${serviceName}-db" ];  # DO NOT USE IT - backup will stop the db service and with it the dependency, which will not be restarted afterwards.
 
       # optional and overrides
       #entrypoint = "/example.sh";

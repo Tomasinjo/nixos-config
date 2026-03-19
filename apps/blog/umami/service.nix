@@ -22,10 +22,6 @@ let
         "APP_SECRET" = vars.apps.umami.app.secret;
       };
 
-      dependsOn = [
-        "${serviceName}-db"
-      ];
-
       networks = [
         "umami-net"
       ];

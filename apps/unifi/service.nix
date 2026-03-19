@@ -49,8 +49,6 @@ let
         "traefik.http.services.${serviceHostname}.loadbalancer.server.scheme" = "https";
         "traefik.http.routers.${serviceHostname}.middlewares" = "unifiHeaders@file,internal-whitelist@file";
       };
-
-      dependsOn = [ "${serviceName}-db" ];
     }
   ];
 
