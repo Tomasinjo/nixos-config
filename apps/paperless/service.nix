@@ -42,10 +42,6 @@ let
       ];
       
       labels = {};
-      dependsOn = [ 
-        "${serviceName}-db"
-        "${serviceName}-redis"
-      ];
 
       user = "";  # the image support non-root container by default
     }
@@ -115,10 +111,6 @@ let
       ];
       
       labels = {};
-
-      dependsOn = [ 
-        "${serviceName}-app"
-      ];
 
       cmd = ["python" "main.py" "--mode" "auto"];
     }

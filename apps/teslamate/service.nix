@@ -43,7 +43,6 @@ let
       ];
       
       labels = {};
-      dependsOn = [ "${serviceName}-db" ];
     }
   ];
 
@@ -94,7 +93,6 @@ let
       ];
       
       labels = {};
-      dependsOn = [ "${serviceName}-db" ];
     }
   ];
 

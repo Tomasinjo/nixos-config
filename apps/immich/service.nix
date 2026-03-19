@@ -65,11 +65,6 @@ let
         "traefik.http.routers.immich-share.tls" = "true";
         "traefik.http.routers.immich-share.tls.certresolver" = "fikus_resolver";
       };
-
-      dependsOn = [ 
-        "${serviceName}-db"
-        "${serviceName}-redis"
-      ];
     }
   ];
 

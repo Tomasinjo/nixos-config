@@ -29,7 +29,6 @@ let
       ];
       
       labels = {};
-      dependsOn = [ ];
       user = ""; # can't run without root, fails at installing with pip
 
       extraOptions = [

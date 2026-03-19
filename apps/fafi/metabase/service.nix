@@ -38,8 +38,6 @@ let
       ];
       
       labels = {};
-
-      dependsOn = [ "${serviceName}-db" ];
     }
   ];
 
