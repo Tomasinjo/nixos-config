@@ -42,7 +42,7 @@ let
     oci-framework.base.standard
     oci-framework.hardware.cuda
     {
-      image = "ollama/ollama:0.17.7";
+      image = "ollama/ollama:0.18.2";
 
       environment = {
         "OLLAMA_KEEP_ALIVE" = "24h";
