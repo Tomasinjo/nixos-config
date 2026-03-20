@@ -15,7 +15,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort; })
     {
-      image = "nocodb/nocodb:0.301.3";
+      image = "nocodb/nocodb:0.301.5";
 
       environment = {
         "NC_DB" = "pg://fafi-db:5432?u=${dbUser}&p=${dbPass}&d=${dbName}";
