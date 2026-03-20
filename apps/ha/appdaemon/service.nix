@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort; })
     {
-      image = "acockburn/appdaemon:4.5.11";
+      image = "acockburn/appdaemon:4.5.13";
 
       environment = {
         "HA_URL" = "http://homeassistant-app:8123";
