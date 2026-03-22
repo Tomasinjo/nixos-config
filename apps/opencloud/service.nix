@@ -15,7 +15,7 @@ let
 
       environment = {
         "OC_ADD_RUN_SERVICES" = ""; # enable stuff like antivirus, webdav, see docs
-        "OC_URL" = "https://${serviceHostname}.${vars.networking.domain}";
+        "OC_URL" = "https://${serviceHostname}.${vars.net.domain}";
         "OC_LOG_LEVEL" = "info";
         "OC_LOG_COLOR" = "false";
         "OC_LOG_PRETTY" = "false";
@@ -41,7 +41,7 @@ let
       networks = [];
       labels = {
 
-        "traefik.http.routers.opencloud-share.rule" = "Host(`${serviceHostname}.${vars.networking.domain}`) && PathRegexp(`^\/s\/(?:[A-Z,a-z,0-9]){15}$`)";
+        "traefik.http.routers.opencloud-share.rule" = "Host(`${serviceHostname}.${vars.net.domain}`) && PathRegexp(`^\/s\/(?:[A-Z,a-z,0-9]){15}$`)";
         "traefik.http.routers.opencloud-share.entrypoints" = "https,http";
         "traefik.http.routers.opencloud-share.tls" = "true";
         "traefik.http.routers.opencloud-share.tls.certresolver" = "fikus_resolver";

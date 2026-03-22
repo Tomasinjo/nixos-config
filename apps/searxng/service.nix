@@ -14,7 +14,7 @@ let
       image = "docker.io/searxng/searxng:2026.2.28-a2108ce2e";
 
       environment = {
-        "SEARXNG_BASE_URL" = "https://${serviceHostname}.${vars.networking.domain}/";
+        "SEARXNG_BASE_URL" = "https://${serviceHostname}.${vars.net.domain}/";
         "SEARXNG_BIND_ADDRESS" = "0.0.0.0";
         "SEARXNG_SECRET" = vars.apps.searxng.app.secret;
       };

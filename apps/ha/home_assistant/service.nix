@@ -29,7 +29,7 @@ let
       ];
 
       ports = [
-        "${vars.networking.zenki.vlan10.ipv4Address}:5683:5683/udp"  # shelly em3 CoIoT"
+        "${vars.net.zenki.common-vlan.ipv4Address}:5683:5683/udp"  # shelly em3 CoIoT"
       ];
 
       networks = [
@@ -75,7 +75,7 @@ let
       ];
 
       ports = [
-        "${vars.networking.zenki.vlan10.ipv4Address}:1883:1883"
+        "${vars.net.zenki.common-vlan.ipv4Address}:1883:1883"
       ];
 
       networks = [

@@ -63,7 +63,7 @@ let
       networks = [ "traefik-net" ];
       labels = {
         "traefik.enable" = "true";
-        "traefik.http.routers.${serviceHostname}.rule" = "Host(`${serviceHostname}.${vars.networking.domain}`)";
+        "traefik.http.routers.${serviceHostname}.rule" = "Host(`${serviceHostname}.${vars.net.domain}`)";
         "traefik.http.routers.${serviceHostname}.entrypoints" = "https,http";
         "traefik.http.routers.${serviceHostname}.tls" = "true";
         "traefik.http.services.${serviceHostname}.loadbalancer.server.port" = toString servicePort;
@@ -74,6 +74,8 @@ let
       merge (web.base { inherit serviceHostname servicePort; }) {
         labels = {
           "traefik.http.routers.${serviceHostname}.middlewares" = "internal-whitelist@file";
+          "fikus.dns.internal" = "true";
+          "fikus.dns.hostname" = serviceHostname;
         };
       };
 

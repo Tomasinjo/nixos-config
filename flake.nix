@@ -20,7 +20,7 @@
     nixosConfigurations = {
       zenki = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { inherit inputs vars; };
+        specialArgs = { inherit inputs vars self; };
         modules = [
           ./hosts/zenki/configuration.nix
           nixvim.nixosModules.nixvim
@@ -37,7 +37,7 @@
 
       lenko = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { inherit inputs vars; };
+        specialArgs = { inherit inputs vars self; };
         modules = [
           ./hosts/lenko/configuration.nix
           nixvim.nixosModules.nixvim
@@ -49,6 +49,23 @@
             home-manager.useUserPackages = true;
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "lenko"; };
+          }
+        ];
+      };
+
+      sensei = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs vars self; };
+        modules = [
+          ./hosts/sensei/configuration.nix
+          nixvim.nixosModules.nixvim
+          ./modules/nixvim.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.tom = ./home-manager/users/tom.nix;
+            home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "sensei"; };
           }
         ];
       };

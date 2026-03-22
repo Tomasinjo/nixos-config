@@ -1,7 +1,7 @@
 { config, pkgs, vars, ... }:
 
 {
-  networking.hostName = vars.networking.lenko.hostname;
+  networking.hostName = vars.net.lenko.hostname;
   networking.networkmanager.enable = true;
 
   networking.firewall = {

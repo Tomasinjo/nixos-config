@@ -31,14 +31,14 @@ let
       ];
 
       ports = [
-        "${vars.networking.zenki.vlan10.ipv4Address}:3478:3478/udp"  # STUN
-        "${vars.networking.zenki.vlan10.ipv4Address}:8080:8080"      # Port used for device and application communication.
-        # "${vars.networking.zenki.vlan10.ipv4Address}:10001:10001/udp" # Port used for device discovery.
-        # "${vars.networking.zenki.vlan10.ipv4Address}:1900:1900/udp"   # Port used for "Make application discoverable on L2 network" in the UniFi Network settings.
-        # "${vars.networking.zenki.vlan10.ipv4Address}:8843:8843"       # Port used for application GUI/API as seen in a web browser
-        # "${vars.networking.zenki.vlan10.ipv4Address}:8880:8880"       # Port used for HTTP portal redirection.
-        # "${vars.networking.zenki.vlan10.ipv4Address}:6789:6789"       # Port used for UniFi mobile speed test.
-        # "${vars.networking.zenki.vlan10.ipv4Address}:5514:5514/udp"   # Port used for remote syslog capture.
+        "${vars.net.zenki.common-vlan.ipv4Address}:3478:3478/udp"  # STUN
+        "${vars.net.zenki.common-vlan.ipv4Address}:8080:8080"      # Port used for device and application communication.
+        # "${vars.net.zenki.common-vlan.ipv4Address}:10001:10001/udp" # Port used for device discovery.
+        # "${vars.net.zenki.common-vlan.ipv4Address}:1900:1900/udp"   # Port used for "Make application discoverable on L2 network" in the UniFi Network settings.
+        # "${vars.net.zenki.common-vlan.ipv4Address}:8843:8843"       # Port used for application GUI/API as seen in a web browser
+        # "${vars.net.zenki.common-vlan.ipv4Address}:8880:8880"       # Port used for HTTP portal redirection.
+        # "${vars.net.zenki.common-vlan.ipv4Address}:6789:6789"       # Port used for UniFi mobile speed test.
+        # "${vars.net.zenki.common-vlan.ipv4Address}:5514:5514/udp"   # Port used for remote syslog capture.
       ];
 
       networks = [
