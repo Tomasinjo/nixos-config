@@ -43,13 +43,13 @@ let
         "traefik.enable" = "true";
 
         # This is for home assistant for wall photoframe
-        "traefik.http.middlewares.immich-cors.headers.accessControlAllowOriginList" = "https://ha.${vars.networking.domain}";
+        "traefik.http.middlewares.immich-cors.headers.accessControlAllowOriginList" = "https://ha.${vars.net.domain}";
         "traefik.http.middlewares.immich-cors.headers.accessControlAllowMethods" = "GET, PUT, POST, DELETE, OPTIONS";
         "traefik.http.middlewares.immich-cors.headers.accessControlAllowHeaders" = "X-Api-Key, User-Agent, Content-Type";
         "traefik.http.middlewares.immich-cors.headers.accessControlMaxAge" = "1728000";
 
         # Access with gatekeeper's whitelist, mostly for links sharing
-        "traefik.http.routers.immich-main.rule" = "Host(`${alternateServiceHostname}.${vars.networking.domain}`)";
+        "traefik.http.routers.immich-main.rule" = "Host(`${alternateServiceHostname}.${vars.net.domain}`)";
         "traefik.http.routers.immich-main.entrypoints" = "https,http";
         "traefik.http.routers.immich-main.tls" = "true";
         "traefik.http.routers.immich-main.tls.certresolver" = "fikus_resolver";
@@ -59,7 +59,7 @@ let
         "traefik.http.routers.${serviceHostname}.middlewares" = "immich-cors";
 
         # Gatekeeper whitelists IPs that access a valid share link
-        "traefik.http.routers.immich-share.rule" = "Host(`${alternateServiceHostname}.${vars.networking.domain}`) && PathRegexp(`^\/share\/(?:[A-Z,a-z,0-9,_,-]){67}$`)";
+        "traefik.http.routers.immich-share.rule" = "Host(`${alternateServiceHostname}.${vars.net.domain}`) && PathRegexp(`^\/share\/(?:[A-Z,a-z,0-9,_,-]){67}$`)";
         "traefik.http.routers.immich-share.entrypoints" = "https,http";
         "traefik.http.routers.immich-share.middlewares" = "gatekeeper_immich_share@docker";
         "traefik.http.routers.immich-share.tls" = "true";

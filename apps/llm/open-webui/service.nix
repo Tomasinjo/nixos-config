@@ -18,7 +18,7 @@ let
         "ENV" = "prod";
         "WEBUI_AUTH" = "True";
         "WEBUI_NAME" = "Fikus AI Chat";
-        "WEBUI_URL" = "https://${serviceHostname}.${vars.networking.domain}";
+        "WEBUI_URL" = "https://${serviceHostname}.${vars.net.domain}";
         "WEBUI_SECRET_KEY" = vars.apps.open-webui.app.secret;
       };
 
@@ -54,7 +54,7 @@ let
       ];
 
       ports = [
-        "${vars.networking.zenki.vlan10.ipv4Address}:7869:11434"
+        "${vars.net.zenki.common-vlan.ipv4Address}:7869:11434"
       ];
 
       networks = [

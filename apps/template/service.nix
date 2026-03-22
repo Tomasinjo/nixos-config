@@ -59,8 +59,8 @@ let
       # use for rarely used service, systemd service must be manually started:
       # autoStart = false;
 
-      # FQDN: ${serviceHostname}.${vars.networking.domain}
-      # IP ${vars.networking.zenki.vlan10.ipv4Address}
+      # FQDN: ${serviceHostname}.${vars.net.domain}
+      # IP ${vars.net.zenki.common-vlan.ipv4Address}
     }
   ];
 

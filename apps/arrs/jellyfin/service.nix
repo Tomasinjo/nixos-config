@@ -15,7 +15,7 @@ let
       image = "jellyfin/jellyfin:10.11.6";
 
       environment = {
-        "JELLYFIN_PublishedServerUrl" = "https://${serviceHostname}.${vars.networking.domain}";
+        "JELLYFIN_PublishedServerUrl" = "https://${serviceHostname}.${vars.net.domain}";
       };
 
       volumes = [
@@ -37,7 +37,7 @@ let
         "traefik.http.middlewares.jellyfin-mw.headers.frameDeny" = "true";
         "traefik.http.middlewares.jellyfin-mw.headers.contentTypeNosniff" = "true";
         "traefik.http.middlewares.jellyfin-mw.headers.customresponseheaders.X-XSS-PROTECTION" = "0";
-        "traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue" = "allow-from https://${serviceHostname}.${vars.networking.domain}";
+        "traefik.http.middlewares.jellyfin-mw.headers.customFrameOptionsValue" = "allow-from https://${serviceHostname}.${vars.net.domain}";
         "traefik.http.services.${serviceHostname}.loadBalancer.passHostHeader" = "true";
       };
     }

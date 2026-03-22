@@ -22,7 +22,6 @@
     EDITOR = "nvim";
   };
 
-  wayland.hyprpaper.enable = true;
   xdg.enable = true; # required by home manager
 }
 

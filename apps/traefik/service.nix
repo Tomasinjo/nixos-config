@@ -27,8 +27,8 @@ let
 
       extraOptions = [
         "--sysctl=net.ipv4.ip_unprivileged_port_start=0" # allows binding low ports
-        "--ip=${vars.networking.zenki.vlan10.mac-vlan.traefik.ipv4Address}"
-        "--ip6=${vars.networking.zenki.vlan10.mac-vlan.traefik.ipv6Address}"
+        "--ip=${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}"
+        "--ip6=${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv6Address}"
       ];
     }
   ]) // {
@@ -93,7 +93,7 @@ let
 
       environment = {
         "MAX_IP_LEN" = "10";
-        "DEFAULT_SOURCE_RANGE" = "127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,${vars.networking.ipv6_prefix}";
+        "DEFAULT_SOURCE_RANGE" = "127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,${vars.net.sensei.ipv6_prefix}";
       };
 
       volumes = [

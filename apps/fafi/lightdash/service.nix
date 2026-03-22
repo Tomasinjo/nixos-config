@@ -28,8 +28,8 @@ let
       ];
 
       ports = [
-        #"${vars.networking.zenki.vlan10.ipv4Address}:9000:9000"
-        #"${vars.networking.zenki.vlan10.ipv4Address}:9001:9001" # for minio console
+        #"${vars.net.zenki.common-vlan.ipv4Address}:9000:9000"
+        #"${vars.net.zenki.common-vlan.ipv4Address}:9001:9001" # for minio console
       ];
 
       networks = [
@@ -58,7 +58,7 @@ let
         "TRUST_PROXY" = "true";
         "LIGHTDASH_SECRET" = vars.apps.lightdash.lightdash.secret;
         "PORT" = toString servicePort;
-        "SITE_URL" = "https://${serviceHostname}.${vars.networking.domain}";
+        "SITE_URL" = "https://${serviceHostname}.${vars.net.domain}";
         "LIGHTDASH_LOG_LEVEL" = "info";
         "LIGHTDASH_INSTALL_ID" = "";
         "LIGHTDASH_INSTALL_TYPE" = "docker_image";

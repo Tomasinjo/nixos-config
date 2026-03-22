@@ -45,11 +45,11 @@
       iptables -A RESTRICTED_VM -p tcp --dport 53 -j ACCEPT
 
       # 5. Allow SCP/SSH to specific local IP
-      iptables -A RESTRICTED_VM -d 192.168.10.15 -j ACCEPT
+      iptables -A RESTRICTED_VM -d ${vars.net.common-vlan.ipv4Address} -j ACCEPT
 
       # 6. Allow specific external IPs
       iptables -A RESTRICTED_VM -d 1.1.1.1 -j ACCEPT
-      iptables -A RESTRICTED_VM -d ${vars.networking.vps.ipv4Address} -j ACCEPT
+      iptables -A RESTRICTED_VM -d ${vars.net.vps.ipv4Address} -j ACCEPT
 
       # 7. Default Policy: DROP everything else originating from the VM
       iptables -A RESTRICTED_VM -j DROP

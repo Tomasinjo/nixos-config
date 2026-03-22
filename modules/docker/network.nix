@@ -26,12 +26,12 @@
       if ! ${pkgs.docker}/bin/docker network inspect macvlan-10 >/dev/null 2>&1; then
         ${pkgs.docker}/bin/docker network create \
 	  -d macvlan \
-          -o parent=${vars.networking.zenki.vlan10.interface_name} \
-          --subnet=${vars.networking.vlan10.ipv4.subnet} \
-          --gateway=${vars.networking.vlan10.ipv4.gateway} \
+          -o parent=${vars.net.zenki.common-vlan.interface_name} \
+          --subnet=${vars.net.sensei.common-vlan.ipv4.subnet}/${vars.net.sensei.common-vlan.ipv4.mask} \
+          --gateway=${vars.net.sensei.common-vlan.ipv4.gateway} \
           --ipv6 \
-          --subnet=${vars.networking.vlan10.ipv6.subnet} \
-          --gateway=${vars.networking.vlan10.ipv6.gateway} \
+          --subnet=${vars.net.sensei.common-vlan.ipv6.subnet}/${vars.net.sensei.common-vlan.ipv6.mask} \
+          --gateway=${vars.net.sensei.common-vlan.ipv6.gateway} \
           macvlan-10
       fi
     '';

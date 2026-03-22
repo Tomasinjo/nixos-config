@@ -19,7 +19,7 @@ let
 
       environment = {
         "NC_DB" = "pg://fafi-db:5432?u=${dbUser}&p=${dbPass}&d=${dbName}";
-        "NC_PUBLIC_URL" = "https://${serviceHostname}.${vars.networking.domain}";
+        "NC_PUBLIC_URL" = "https://${serviceHostname}.${vars.net.domain}";
         "NC_DISABLE_TELE" = "true";
       };
 

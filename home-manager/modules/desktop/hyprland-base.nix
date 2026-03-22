@@ -142,6 +142,7 @@ in
   };
 
   config = mkIf cfg.enable {
+    wayland.hyprpaper.enable = true;
     wayland.windowManager.hyprland = {
       enable = true;
       settings = recursiveUpdate baseSettings cfg.settings // {

@@ -23,7 +23,7 @@ let
         "USERMAP_UID" = toString vars.dockerUser.uid;
         "USERMAP_GID" = toString vars.dockerUser.gid;
         "PAPERLESS_OCR_LANGUAGES" = "slv";
-        "PAPERLESS_URL" = "https://${serviceHostname}.${vars.networking.domain}";
+        "PAPERLESS_URL" = "https://${serviceHostname}.${vars.net.domain}";
         "PAPERLESS_ADMIN_USER" = "fikus";
         "PAPERLESS_ADMIN_PASSWORD" = vars.apps.paperless.app.admin_password;
       };
@@ -88,7 +88,7 @@ let
       image = "ghcr.io/tomasinjo/paper-llama:main";
 
       environment = {
-        "PAPERLESS_URL" = "https://${serviceHostname}.${vars.networking.domain}";
+        "PAPERLESS_URL" = "https://${serviceHostname}.${vars.net.domain}";
         "PAPERLESS_TOKEN" = vars.apps.paperless.app.api_key;
         "OLLAMA_URL" = "http://ollama:11434";
         "OLLAMA_MODEL" = "gemma3:27b-32k";

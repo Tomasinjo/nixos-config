@@ -1,12 +1,12 @@
 let
-  # Base values
   username = "tom";
   homeDir = "/home/${username}";
   secrets = import ./secrets.nix;
 in {
-  # User configuration
   inherit username;
   fullName = "Tom";
+
+  net = (import ./net.nix { inherit secrets; }).net;
 
   dir = {
     home = homeDir;
@@ -92,55 +92,6 @@ in {
     unifi.mongo = {
       password = secrets.apps.unifi.mongo.password;
       root_password = secrets.apps.unifi.mongo.root_password;
-    };
-  };
-
-  networking = {
-    domain = secrets.networking.domain;
-    ipv4DNS = secrets.networking.ipv4DNS;
-    ipv6DNS = secrets.networking.ipv6DNS;
-
-    vlan10 = {
-      ipv4 = {
-        subnet =  secrets.networking.vlan10.ipv4.subnet;
-        mask = "24";
-        gateway = secrets.networking.vlan10.ipv4.gateway;
-      };
-      ipv6 = {
-        subnet =  secrets.networking.vlan10.ipv6.subnet;
-        mask = "64";
-        gateway = secrets.networking.vlan10.ipv6.gateway;
-      };
-    };
-    ipv6_prefix = secrets.networking.ipv6_prefix;
-
-    zenki = {
-      hostname = "zenki";
-      fqdn = secrets.networking.zenki.fqdn;
-      interface_name = "eth10g";
-      interface_mac = secrets.networking.zenki.interface_mac;
-      vlan10 = {
-        tag = 10;
-	      ipv4Address = secrets.networking.zenki.vlan10.ipv4Address;
-        ipv6Address = secrets.networking.zenki.vlan10.ipv6Address;
-	      interface_name = "eth10g.10";
-        mac-vlan = {
-          mass = {
-            ipv4Address = secrets.networking.zenki.vlan10.mac-vlan.mass.ipv4Address;
-            ipv6Address = secrets.networking.zenki.vlan10.mac-vlan.mass.ipv6Address;
-          };
-          traefik = {
-            ipv4Address = secrets.networking.zenki.vlan10.mac-vlan.traefik.ipv4Address;
-            ipv6Address = secrets.networking.zenki.vlan10.mac-vlan.traefik.ipv6Address;
-          };
-        };
-      };
-    };
-    lenko = {
-      hostname = "lenko";
-    };
-    vps = {
-      ipv4Address = secrets.networking.vps.ipv4Address;
     };
   };
 }
