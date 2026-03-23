@@ -27,7 +27,7 @@
       Name = vars.net.zenki.common-vlan.interface_name;
       Kind = "vlan";
     };
-    vlanConfig.Id = vars.vars.net.sensei.common-vlan.id;
+    vlanConfig.Id = vars.net.sensei.common-vlan.id;
   };
 
   # IP Configuration for VLAN 10
