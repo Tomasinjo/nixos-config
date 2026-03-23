@@ -51,5 +51,6 @@
     ../../apps/unifi/service.nix
     ../../apps/vaultwarden/service.nix
     ../../apps/victorialogs/service.nix
+    ../../apps/kiwix/service.nix
   ];
 }
