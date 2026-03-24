@@ -16,7 +16,7 @@ let
       environment = {};
 
       volumes = [
-        "${vars.dir.nixos_config}/apps/kiwix/app-data:/data"
+        "${vars.dir.impo_data}/kiwix:/data"
       ];
 
       ports = [];
