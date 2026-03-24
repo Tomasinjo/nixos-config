@@ -22,5 +22,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  programs.nix-ld.enable = true; # allow unsigned links, requred for connecting with vscode remote ssh
+
   system.stateVersion = "25.11";
 }
