@@ -34,7 +34,7 @@
           include = [ 
       	      "${vars.dir.nixos_config}/apps/ha/appdaemon/app-data/logs/appdaemon.log"
       	      "${vars.dir.nixos_config}/apps/ha/appdaemon/app-data/logs/error.log"
-	  ];
+	        ];
         };
 
         vector_metrics.type = "internal_metrics";
@@ -42,12 +42,12 @@
 
 
       transforms = {
-	# Remove logs from journald that are already captured by the docker source
-	filter_docker_from_journal = {
-	  type = "filter";
-	  inputs = [ "journald" ];
-	  condition = ''!includes(["docker", "dockerd"], .container_name) && ._SYSTEMD_UNIT != "docker.service"'';
-	};
+	      # Remove logs from journald that are already captured by the docker source (start with "docker-", but don't exclude docker-update sincce it is a backup script)
+	      filter_docker_from_journal = {
+	        type = "filter";
+	        inputs = [ "journald" ];
+	        condition = ''!starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-") || starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-update")'';
+	      };
       };
 
       sinks = {

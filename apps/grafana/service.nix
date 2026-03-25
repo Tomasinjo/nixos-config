@@ -3,34 +3,33 @@
 let
   oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
 
-  serviceName = "victoriametrics";
-  serviceHostname = "logs";
-  servicePort = 9428;
+  serviceName = "grafana";
+  serviceHostname = "graf";
+  servicePort = 3000;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort; })
     {
-      image = "docker.io/victoriametrics/victoria-logs:v1.48.0";
+      image = "grafana/grafana:12.4.2";
 
-      environment = {};
+      environment = {
+        "GF_SERVER_ROOT_URL" = "https://${serviceHostname}.${vars.net.domain}/";
+        "GF_PLUGINS_PREINSTALL" = "";
+      };
 
       volumes = [
-        "${vars.dir.nixos_config}/apps/victorialogs/app-data:/victoria-logs-data"
+        "${vars.dir.nixos_config}/apps/grafana/app-data:/var/lib/grafana"
       ];
 
-      ports = [
-        "127.0.0.1:9428:9428"
-      ];
+      ports = [];
 
       networks = [
         "logging-net"
       ];
+      
       labels = {};
       dependsOn = [];
-      cmd = [
-        "-storageDataPath=victoria-logs-data"
-      ];
     }
   ];
 
