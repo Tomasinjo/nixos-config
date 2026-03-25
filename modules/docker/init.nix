@@ -52,5 +52,6 @@
     ../../apps/vaultwarden/service.nix
     ../../apps/victorialogs/service.nix
     ../../apps/kiwix/service.nix
+    ../../apps/grafana/service.nix
   ];
 }
