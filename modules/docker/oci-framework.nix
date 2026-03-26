@@ -79,21 +79,14 @@ let
         };
       };
 
-    exposed = { serviceHostname, servicePort }: 
-      merge (web.base { inherit serviceHostname servicePort; }) {
-        labels = {
-          "traefik.http.routers.${serviceHostname}.tls.certresolver" = "fikus_resolver";
-        };
-      };
-
     exposed_gatekeeper = { serviceHostname, servicePort }: 
-      merge (web.exposed { inherit serviceHostname servicePort; }) {
+      merge (web.base { inherit serviceHostname servicePort; }) {
         labels = {
           "traefik.http.routers.${serviceHostname}.middlewares" = "dynamic-whitelist@file";
         };
       };
     exposed_mtls = { serviceHostname, servicePort }: 
-      merge (web.exposed { inherit serviceHostname servicePort; }) {
+      merge (web.base { inherit serviceHostname servicePort; }) {
         labels = {
           "traefik.http.routers.${serviceHostname}.tls.options" = "fikus_mtls@file";
         };
