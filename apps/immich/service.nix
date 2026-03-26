@@ -52,7 +52,6 @@ let
         "traefik.http.routers.immich-main.rule" = "Host(`${alternateServiceHostname}.${vars.net.domain}`)";
         "traefik.http.routers.immich-main.entrypoints" = "https,http";
         "traefik.http.routers.immich-main.tls" = "true";
-        "traefik.http.routers.immich-main.tls.certresolver" = "fikus_resolver";
         "traefik.http.routers.immich-main.middlewares" = "immich-cors,dynamic-whitelist@file";
 
         # Access by mTLS (oci-framework configures it)
@@ -63,7 +62,6 @@ let
         "traefik.http.routers.immich-share.entrypoints" = "https,http";
         "traefik.http.routers.immich-share.middlewares" = "gatekeeper_immich_share@docker";
         "traefik.http.routers.immich-share.tls" = "true";
-        "traefik.http.routers.immich-share.tls.certresolver" = "fikus_resolver";
       };
     }
   ];
