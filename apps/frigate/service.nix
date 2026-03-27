@@ -13,7 +13,7 @@ let
     oci-framework.hardware.quicksync
     oci-framework.hardware.coral
     {
-      image = "ghcr.io/blakeblackshear/frigate:0.17.0";
+      image = "ghcr.io/blakeblackshear/frigate:0.17.1";
 
       environment = {
         "FRIGATE_RTSP_USER" = vars.apps.frigate.rtsp_user;
