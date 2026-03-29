@@ -188,9 +188,12 @@
       # PPP interface
       "50-ppp" = {
         matchConfig.Name = "ppp*";
-        networkConfig.DHCP = "ipv6";
-        networkConfig.IPv6AcceptRA = true;
-        networkConfig.KeepConfiguration = "static";
+        networkConfig = {
+          DHCP = "ipv6";
+          IPv6AcceptRA = true;
+          KeepConfiguration = "static";
+	  DHCPPrefixDelegation = "yes"; 
+        };
       };
     };
   };

@@ -120,7 +120,7 @@ in
           oifname "ppp0" masquerade
         }
       }
-      table ip mss-clamp {
+      table inet mss-clamp {
           chain forward {
               type filter hook forward priority filter; policy accept;
               tcp flags syn tcp option maxseg size set 1380 oifname "ppp*"

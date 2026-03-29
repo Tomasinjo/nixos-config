@@ -7,8 +7,8 @@
     sensei = {
       hostname = "sensei";
       ipv4DNS = "192.168.99.10";
-      ipv6DNS = "${secrets.net.ipv6}:ff99::10";
-      ipv6_prefix = "${secrets.net.ipv6}::/48";
+      ipv6DNS = "${secrets.net.ipv6}99::10";
+      ipv6_prefix = "${secrets.net.ipv6}::/56";
       ipv4_public = secrets.net.ipv4;
       ppoe = {
         user = secrets.net.ppoe_username;
@@ -25,10 +25,9 @@
           dhcp_pool = "192.168.10.150 - 192.168.10.250";
         };
         ipv6 = {
-          subnet =  "${secrets.net.ipv6}:ff10::";
-          gateway = "${secrets.net.ipv6}:ff10::1";
+          subnet =  "${secrets.net.ipv6}10::";
+          gateway = "${secrets.net.ipv6}10::1";
           mask = "64";
-          dhcp_pool = "${secrets.net.ipv6}:ff10::100 - ${secrets.net.ipv6}:ff10::1ff";
         };
         members = {
           beyondtv2 = { mac = "34:51:80:c0:48:9a"; ip = "192.168.10.251"; hostname = "beyondtv2"; };
@@ -45,10 +44,9 @@
           dhcp_pool = "192.168.20.150 - 192.168.20.250";
         };
         ipv6 = {
-          subnet =  "${secrets.net.ipv6}:ff20::";
-          gateway = "${secrets.net.ipv6}:ff20::1";
+          subnet =  "${secrets.net.ipv6}20::";
+          gateway = "${secrets.net.ipv6}20::1";
           mask = "64";
-          dhcp_pool = "${secrets.net.ipv6}:ff20::100 - ${secrets.net.ipv6}:ff20::1ff";
         };
       };
       iot-vlan = {
@@ -61,10 +59,9 @@
           dhcp_pool = "192.168.30.200 - 192.168.30.254";
         };
         ipv6 = {
-          subnet =  "${secrets.net.ipv6}:ff30::";
-          gateway = "${secrets.net.ipv6}:ff30::1";
+          subnet =  "${secrets.net.ipv6}30::";
+          gateway = "${secrets.net.ipv6}30::1";
           mask = "64";
-          dhcp_pool = "${secrets.net.ipv6}:ff30::100 - ${secrets.net.ipv6}:ff30::1ff";
         };
         members = {
           orca =                  { mac = "00:0a:5c:c0:3f:d1"; ip = "192.168.30.160"; allow_out = false; hostname = "orca-tc"; };
@@ -90,19 +87,19 @@
           mask = "24";
         };
         ipv6 = {
-          subnet =  "${secrets.net.ipv6}:ff99::";
-          gateway = "${secrets.net.ipv6}:ff99::1";
+          subnet =  "${secrets.net.ipv6}99::";
+          gateway = "${secrets.net.ipv6}99::1";
           mask = "64";
         };
       };
 
       wireguard = {
         ipv4.gateway = "192.168.19.1";
-        ipv6.gateway = "${secrets.net.ipv6}:ff19::1";
+        ipv6.gateway = "${secrets.net.ipv6}19::1";
         clients = {
           tom = {
             ipv4 = "192.168.19.2";
-            ipv6 = "${secrets.net.ipv6}:ff19::2";
+            ipv6 = "${secrets.net.ipv6}19::2";
             pub_key = "NNT1knadmTdHrAUn6vsS5hR+NEOIsmqko9JrNYKjFzg=";
           };
         };
@@ -118,15 +115,15 @@
       common-vlan = {
         interface_name = "eth10g.10";
   	    ipv4Address = "192.168.10.15";
-        ipv6Address = "${secrets.net.ipv6}:ff10::15";
+        ipv6Address = "${secrets.net.ipv6}10::15";
         mac-vlan = {
           mass = {
   	        ipv4Address = "192.168.10.29";
-            ipv6Address = "${secrets.net.ipv6}:ff10::29";
+            ipv6Address = "${secrets.net.ipv6}10::29";
           };
           traefik = {
   	        ipv4Address = "192.168.10.25";
-            ipv6Address = "${secrets.net.ipv6}:ff10::25";
+            ipv6Address = "${secrets.net.ipv6}10::25";
           };
         };
       };
