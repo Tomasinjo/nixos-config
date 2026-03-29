@@ -93,5 +93,9 @@ in {
       password = secrets.apps.unifi.mongo.password;
       root_password = secrets.apps.unifi.mongo.root_password;
     };
+<<<<<<< HEAD
+=======
+    traefik.app.cloudflare_api_key = secrets.apps.traefik.app.cloudflare_api_key;
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
   };
 }

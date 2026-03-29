@@ -10,9 +10,17 @@ let
   appContainerConfig = (oci-framework.mergeAll [
     oci-framework.base.standard
     {
+<<<<<<< HEAD
       image = "traefik:v3.6.11";
 
       environment = {};
+=======
+      image = "traefik:v3.6.12";
+
+      environment = {
+        CF_DNS_API_TOKEN = vars.apps.traefik.app.cloudflare_api_key;
+      };
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
 
       volumes = [
         "${vars.dir.nixos_config}/apps/traefik/app-data:/etc/traefik"
@@ -110,8 +118,15 @@ let
         "traefik.enable" = "true";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.address" = "http://gatekeeper:5000/verify_share_request?protocol=http&container_name_port=immich-app:2283";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.trustForwardHeader" = "true";
+<<<<<<< HEAD
         "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.address" = "http://gatekeeper:5000/verify_share_request?protocol=http&container_name_port=opencloud-app:9200";
         "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.trustForwardHeader" = "true";
+=======
+        "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.maxResponseBodySize" = "10485760"; # 10MB limit, silence the error, gatekeeper response is irrelevant and short
+        "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.address" = "http://gatekeeper:5000/verify_share_request?protocol=http&container_name_port=opencloud-app:9200";
+        "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.trustForwardHeader" = "true";
+        "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.maxResponseBodySize" = "10485760"; # 10MB limit, silence the error, gatekeeper response is irrelevant and short
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
       };
       dependsOn = [];
     }

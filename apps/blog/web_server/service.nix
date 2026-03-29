@@ -31,7 +31,11 @@ let
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
+<<<<<<< HEAD
       image = "joseluisq/static-web-server:2.41.0";
+=======
+      image = "joseluisq/static-web-server:2.42.0";
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
 
       environment = {
         "SERVER_CONFIG_FILE" = "/etc/config.toml";
@@ -52,13 +56,21 @@ let
         "traefik.http.routers.rp.entrypoints" = "https,http";
         "traefik.http.routers.rp.tls" = "true";
         "traefik.http.routers.rp.middlewares" = "umami@file,redirect-to-non-www-rp,security-headers";
+<<<<<<< HEAD
         "traefik.http.routers.rp.tls.certresolver" = "fikus_resolver";
+=======
+        "traefik.http.routers.rp.tls.certresolver" = "tls_challenge_resolver";
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
 
         "traefik.http.routers.ts.rule" = "Host(`www.${vars.apps.blog.en.domain}`) || Host(`${vars.apps.blog.en.domain}`)";
         "traefik.http.routers.ts.entrypoints" = "https,http";
         "traefik.http.routers.ts.tls" = "true";
         "traefik.http.routers.ts.middlewares" = "umami@file,redirect-to-non-www-ts,security-headers";
+<<<<<<< HEAD
         "traefik.http.routers.ts.tls.certresolver" = "fikus_resolver";
+=======
+        "traefik.http.routers.ts.tls.certresolver" = "tls_challenge_resolver";
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
 
         "traefik.http.middlewares.redirect-to-non-www-rp.redirectregex.regex" = "^https://www.${vars.apps.blog.si.domain}/(.*)";
         "traefik.http.middlewares.redirect-to-non-www-rp.redirectregex.replacement" = "https://${vars.apps.blog.si.domain}/$${1}";

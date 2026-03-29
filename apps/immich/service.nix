@@ -18,7 +18,11 @@ let
     (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort; })
     oci-framework.hardware.quicksync
     {
+<<<<<<< HEAD
       image = "ghcr.io/immich-app/immich-server:v2.6.1";
+=======
+      image = "ghcr.io/immich-app/immich-server:v2.6.3";
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
 
       environment = {
         "DB_USERNAME" = dbUser;
@@ -52,7 +56,10 @@ let
         "traefik.http.routers.immich-main.rule" = "Host(`${alternateServiceHostname}.${vars.net.domain}`)";
         "traefik.http.routers.immich-main.entrypoints" = "https,http";
         "traefik.http.routers.immich-main.tls" = "true";
+<<<<<<< HEAD
         "traefik.http.routers.immich-main.tls.certresolver" = "fikus_resolver";
+=======
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
         "traefik.http.routers.immich-main.middlewares" = "immich-cors,dynamic-whitelist@file";
 
         # Access by mTLS (oci-framework configures it)
@@ -63,7 +70,10 @@ let
         "traefik.http.routers.immich-share.entrypoints" = "https,http";
         "traefik.http.routers.immich-share.middlewares" = "gatekeeper_immich_share@docker";
         "traefik.http.routers.immich-share.tls" = "true";
+<<<<<<< HEAD
         "traefik.http.routers.immich-share.tls.certresolver" = "fikus_resolver";
+=======
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
       };
     }
   ];
@@ -116,7 +126,11 @@ let
     oci-framework.base.standard
     oci-framework.hardware.cuda
     {
+<<<<<<< HEAD
       image = "ghcr.io/immich-app/immich-machine-learning:v2.6.1-cuda";
+=======
+      image = "ghcr.io/immich-app/immich-machine-learning:v2.6.3-cuda";
+>>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
       
       environment = {
         "MACHINE_LEARNING_MODEL_TTL" = "300";
