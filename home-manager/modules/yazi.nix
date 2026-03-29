@@ -1,6 +1,7 @@
 { config, pkgs, ... }:
 
 {
+  home.packages = [ pkgs.exiftool ];
   programs.yazi = {
     enable = true;
     enableZshIntegration = true;

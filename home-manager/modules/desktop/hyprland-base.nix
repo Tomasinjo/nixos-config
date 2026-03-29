@@ -126,6 +126,8 @@ in
     ./hyprlock.nix
     ./cursor.nix
     ./hyprpaper.nix
+    ./kitty.nix
+    ./rofi.nix
     ../../hosts/${hostName}/hyprland.nix
   ];
   options.wayland.hyprland = {
@@ -160,6 +162,8 @@ in
 
     home.packages = with pkgs; [ 
       cliphist 
-      playerctl ];
+      playerctl 
+      pavucontrol
+    ];
   };
 }

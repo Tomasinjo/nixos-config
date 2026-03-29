@@ -268,10 +268,6 @@ in
       '';
     };
 
-    home.packages = with pkgs; [
-      pavucontrol
-    ];
-
     xdg.configFile."waybar/scripts/powerdraw.sh".text = ''
       #!${pkgs.bash}/bin/bash
 
