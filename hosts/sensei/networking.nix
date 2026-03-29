@@ -123,6 +123,14 @@
           ];
           IPv6SendRA = "yes";
         };
+        ipv6SendRAConfig = {
+          Managed = false;         # turn off dhcpv6 
+          OtherInformation = false; # turn off dhcpv6 for dns
+          EmitDNS = true;  # for slaac
+          DNS = vars.net.sensei.ipv6DNS;
+          EmitDomains = true;
+          Domains = vars.net.domain;
+        };
       };
 
       # VLAN 20 (Guest)
@@ -135,6 +143,12 @@
           ];
           IPv6SendRA = "yes";
         };
+        ipv6SendRAConfig = {
+          Managed = false;
+          OtherInformation = false;
+          EmitDNS = true;
+          DNS = "2606:4700:4700::1111";
+        };
       };
 
       # VLAN 30 (IoT)
@@ -145,15 +159,15 @@
             "${vars.net.sensei.iot-vlan.ipv4.gateway}/24"
             "${vars.net.sensei.iot-vlan.ipv6.gateway}/64"
           ];
-          IPv6SendRA = "yes";
+          IPv6SendRA = "no";
         };
       };
 
-      # Dummy interface for DNS (opt5)
+      # loopback interface for DNS
       "40-lo-dns" = {
         matchConfig.Name = "lo-dns";
         networkConfig = {
-          Address = [ 
+          Address = [
             "${vars.net.sensei.ipv4DNS}/32" 
             "${vars.net.sensei.ipv6DNS}/128" 
           ];
@@ -166,7 +180,6 @@
         networkConfig.DHCP = "ipv6";
         networkConfig.IPv6AcceptRA = true;
         networkConfig.KeepConfiguration = "static";
-#	IPv6PrefixDelegation = "yes";
       };
     };
   };

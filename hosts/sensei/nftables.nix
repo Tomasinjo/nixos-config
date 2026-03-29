@@ -18,14 +18,6 @@ in
   networking.nftables = {
     enable = true;
     ruleset = ''
-      # Interfaces:
-      # wan: ppp0 (assuming PPPoE creates ppp0)
-      # opt1: bond0
-      # opt2: ${vars.net.sensei.common-vlan.name}
-      # opt3: ${vars.net.sensei.guest-vlan.name}
-      # opt4: ${vars.net.sensei.iot-vlan.name}
-      # opt5: lo-dns
-      
       table inet filter {
         chain input {
           type filter hook input priority 0; policy drop;
@@ -53,16 +45,12 @@ in
 
           # opt2 (VLAN10)
           iifname "${vars.net.sensei.common-vlan.name}" udp dport 67 accept  # DHCPv4
-          iifname "${vars.net.sensei.common-vlan.name}" udp dport 547 accept # DHCPv6
 
           # opt3 (Guest)
           iifname "${vars.net.sensei.guest-vlan.name}" udp dport 67 accept  # DHCPv4
-          iifname "${vars.net.sensei.guest-vlan.name}" udp dport 547 accept # DHCPv6
 
           # opt4 (IoT) rules
           iifname "${vars.net.sensei.iot-vlan.name}" udp dport 67 accept  # DHCPv4
-          iifname "${vars.net.sensei.iot-vlan.name}" udp dport 547 accept # DHCPv6
-
 
           # opt5 (lo-dns)
           ip daddr ${vars.net.sensei.ipv4DNS} udp dport { 53, 123 } accept
@@ -126,7 +114,6 @@ in
           type nat hook postrouting priority srcnat; policy accept;
 
           # Hairpin NAT for Traefik
-          # Traffic from vlan10 destined to traefik (which was DNAT'd) gets SNAT'd to the router's vlan10 IP
           ip saddr ${vars.net.sensei.common-vlan.ipv4.subnet}/${vars.net.sensei.common-vlan.ipv4.mask} ip daddr ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address} tcp dport { 80, 443 } snat to ${vars.net.sensei.common-vlan.ipv4.gateway}
           
           # Outbound NAT (Masquerade on WAN)
@@ -138,14 +125,13 @@ in
               type filter hook forward priority filter; policy accept;
               tcp flags syn tcp option maxseg size set 1380 oifname "ppp*"
               tcp flags syn tcp option maxseg size set 1380 iifname { 
-		"bond0",
-		"${vars.net.sensei.common-vlan.name}",
-		"${vars.net.sensei.guest-vlan.name}",
-		"${vars.net.sensei.iot-vlan.name}"
-	      }
+		              "bond0",
+		              "${vars.net.sensei.common-vlan.name}",
+		              "${vars.net.sensei.guest-vlan.name}",
+		              "${vars.net.sensei.iot-vlan.name}"
+	            }
           }
       }
-
 
     '';
   };
