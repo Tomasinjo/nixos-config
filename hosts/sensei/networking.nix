@@ -83,7 +83,7 @@
     };
 
     networks = {
-      # WAN physical interface (PPPoE will attach here)
+      # WAN physical interface
       "10-wan" = {
         matchConfig.Name = "enp6s0";
         networkConfig.LinkLocalAddressing = "no";
@@ -91,13 +91,13 @@
         linkConfig.ActivationPolicy = "always-up";
       };
 
-      # Bond slaves (igb1-igb4)
+      # LACP slaves
       "10-bond-slaves" = {
         matchConfig.Name = "enp2s0 enp3s0 enp4s0 enp5s0";
         networkConfig.Bond = "bond0";
       };
 
-      # Bond interface configuration
+      # LACP config
       "20-bond0" = {
         matchConfig.Name = "bond0";
         networkConfig = {
@@ -126,11 +126,17 @@
         ipv6SendRAConfig = {
           Managed = false;         # turn off dhcpv6 
           OtherInformation = false; # turn off dhcpv6 for dns
-          EmitDNS = true;  # for slaac
+          EmitDNS = true;  # include dns in RA, for slaac
           DNS = vars.net.sensei.ipv6DNS;
-          EmitDomains = true;
+          EmitDomains = true; # include domain in RA, for slaac
           Domains = vars.net.domain;
         };
+        # include prefix information option in RA. wasn't included without it.
+        ipv6Prefixes = [
+          {
+            Prefix = "${vars.net.sensei.common-vlan.ipv6.subnet}/${vars.net.sensei.common-vlan.ipv6.mask}";
+          }
+        ];
       };
 
       # VLAN 20 (Guest)
@@ -149,6 +155,11 @@
           EmitDNS = true;
           DNS = "2606:4700:4700::1111";
         };
+        ipv6Prefixes = [
+          {
+            Prefix = "${vars.net.sensei.guest-vlan.ipv6.subnet}/${vars.net.sensei.guest-vlan.ipv6.mask}";
+          }
+        ];
       };
 
       # VLAN 30 (IoT)
