@@ -15,7 +15,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort; })
     {
-      image = "ghcr.io/paperless-ngx/paperless-ngx:2.20.11";
+      image = "ghcr.io/paperless-ngx/paperless-ngx:2.20.13";
 
       environment = {
         "PAPERLESS_REDIS" = "redis://${serviceName}-redis:6379";

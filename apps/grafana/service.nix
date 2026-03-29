@@ -15,7 +15,7 @@ let
 
       environment = {
         "GF_SERVER_ROOT_URL" = "https://${serviceHostname}.${vars.net.domain}/";
-        "GF_PLUGINS_PREINSTALL" = "";
+        "GF_PLUGINS_PREINSTALL" = "victoriametrics-metrics-datasource";
       };
 
       volumes = [

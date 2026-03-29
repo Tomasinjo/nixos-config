@@ -31,7 +31,7 @@
         useTemplate = [ "production" ];
         recursive = true;
       };
-      "${vars.dir.hoarder_data}/backups-impo-data" = {
+      "hoarder-data/backups-impo-data" = {
         useTemplate = [ "backup" ];
         recursive = true;
       };

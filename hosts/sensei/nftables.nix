@@ -49,7 +49,7 @@ in
           iifname "ppp0" udp dport 8080 accept
 
           # opt1 (LACP)
-          ip daddr ${vars.net.sensei.vlan99.ipv4.gateway} tcp dport 22 accept
+          ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
 
           # opt2 (VLAN10)
           iifname "${vars.net.sensei.common-vlan.name}" udp dport 67 accept  # DHCPv4
@@ -116,8 +116,8 @@ in
           type nat hook prerouting priority dstnat; policy accept;
 
           # Port forwarding
-          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } tcp dport 443 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:443
-          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } tcp dport 80 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:80
+          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip daddr ${vars.net.sensei.ipv4_public} tcp dport 443 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:443
+          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}"} ip daddr ${vars.net.sensei.ipv4_public} tcp dport 80 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:80
           iifname "ppp0" tcp dport 51413 dnat to ${vars.net.zenki.common-vlan.ipv4Address}:51413
           iifname "ppp0" udp dport 51413 dnat to ${vars.net.zenki.common-vlan.ipv4Address}:51413
         }
@@ -133,6 +133,20 @@ in
           oifname "ppp0" masquerade
         }
       }
+      table ip mss-clamp {
+          chain forward {
+              type filter hook forward priority filter; policy accept;
+              tcp flags syn tcp option maxseg size set 1380 oifname "ppp*"
+              tcp flags syn tcp option maxseg size set 1380 iifname { 
+		"bond0",
+		"${vars.net.sensei.common-vlan.name}",
+		"${vars.net.sensei.guest-vlan.name}",
+		"${vars.net.sensei.iot-vlan.name}"
+	      }
+          }
+      }
+
+
     '';
   };
 }

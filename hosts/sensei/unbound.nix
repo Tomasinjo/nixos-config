@@ -18,7 +18,7 @@
           "${vars.net.sensei.ipv6_prefix} allow"
         ];
         
-        local-zone = [
+        local-data = [
           ''"ha-int.${vars.net.domain}. IN A 192.168.10.15"''
           ''"sensei.${vars.net.domain}. IN A 192.168.99.1"''
           ''"sensei.${vars.net.domain}. IN AAAA 2a00:ee2:1101:ff99::1"''
@@ -58,10 +58,10 @@
           name = ".";
           forward-tls-upstream = "yes";
           forward-addr = [
-            "9.9.9.9@853#dns.quad9.net"
-            "149.112.112.112@853#dns.quad9.net"
-            "2620:fe::fe@853#dns.quad9.net"
-            "2620:fe::9@853#dns.quad9.net"
+            "1.1.1.1@853#cloudflare-dns.com"
+            "1.0.0.1@853#cloudflare-dns.com"
+            "2606:4700:4700::1111@853#cloudflare-dns.com"
+            "2606:4700:4700::1001@853#cloudflare-dns.com"
           ];
         }
       ];

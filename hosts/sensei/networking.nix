@@ -107,8 +107,8 @@
             vars.net.sensei.iot-vlan.name
           ];
           Address = [ 
-            "${vars.net.sensei.vlan99.ipv4.gateway}/24" 
-            "${vars.net.sensei.vlan99.ipv6.gateway}/64" 
+            "${vars.net.sensei.mgmt-vlan.ipv4.gateway}/24" 
+            "${vars.net.sensei.mgmt-vlan.ipv6.gateway}/64" 
           ];
         };
       };
@@ -121,6 +121,7 @@
             "${vars.net.sensei.common-vlan.ipv4.gateway}/24"
             "${vars.net.sensei.common-vlan.ipv6.gateway}/64"
           ];
+          IPv6SendRA = "yes";
         };
       };
 
@@ -132,6 +133,7 @@
             "${vars.net.sensei.guest-vlan.ipv4.gateway}/24"
             "${vars.net.sensei.guest-vlan.ipv6.gateway}/64"
           ];
+          IPv6SendRA = "yes";
         };
       };
 
@@ -143,6 +145,7 @@
             "${vars.net.sensei.iot-vlan.ipv4.gateway}/24"
             "${vars.net.sensei.iot-vlan.ipv6.gateway}/64"
           ];
+          IPv6SendRA = "yes";
         };
       };
 
@@ -163,6 +166,7 @@
         networkConfig.DHCP = "ipv6";
         networkConfig.IPv6AcceptRA = true;
         networkConfig.KeepConfiguration = "static";
+#	IPv6PrefixDelegation = "yes";
       };
     };
   };

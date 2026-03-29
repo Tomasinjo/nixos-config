@@ -38,11 +38,11 @@ backupScriptServicesDaily = pkgs.writeShellScriptBin "backup-services-daily" ''
 
     if [ "$(date +%w)" -eq 0 ]; then
       echo "It's Sunday - Running rsnapshot weekly..."
-      rsnapshot -c ${rsnapshotServicesConfDaily} weekly
+      rsnapshot -v -c ${rsnapshotServicesConfDaily} weekly
     fi
 
     echo "Running rsnapshot daily..."
-    rsnapshot -c ${rsnapshotServicesConfDaily} daily
+    rsnapshot -v -c ${rsnapshotServicesConfDaily} daily
 
     if [ -n "$DB_CONTAINERS" ]; then
       echo "Starting services: $(echo $DB_SERVICES)"

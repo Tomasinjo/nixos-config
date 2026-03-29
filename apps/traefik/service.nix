@@ -10,6 +10,7 @@ let
   appContainerConfig = (oci-framework.mergeAll [
     oci-framework.base.standard
     {
+<<<<<<< HEAD
       image = "traefik:v3.6.11";
 
       environment = {
