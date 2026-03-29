@@ -19,7 +19,7 @@
         { name = "domain-search"; data = vars.net.domain; }
         { name = "ntp-servers"; data = vars.net.sensei.ipv4DNS; }
         { name = "time-servers"; data = vars.net.sensei.ipv4DNS; }
-        { name = "domain-name-servers"; data = "${vars.net.sensei.ipv4DNS}, 9.9.9.9"; }
+        { name = "domain-name-servers"; data = "${vars.net.sensei.ipv4DNS}, 1.1.1.1"; }
       ];
 
       subnet4 = [
@@ -42,13 +42,13 @@
           pools = [ { pool = vars.net.sensei.guest-vlan.ipv4.dhcp_pool; } ];
           option-data = [
             { name = "routers"; data = vars.net.sensei.guest-vlan.ipv4.gateway; }
-            { name = "domain-name-servers"; data = "9.9.9.9"; }
+            { name = "domain-name-servers"; data = "1.1.1.1"; }
           ];
         }
         {
           subnet = "${vars.net.sensei.iot-vlan.ipv4.subnet}/${vars.net.sensei.iot-vlan.ipv4.mask}";
           id = vars.net.sensei.iot-vlan.id;
-          pools = [ { pool = vars.net.sensei.guest-vlan.ipv4.dhcp_pool; } ];
+          pools = [ { pool = vars.net.sensei.iot-vlan.ipv4.dhcp_pool; } ];
           option-data = [
             { name = "routers"; data = vars.net.sensei.iot-vlan.ipv4.gateway; }
           ];
@@ -77,19 +77,17 @@
       option-data = [
         { name = "domain-search"; data = vars.net.domain; }
         { name = "dns-servers"; data = vars.net.sensei.ipv6DNS; }
-        { name = "ntp-servers"; data = vars.net.sensei.ipv6DNS; }
-        { name = "time-servers"; data = vars.net.sensei.ipv6DNS; }
       ];
 
       subnet6 = [
         {
-          subnet = "${vars.net.sensei.common-vlan.ipv4.subnet}/${vars.net.sensei.common-vlan.ipv4.mask}";
+          subnet = "${vars.net.sensei.common-vlan.ipv6.subnet}/${vars.net.sensei.common-vlan.ipv6.mask}";
           id = vars.net.sensei.common-vlan.id;
           pools = [ { pool = vars.net.sensei.common-vlan.ipv6.dhcp_pool; } ];
           option-data = [];
         }
         {
-          subnet = "${vars.net.sensei.common-vlan.ipv6.subnet}/${vars.net.sensei.common-vlan.ipv6.mask}";
+          subnet = "${vars.net.sensei.guest-vlan.ipv6.subnet}/${vars.net.sensei.guest-vlan.ipv6.mask}";
           id = vars.net.sensei.guest-vlan.id;
           pools = [ { pool = vars.net.sensei.guest-vlan.ipv6.dhcp_pool; } ];
           option-data = [
@@ -97,7 +95,7 @@
           ];
         }
         #{
-        #  subnet = "${vars.net.sensei.iot-vlan.ipv4.subnet}/${vars.net.sensei.iot-vlan.ipv4.mask}";
+        #  subnet = "${vars.net.sensei.iot-vlan.ipv6.subnet}/${vars.net.sensei.iot-vlan.ipv6.mask}";
         #  id = vars.net.sensei.iot-vlan.id;
         #  pools = [ { pool = vars.net.sensei.iot-vlan.ipv6.dhcp_pool; } ];
         #  option-data = [];
