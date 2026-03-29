@@ -140,8 +140,4 @@
       ipv4Address = secrets.net.vps_ip;
     };
   };
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
