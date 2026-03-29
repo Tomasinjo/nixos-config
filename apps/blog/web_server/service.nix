@@ -31,11 +31,7 @@ let
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
-<<<<<<< HEAD
-      image = "joseluisq/static-web-server:2.41.0";
-=======
       image = "joseluisq/static-web-server:2.42.0";
->>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
 
       environment = {
         "SERVER_CONFIG_FILE" = "/etc/config.toml";

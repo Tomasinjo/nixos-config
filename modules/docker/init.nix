@@ -52,9 +52,6 @@
     ../../apps/vaultwarden/service.nix
     ../../apps/victorialogs/service.nix
     ../../apps/kiwix/service.nix
-<<<<<<< HEAD
-=======
     ../../apps/grafana/service.nix
->>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
   ];
 }

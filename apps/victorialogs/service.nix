@@ -23,13 +23,9 @@ let
         "127.0.0.1:9428:9428"
       ];
 
-<<<<<<< HEAD
-      networks = [];
-=======
       networks = [
         "logging-net"
       ];
->>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
       labels = {};
       dependsOn = [];
       cmd = [

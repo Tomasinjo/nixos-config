@@ -9,10 +9,7 @@
       ipv4DNS = "192.168.99.10";
       ipv6DNS = "${secrets.net.ipv6}:ff99::10";
       ipv6_prefix = "${secrets.net.ipv6}::/48";
-<<<<<<< HEAD
-=======
       ipv4_public = secrets.net.ipv4;
->>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
       ppoe = {
         user = secrets.net.ppoe_username;
         password = secrets.net.ppoe_password;

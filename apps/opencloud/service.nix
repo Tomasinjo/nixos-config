@@ -44,10 +44,6 @@ let
         "traefik.http.routers.opencloud-share.rule" = "Host(`${serviceHostname}.${vars.net.domain}`) && PathRegexp(`^\/s\/(?:[A-Z,a-z,0-9]){15}$`)";
         "traefik.http.routers.opencloud-share.entrypoints" = "https,http";
         "traefik.http.routers.opencloud-share.tls" = "true";
-<<<<<<< HEAD
-        "traefik.http.routers.opencloud-share.tls.certresolver" = "fikus_resolver";
-=======
->>>>>>> d77319e9b9a8b8dc87a973320b35076d0602b5dc
         "traefik.http.routers.opencloud-share.middlewares" = "gatekeeper_opencloud_share@docker";
       };
       dependsOn = [];
