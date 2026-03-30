@@ -8,11 +8,9 @@
   networking.useNetworkd = true;
   systemd.network.enable = true;
 
-  # Do not use legacy networking
   networking.useDHCP = false;
-
-  # Use ethN instead of enp... naming
   networking.usePredictableInterfaceNames = true;
+
 
   # PPPoE setup
   services.pppd = {
@@ -118,8 +116,8 @@
         matchConfig.Name = vars.net.sensei.common-vlan.name;
         networkConfig = {
           Address = [ 
-            "${vars.net.sensei.common-vlan.ipv4.gateway}/24"
-            "${vars.net.sensei.common-vlan.ipv6.gateway}/64"
+            "${vars.net.sensei.common-vlan.ipv4.gateway}/${vars.net.sensei.common-vlan.ipv4.mask}"
+            "${vars.net.sensei.common-vlan.ipv6.gateway}/${vars.net.sensei.common-vlan.ipv6.mask}"
           ];
           IPv6SendRA = "yes";
         };
@@ -144,8 +142,8 @@
         matchConfig.Name = vars.net.sensei.guest-vlan.name;
         networkConfig = {
           Address = [ 
-            "${vars.net.sensei.guest-vlan.ipv4.gateway}/24"
-            "${vars.net.sensei.guest-vlan.ipv6.gateway}/64"
+            "${vars.net.sensei.guest-vlan.ipv4.gateway}/${vars.net.sensei.guest-vlan.ipv4.mask}"
+            "${vars.net.sensei.guest-vlan.ipv6.gateway}/${vars.net.sensei.guest-vlan.ipv6.mask}"
           ];
           IPv6SendRA = "yes";
         };
@@ -167,8 +165,8 @@
         matchConfig.Name = vars.net.sensei.iot-vlan.name;
         networkConfig = {
           Address = [ 
-            "${vars.net.sensei.iot-vlan.ipv4.gateway}/24"
-            "${vars.net.sensei.iot-vlan.ipv6.gateway}/64"
+            "${vars.net.sensei.iot-vlan.ipv4.gateway}/${vars.net.sensei.iot-vlan.ipv4.mask}"
+            "${vars.net.sensei.iot-vlan.ipv6.gateway}/${vars.net.sensei.iot-vlan.ipv6.mask}"
           ];
           IPv6SendRA = "no";
         };
@@ -189,11 +187,16 @@
       "50-ppp" = {
         matchConfig.Name = "ppp*";
         networkConfig = {
-          DHCP = "ipv6";
-          IPv6AcceptRA = true;
-          KeepConfiguration = "static";
-	  DHCPPrefixDelegation = "yes"; 
+          DHCP = "ipv6"; # dhcp client
+          IPv6AcceptRA = true; # provides dns servers, i dont use them, just playing it nicely
         };
+	dhcpV6Config = {
+	  PrefixDelegationHint = "::/56"; # request prefix with prefix delegation IA_PD
+	  UseDelegatedPrefix = true; # probably not necessary since prefix is statically defined
+	  WithoutRA = "solicit";   # ask for ip without instructions in RA
+	  RapidCommit = false;  # dont skip dhcp messages
+	  UseAddress = false;   # do not request wan ip IA_NA
+	};
       };
     };
   };
