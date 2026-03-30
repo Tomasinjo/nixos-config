@@ -30,8 +30,6 @@
           ''"os.${vars.net.domain}. IN A 192.168.30.12"''
           ''"printer.${vars.net.domain}. IN A 192.168.30.7"''
           ''"tc.${vars.net.domain}. IN A 192.168.30.160"''
-          ''"mass.${vars.net.domain}. IN A 192.168.10.29"''
-          ''"hugo.${vars.net.domain}. IN A 192.168.10.15"''
           ''"reo-terasa_1.${vars.net.domain}. IN A 192.168.30.80"''
           ''"reo-terasa_2.${vars.net.domain}. IN A 192.168.30.78"''
           ''"reo-dvorisce.${vars.net.domain}. IN A 192.168.30.85"''
