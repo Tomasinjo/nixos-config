@@ -22,6 +22,7 @@
     ethtool
     tcpdump
     iftop
+    bandwhich
     iperf3
     wireguard-tools
     conntrack-tools
