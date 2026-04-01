@@ -17,11 +17,13 @@
           "192.168.0.0/16 allow"
           "${vars.net.sensei.ipv6_prefix} allow"
         ];
-        
+      
+	module-config = "'respip validator iterator'"; # respip-enables rpz blocklist. validator=enables dnssec. iterator=queries upstream, necessary.
+
         local-data = [
           ''"ha-int.${vars.net.domain}. IN A 192.168.10.15"''
-          ''"sensei.${vars.net.domain}. IN A 192.168.99.1"''
-          ''"sensei.${vars.net.domain}. IN AAAA 2a00:ee2:1101:ff99::1"''
+          ''"sensei.${vars.net.domain}. IN A ${vars.net.sensei.mgmt-vlan.ipv4.gateway}"''
+          ''"sensei.${vars.net.domain}. IN AAAA ${vars.net.sensei.mgmt-vlan.ipv6.gateway}"''
           ''"pretikalo.${vars.net.domain}. IN A 192.168.99.2"''
           ''"ap.${vars.net.domain}. IN A 192.168.99.101"''
           ''"ap2.${vars.net.domain}. IN A 192.168.99.102"''
@@ -50,6 +52,18 @@
           "fe80::/10"
         ];
       };
+
+      # Pro and TIF, together take about 1.3GB of memory
+      rpz = [
+	{
+	  name = "hageziPro";
+	  url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/pro.txt";
+	}
+	{
+	  name = "hageziThreatIntel";
+	  url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/tif.txt";
+	}
+      ];
       
       forward-zone = [
         {

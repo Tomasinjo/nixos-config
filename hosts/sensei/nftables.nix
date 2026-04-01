@@ -39,10 +39,11 @@ in
 
           # Wireguard port on WAN
           iifname "ppp0" udp dport 8080 accept
+	  iifname "lo-wg" udp dport 8080 accept
 
           # opt1 (LACP)
           ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
-          ip daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
+          ip6 daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
 
           # opt2 (VLAN10)
           iifname "${vars.net.sensei.common-vlan.name}" udp dport 67 accept  # DHCPv4
@@ -105,8 +106,8 @@ in
           type nat hook prerouting priority dstnat; policy accept;
 
           # Port forwarding
-          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip daddr ${vars.net.sensei.ipv4_public} tcp dport 443 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:443
-          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}"} ip daddr ${vars.net.sensei.ipv4_public} tcp dport 80 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:80
+          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", wg0 } ip daddr ${vars.net.sensei.ipv4_public} tcp dport 443 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:443
+          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", "wg0"} ip daddr ${vars.net.sensei.ipv4_public} tcp dport 80 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:80
           iifname "ppp0" tcp dport 51413 dnat to ${vars.net.zenki.common-vlan.ipv4Address}:51413
           iifname "ppp0" udp dport 51413 dnat to ${vars.net.zenki.common-vlan.ipv4Address}:51413
         }
@@ -117,7 +118,9 @@ in
           # Hairpin NAT for Traefik
           ip saddr ${vars.net.sensei.common-vlan.ipv4.subnet}/${vars.net.sensei.common-vlan.ipv4.mask} ip daddr ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address} tcp dport { 80, 443 } snat to ${vars.net.sensei.common-vlan.ipv4.gateway}
           
-          # Outbound NAT (Masquerade on WAN)
+          ip saddr ${vars.net.sensei.wireguard.ipv4.subnet}/${vars.net.sensei.wireguard.ipv4.mask} ip daddr ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address} tcp dport { 80, 443 } snat to ${vars.net.sensei.wireguard.ipv4.gateway}
+          
+	  # Outbound NAT (Masquerade on WAN)
           oifname "ppp0" masquerade
         }
       }

@@ -78,7 +78,16 @@
           Kind = "dummy";
         };
       };
+      
+      # Loopback for wg, resolves AAAA vpn....
+      "30-lo-wg" = {
+        netdevConfig = {
+          Name = "lo-wg";
+          Kind = "dummy";
+        };
+      };
     };
+      
 
     networks = {
       # WAN physical interface
@@ -182,7 +191,18 @@
           ];
         };
       };
-      
+ 
+      # loopback interface for wg public AAAA vpn....
+      "40-lo-wg" = {
+        matchConfig.Name = "lo-wg";
+        networkConfig = {
+          Address = [
+            "${vars.net.sensei.wireguard.ipv6.public_if}/128" 
+          ];
+        };
+      };
+
+
       # PPP interface
       "50-ppp" = {
         matchConfig.Name = "ppp*";

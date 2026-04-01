@@ -20,6 +20,8 @@
     EDITOR = "nvim";
   };
 
+  programs.zsh.enable = true;
+
   xdg.enable = true; # required by home manager
 }
 

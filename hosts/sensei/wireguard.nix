@@ -9,7 +9,7 @@
           Kind = "wireguard";
         };
         wireguardConfig = {
-          PrivateKeyFile = "/root/wireguard.key";
+          PrivateKeyFile = "/etc/systemd/network/wireguard.key";
           ListenPort = 8080;
         };
         wireguardPeers = [
