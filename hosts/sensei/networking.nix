@@ -210,13 +210,13 @@
           DHCP = "ipv6"; # dhcp client
           IPv6AcceptRA = true; # provides dns servers, i dont use them, just playing it nicely
         };
-	dhcpV6Config = {
-	  PrefixDelegationHint = "::/56"; # request prefix with prefix delegation IA_PD
-	  UseDelegatedPrefix = true; # probably not necessary since prefix is statically defined
-	  WithoutRA = "solicit";   # ask for ip without instructions in RA
-	  RapidCommit = false;  # dont skip dhcp messages
-	  UseAddress = false;   # do not request wan ip IA_NA
-	};
+	      dhcpV6Config = {
+	        PrefixDelegationHint = "::/56"; # request prefix with prefix delegation IA_PD
+	        UseDelegatedPrefix = true; # probably not necessary since prefix is statically defined
+	        WithoutRA = "solicit";   # ask for ip without instructions in RA
+	        RapidCommit = false;  # dont skip dhcp messages
+	        UseAddress = false;   # do not request wan ip IA_NA
+	      };
       };
     };
   };

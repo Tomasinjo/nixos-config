@@ -95,14 +95,14 @@
 
       wireguard = {
         ipv4 = {
-	  gateway = "192.168.19.1";
-	  subnet = "192.168.19.0";
-	  mask = "24";
-	};
+	        gateway = "192.168.19.1";
+	        subnet = "192.168.19.0";
+	        mask = "24";
+	      };
         ipv6 = {
-	  gateway = "${secrets.net.ipv6}19::1";
-	  public_if = "${secrets.net.ipv6}77::1";
-	};
+	        gateway = "${secrets.net.ipv6}19::1";
+	        public_if = "${secrets.net.ipv6}77::1";
+	      };
         clients = {
           tom = {
             ipv4 = "192.168.19.2";

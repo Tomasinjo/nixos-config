@@ -18,7 +18,7 @@
           "${vars.net.sensei.ipv6_prefix} allow"
         ];
       
-	module-config = "'respip validator iterator'"; # respip-enables rpz blocklist. validator=enables dnssec. iterator=queries upstream, necessary.
+	      module-config = "'respip validator iterator'"; # respip-enables rpz blocklist. validator=enables dnssec. iterator=queries upstream, necessary.
 
         local-data = [
           ''"ha-int.${vars.net.domain}. IN A 192.168.10.15"''
@@ -55,14 +55,14 @@
 
       # Pro and TIF, together take about 1.3GB of memory
       rpz = [
-	{
-	  name = "hageziPro";
-	  url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/pro.txt";
-	}
-	{
-	  name = "hageziThreatIntel";
-	  url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/tif.txt";
-	}
+	      {
+	        name = "hageziPro";
+	        url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/pro.txt";
+	      }
+	      {
+	        name = "hageziThreatIntel";
+	        url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/tif.txt";
+	      }
       ];
       
       forward-zone = [
