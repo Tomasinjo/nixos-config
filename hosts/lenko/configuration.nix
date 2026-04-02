@@ -5,8 +5,7 @@
     ./networking.nix
     ../../modules/common.nix
     ../../modules/shell.nix
-    ../../modules/desktop.nix
-    ../../modules/greetd.nix
+    ../../modules/desktop/hyprland.nix
     ../../modules/sudo.nix
     ../../modules/docker/init_base.nix
     ../../modules/utilities.nix

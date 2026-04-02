@@ -5,8 +5,7 @@
     ./networking.nix
     ../../modules/common.nix
     ../../modules/shell.nix
-    ../../modules/desktop.nix
-    ../../modules/greetd.nix
+    ../../modules/desktop/kiosk.nix
     ../../modules/sudo.nix
     ../../modules/utilities.nix
     ../../modules/ssh.nix
@@ -21,7 +20,6 @@
   # System packages
   environment.systemPackages = with pkgs; [
     ddcutil  # for setting brightness via ssh commands from home assistant
-    kitty.terminfo
   ];
 
   system.stateVersion = "25.11";
