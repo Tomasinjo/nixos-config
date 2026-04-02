@@ -140,6 +140,10 @@
       hostname = "lenko";
     };
 
+    boarder = {
+      hostname = "boarder";
+    };
+
     vps = {
       ipv4Address = secrets.net.vps_ip;
     };

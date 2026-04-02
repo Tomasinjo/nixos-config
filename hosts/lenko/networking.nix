@@ -2,6 +2,8 @@
 
 {
   networking.hostName = vars.net.lenko.hostname;
+  networking.domain = vars.net.domain;
+  
   networking.networkmanager.enable = true;
 
   networking.firewall = {
