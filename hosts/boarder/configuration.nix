@@ -6,6 +6,7 @@
     ../../modules/common.nix
     ../../modules/shell.nix
     ../../modules/desktop.nix
+    ../../modules/greetd.nix
     ../../modules/sudo.nix
     ../../modules/utilities.nix
     ../../modules/ssh.nix
