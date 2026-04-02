@@ -13,6 +13,9 @@
   wayland.hyprland = {
     settings = {
     # Zenki specific Hyprland settings
+      monitor = [
+        "desc:LG Electronics LG ULTRAWIDE 0x01010101, 2560x1080@75, 0x0, 1"
+      ];
       env = [
         "AQ_DRM_DEVICES,${config.xdg.configHome}/hypr/igpu:${config.xdg.configHome}/hypr/dgpu" # prefer iGPU (00:02) over dGPU
       ];

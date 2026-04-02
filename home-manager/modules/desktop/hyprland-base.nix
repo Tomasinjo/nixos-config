@@ -6,21 +6,11 @@ let
   cfg = config.wayland.hyprland;
 
   baseSettings = {
-    monitor = [ 
-      "desc:LG Electronics LG ULTRAWIDE 0x01010101, 2560x1080@75, 0x0, 1"
-    ];
+    monitor = [];
 
     "$terminal" = "kitty";
     "$fileManager" = "kitty yazi";
     "$menu" = "rofi -show drun";
-
-    exec-once = [
-      "hyprpaper"
-      "hyprlock"
-      "wl-paste --type text --watch cliphist store"
-      "wl-paste --type image --watch cliphist store"
-      "waybar"
-    ];
 
     general = {
       gaps_in = 5;
@@ -119,15 +109,16 @@ let
     bindm = [ "$mainMod,mouse:272,movewindow" ];
   };
 
+  baseExecOnce = [
+    "wl-paste --type text --watch cliphist store"
+    "wl-paste --type image --watch cliphist store"
+  ] ++ optionals (attrByPath [ "wayland" "hyprpaper" "enable" ] false config) [ "hyprpaper" ] # conditional exec-once commands depending on loaded modules
+    ++ optionals (attrByPath [ "wayland" "hyprlock" "enable" ] false config) [ "hyprlock" ]
+    ++ optionals (attrByPath [ "wayland" "waybar" "enable" ] false config) [ "waybar" ];
+
 in
 {
   imports = [
-    ./waybar-base.nix
-    ./hyprlock.nix
-    ./cursor.nix
-    ./hyprpaper.nix
-    ./kitty.nix
-    ./rofi.nix
     ../../hosts/${hostName}/hyprland.nix
   ];
   options.wayland.hyprland = {
@@ -144,13 +135,12 @@ in
   };
 
   config = mkIf cfg.enable {
-    wayland.hyprpaper.enable = true;
     wayland.windowManager.hyprland = {
       enable = true;
       settings = recursiveUpdate baseSettings cfg.settings // {
         # recursiveUpdate merges sets, but it overwrites lists.
         # So we manually concatenate the important lists:
-        exec-once = (baseSettings.exec-once or []) ++ (cfg.settings.exec-once or []);
+        exec-once = baseExecOnce ++ (cfg.settings.exec-once or []);
         bind = (baseSettings.bind or []) ++ (cfg.settings.bind or []);
         bindel = (baseSettings.bindel or []) ++ (cfg.settings.bindel or []);
         windowrule = (baseSettings.windowrule or []) ++ (cfg.settings.windowrule or []);

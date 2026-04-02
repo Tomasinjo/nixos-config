@@ -69,6 +69,23 @@
           }
         ];
       };
+
+      boarder = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs vars self; };
+        modules = [
+          ./hosts/boarder/configuration.nix
+          nixvim.nixosModules.nixvim
+          ./modules/nixvim.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.tom = ./home-manager/users/tom.nix;
+            home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "boarder"; };
+          }
+        ];
+      };
     };
   };
 }

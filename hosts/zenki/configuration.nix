@@ -9,6 +9,7 @@
     ../../modules/ssh.nix
     ../../modules/zfs/init.nix
     ../../modules/desktop.nix
+    ../../modules/greetd.nix
     ../../modules/gaming.nix
     ../../modules/utilities.nix
     ../../modules/sudo.nix
