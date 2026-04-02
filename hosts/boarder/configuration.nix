@@ -21,6 +21,7 @@
   # System packages
   environment.systemPackages = with pkgs; [
     ddcutil  # for setting brightness via ssh commands from home assistant
+    kitty.terminfo
   ];
 
   system.stateVersion = "25.11";
