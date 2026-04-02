@@ -8,6 +8,7 @@
     ../../modules/desktop.nix
     ../../modules/sudo.nix
     ../../modules/utilities.nix
+    ../../modules/ssh.nix
   ];
 
   # Boot configuration
