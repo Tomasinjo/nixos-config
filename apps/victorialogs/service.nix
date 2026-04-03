@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort; })
     {
-      image = "docker.io/victoriametrics/victoria-logs:v1.48.0";
+      image = "docker.io/victoriametrics/victoria-logs:v1.49.0";
 
       environment = {};
 
