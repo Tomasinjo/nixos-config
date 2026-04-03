@@ -11,6 +11,7 @@
     ../../modules/utilities.nix
     ../../modules/printing.nix
     ../../modules/virtual-machines/virt-manager.nix
+    ./wireshark.nix
     ./mounts.nix
   ];
 
@@ -30,11 +31,11 @@
     dnsmasq
     sshfs
     wireguard-tools
-    wireshark
   ];
 
+
   boot.kernelModules = [ "drivetemp" ];  # for reading HDD temps
-  users.users.tom.extraGroups = [ "dialout" ];
+  users.users.${vars.username}.extraGroups = [ "dialout" ]; # for flashing microcontrolers
 
   system.stateVersion = "25.11";
 }
