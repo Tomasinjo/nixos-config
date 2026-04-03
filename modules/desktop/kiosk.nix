@@ -10,6 +10,27 @@
 
   services.xserver.enable = false;  # Disable Xorg
 
+  programs.chromium = {
+    enable = true;
+    extraOpts = {
+      "AutoSelectCertificateForUrls" = [
+        ''{"pattern":"https://ha.${vars.net.domain}","filter":{}}'' # for mtls, prevents cert   selection popup every time.
+      ];
+      "ExitTypeRestorePolicy" = "none";
+      "PasswordManagerEnabled" = false;
+      "AutofillAddressEnabled" = false;
+      "AutofillCreditCardEnabled" = false;
+      "AutoplayAllowed" = true;
+      "TranslateEnabled" = false;
+      "BrowserGuestModeEnabled" = false;
+      "BrowserSignin" = 0; # 0 = Disable sign-in
+      "DefaultNotificationsSetting" = 1; 
+      "DefaultPopupsSetting" = 2;
+      "BackgroundModeEnabled" = true;
+      "DefaultSearchProviderEnabled" = false;
+    };
+  };
+
   services.greetd = {
     enable = true;
     settings = {
