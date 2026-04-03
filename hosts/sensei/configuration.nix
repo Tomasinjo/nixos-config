@@ -13,6 +13,7 @@
     ../../modules/sudo.nix
     ../../modules/ssh.nix
     ../../modules/utilities.nix
+    ../../modules/wireshark.nix  # for dumpcap, remote capture via wireshark
   ];
 
   boot.loader.systemd-boot.enable = true;
@@ -29,6 +30,8 @@
     nftables
   ];
 
+  programs.wireshark.package = pkgs.wireshark-cli; # wireshark is enabled in wireshark.nix, this just limits it to cli tools
+
   # NTP server and client
   services.chrony = {
     enable = true;
@@ -43,8 +46,6 @@
       pool pool.ntp.org iburst
     '';
   };
-
-  users.users.${vars.username}.extraGroups = [ "networkmanager" ];
 
   system.stateVersion = "25.11";
 }

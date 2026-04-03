@@ -11,8 +11,7 @@
     ../../modules/utilities.nix
     ../../modules/printing.nix
     ../../modules/virtual-machines/virt-manager.nix
-    ./wireshark.nix
-    ./mounts.nix
+    ../../modules/wireshark.nix
   ];
 
 
@@ -29,7 +28,6 @@
   environment.systemPackages = with pkgs; [
     ntfs3g
     dnsmasq
-    sshfs
     wireguard-tools
   ];
 
