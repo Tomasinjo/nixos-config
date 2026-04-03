@@ -12,7 +12,7 @@ let
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort; })
     oci-framework.hardware.quicksync
     {
-      image = "jellyfin/jellyfin:10.11.6";
+      image = "jellyfin/jellyfin:10.11.7";
 
       environment = {
         "JELLYFIN_PublishedServerUrl" = "https://${serviceHostname}.${vars.net.domain}";
