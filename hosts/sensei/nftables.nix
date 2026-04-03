@@ -127,8 +127,8 @@ in
       table inet mss-clamp {
           chain forward {
               type filter hook forward priority filter; policy accept;
-              tcp flags syn tcp option maxseg size set 1380 oifname "ppp*"
-              tcp flags syn tcp option maxseg size set 1380 iifname { 
+              tcp flags syn tcp option maxseg size set 1340 oifname "ppp*"
+              tcp flags syn tcp option maxseg size set 1340 iifname { 
 		              "bond0",
 		              "${vars.net.sensei.common-vlan.name}",
 		              "${vars.net.sensei.guest-vlan.name}",
