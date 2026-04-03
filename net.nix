@@ -31,7 +31,7 @@
         };
         members = {
           beyondtv2 = { mac = "34:51:80:c0:48:9a"; ip = "192.168.10.251"; hostname = "beyondtv2"; };
-          wall-screen = { mac = "92:be:51:1e:d6:49"; ip = "192.168.10.151"; hostname = "wall-screen"; };
+          boarder = { mac = "d4:f3:2d:81:20:d6"; ip = "192.168.10.164"; hostname = "boarder"; };
         };
       };
       guest-vlan = {
