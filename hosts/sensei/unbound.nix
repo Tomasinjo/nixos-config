@@ -39,6 +39,8 @@
           ''"reo-jedilnica.${vars.net.domain}. IN A 192.168.30.57"''
           ''"reo-sredina.${vars.net.domain}. IN A 192.168.30.58"''
           ''"reo-doorbell.${vars.net.domain}. IN A 192.168.30.158"''
+          ''"boarder.${vars.net.domain}. IN A 192.168.10.164"''
+
         ];
 
         # Prevents upstream from returning private addresses, protects from DNS rebinding
