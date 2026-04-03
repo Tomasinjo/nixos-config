@@ -6,7 +6,7 @@
     ./fonts.nix
   ];
 
-  environment.systemPackages = [ pkgs.cage ]; 
+  environment.systemPackages = [ pkgs.cage pkgs.chromium ];
 
   services.xserver.enable = false;  # Disable Xorg
 
@@ -17,10 +17,9 @@
         user = vars.username; 
         # wrap the command to ensure Wayland variables are set
         command = pkgs.writeShellScript "kiosk-script" ''
-          export MOZ_ENABLE_WAYLAND=1
           export XDG_SESSION_TYPE=wayland
-	  export XCURSOR_SIZE=0
-          ${pkgs.cage}/bin/cage -- firefox "https://ha.${vars.net.domain}"
+          export XCURSOR_SIZE=0
+          ${pkgs.cage}/bin/cage -- chromium --kiosk "https://ha.${vars.net.domain}"
         '';
       };
       default_session = {

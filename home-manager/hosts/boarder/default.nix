@@ -3,6 +3,5 @@
 {
   imports = [
     ./packages.nix
-    ../../modules/firefox/firefox-base.nix
   ];
 }
