@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort; })
     {
-      image = "opencloudeu/opencloud-rolling:5.2.0";
+      image = "opencloudeu/opencloud-rolling:6.0.0";
 
       environment = {
         "OC_ADD_RUN_SERVICES" = ""; # enable stuff like antivirus, webdav, see docs
