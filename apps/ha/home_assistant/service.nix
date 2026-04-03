@@ -15,7 +15,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort; })
     {
-      image = "homeassistant/home-assistant:2026.3.4";
+      image = "homeassistant/home-assistant:2026.4.0";
 
       environment = {
         "PUID" = toString vars.dockerUser.uid;
