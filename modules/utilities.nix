@@ -16,5 +16,6 @@
     openssl
     smartmontools  # smartctl
     screen
+    jq
   ];
 }
