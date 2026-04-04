@@ -41,6 +41,7 @@
     ../../apps/jupyter/service.nix
     ../../apps/llm/comfyui/service.nix
     ../../apps/llm/open-webui/service.nix
+    ../../apps/llm/qdrant/service.nix
     ../../apps/opencloud/service.nix
     ../../apps/paperless/service.nix
     ../../apps/pgadmin/service.nix
