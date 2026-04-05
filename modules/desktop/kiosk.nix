@@ -6,7 +6,8 @@
     ./fonts.nix
   ];
 
-  environment.systemPackages = [ 
+  environment.systemPackages = [
+    pkgs.websocat
     pkgs.sway 
     pkgs.chromium
     (pkgs.writeShellScriptBin "kiosk-screen" ''
