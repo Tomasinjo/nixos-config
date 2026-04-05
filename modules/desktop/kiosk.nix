@@ -127,25 +127,37 @@
       User = "root"; 
       ExecStart = let
         script = pkgs.writeShellScript "kiosk-check.sh" ''
-          export PATH=${pkgs.curl}/bin:${pkgs.jq}/bin:${pkgs.systemd}/bin:$PATH
-          
-          DATA=$(curl -s --max-time 5 http://localhost:9222/json)
-          
-          # check if the API is responding and it is array
-          if [ $? -ne 0 ] || [ -z "$DATA" ] || [ "$(echo "$DATA" | jq 'type')" != "array" ]; then
-            echo "Chromium API not responding. Rebooting..."
-            reboot
-          fi
-  
-          # check website health:
-          MATCH=$(echo "$DATA" | jq -r '.[] | select(.type=="page" and (.title | contains("Home Assistant")) and (.url | contains("https://ha.${vars.net.domain}"))) | .id')
-  
-          if [ -z "$MATCH" ]; then
-            echo "Kiosk page not found or incorrect URL. Rebooting..."
-            reboot
-          fi         
-        '';
-      in "${script}";
+        export PATH=${pkgs.curl}/bin:${pkgs.jq}/bin:${pkgs.websocat}/bin:${pkgs.systemd}/bin:${pkgs.coreutils}/bin:$PATH
+        
+        DATA=$(curl -s --max-time 5 http://localhost:9222/json)
+        
+        # Extract the WebSocket URL for the specific page
+        WS_URL=$(echo "$DATA" | jq -r '.[] | select(.type=="page" and (.title | contains("Home Assistant")) and (.url | contains("https://ha.${vars.net.domain}"))) | .webSocketDebuggerUrl' | head -n 1)
+
+        # Check if URL was found
+        if [ -z "$WS_URL" ] || [ "$WS_URL" == "null" ]; then
+          echo "Kiosk page not found in tab list. Rebooting..."
+          reboot
+          exit 1
+        fi
+
+        # Try to run a simple JS command via WebSocket
+        # If website crashed, it hangs here
+        PROBE_COMMAND='{"id": 1, "method": "Runtime.evaluate", "params": {"expression": "1+1"}}'
+        
+        # Detects timeout
+        RESPONSE=$(echo "$PROBE_COMMAND" | timeout 5s websocat -n1 -t --oneshot "$WS_URL" 2>/dev/null)
+
+        # Validate the response
+        # A healthy response looks like: {"id":1,"result":{"result":{"type":"number","value":2,"description":"2"}}}
+        if [[ "$RESPONSE" == *"\"value\":2"* ]]; then
+          echo "Kiosk is healthy."
+        else
+          echo "Kiosk is unresponsive or crashed. Rebooting..."
+          reboot
+        fi
+      '';
+    in "${script}";
     };
   };
   
