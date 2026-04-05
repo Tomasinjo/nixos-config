@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, vars, ... }:
+{ pkgs, vars, ... }:
 
 {
   imports = [
@@ -98,7 +98,14 @@
           
           cat <<EOF > /tmp/sway-kiosk-config
           output * bg #000000 solid_color
-          exec ${pkgs.chromium}/bin/chromium --kiosk --start-fullscreen --noerrdialogs --no-first-run --check-for-update-interval=31536000 --app="https://ha.${vars.net.domain}"
+          exec ${pkgs.chromium}/bin/chromium \
+            --remote-debugging-port=9222 \
+            --kiosk \
+            --start-fullscreen \
+            --noerrdialogs \
+            --no-first-run \
+            --check-for-update-interval=31536000 \
+            --app="https://ha.${vars.net.domain}"
           include /etc/sway/config.d/*
           EOF
           
@@ -112,6 +119,44 @@
     };
   };
 
+
+  systemd.services.kiosk-healthcheck = {
+    description = "Check if Kiosk website is still alive";
+    serviceConfig = {
+      Type = "oneshot";
+      User = "root"; 
+      ExecStart = let
+        script = pkgs.writeShellScript "kiosk-check.sh" ''
+          export PATH=${pkgs.curl}/bin:${pkgs.jq}/bin:${pkgs.systemd}/bin:$PATH
+          
+          DATA=$(curl -s --max-time 5 http://localhost:9222/json)
+          
+          # check if the API is responding and it is array
+          if [ $? -ne 0 ] || [ -z "$DATA" ] || [ "$(echo "$DATA" | jq 'type')" != "array" ]; then
+            echo "Chromium API not responding. Rebooting..."
+            reboot
+          fi
+  
+          # check website health:
+          MATCH=$(echo "$DATA" | jq -r '.[] | select(.type=="page" and (.title | contains("Home Assistant")) and (.url | contains("https://ha.${vars.net.domain}"))) | .id')
+  
+          if [ -z "$MATCH" ]; then
+            echo "Kiosk page not found or incorrect URL. Rebooting..."
+            reboot
+          fi         
+        '';
+      in "${script}";
+    };
+  };
+  
+  systemd.timers.kiosk-healthcheck = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "5m";
+      OnUnitActiveSec = "5m";
+      Unit = "kiosk-healthcheck.service";
+    };
+  };
 
   users.users.${vars.username}.extraGroups = [ 
     "video"
