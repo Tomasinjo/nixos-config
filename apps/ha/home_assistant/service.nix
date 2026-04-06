@@ -71,7 +71,9 @@ let
       image = "eclipse-mosquitto:2.0";
 
       volumes = [
-        "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/:/mosquitto/"
+        "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/config:/mosquitto/config"
+        "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/data:/mosquitto/data"
+        "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/log:/mosquitto/log"
       ];
 
       ports = [
