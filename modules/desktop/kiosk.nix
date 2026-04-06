@@ -10,6 +10,7 @@
     pkgs.websocat
     pkgs.sway 
     pkgs.chromium
+    pkgs.socat
     (pkgs.writeShellScriptBin "kiosk-screen" ''
       ACTION=$1
 
@@ -101,6 +102,7 @@
           output * bg #000000 solid_color
           exec ${pkgs.chromium}/bin/chromium \
             --remote-debugging-port=9222 \
+            --remote-allow-origins=* \
             --kiosk \
             --start-fullscreen \
             --noerrdialogs \
@@ -178,4 +180,32 @@
 
   # Required for Wayland/Firefox to work correctly with system d-bus
   programs.dconf.enable = true;
+
+
+########### FORWARDING CHROMIUM DEBUG PORT #############
+
+  systemd.services.socat-proxy = {
+    description = "Socat Port Forward 9223 to 9222";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    
+    serviceConfig = {
+      ExecStart = "${pkgs.socat}/bin/socat TCP-LISTEN:9223,fork,reuseaddr, TCP:127.0.0.1:9222";
+
+      # IP Filtering
+      IPAddressDeny = "any";
+      IPAddressAllow = [
+        "${vars.net.zenki.common-vlan.ipv4Address}"
+        "127.0.0.1/32"
+      ];
+    
+      # Required for IPAddressAllow to work
+      RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
+
+      Restart = "always";
+      RestartSec = "5s";
+      DynamicUser = true;
+    };
+  };
+  networking.firewall.allowedTCPPorts = [ 9223 ];
 }
