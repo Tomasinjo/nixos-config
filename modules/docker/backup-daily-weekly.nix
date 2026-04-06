@@ -15,8 +15,8 @@ let
     cmd_logger	${pkgs.util-linux}/bin/logger
     cmd_du	${pkgs.coreutils}/bin/du
 
-    rsync_long_args	-a	--delete
-
+    rsync_long_args	--stats	-a	--delete
+    loglevel	4
     backup	${vars.dir.scripts}/	scripts/
     backup	${vars.dir.certs}/	certs/
     backup	${vars.dir.nixos_config}/	nixos-config/
