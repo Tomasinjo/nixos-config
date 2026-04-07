@@ -143,6 +143,10 @@
     boarder = {
       hostname = "boarder";
     };
+    
+    horse = {
+      hostname = "horse";
+    };
 
     vps = {
       ipv4Address = secrets.net.vps_ip;
