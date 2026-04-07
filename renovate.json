@@ -10,9 +10,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": [
-        "(^|/)service\\.nix$",
-        "(^|/)oci-framework\\.nix$"
+      "managerFilePatterns": [
+        "/(^|/)service\.nix$/",
+        "/(^|/)oci-framework\.nix$/"
       ],
       "matchStrings": [
         "image\\s*=\\s*\"(?<depName>[^\"]+):(?<currentValue>[^\"]+)\";"
