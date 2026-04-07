@@ -48,7 +48,7 @@
     enable = true;
   };
   services.xserver.videoDrivers = [ "vmware" ];
-  virtualisation.virtualbox.guest.enable = true;
+  virtualisation.vmware.guest.enable = true;
   services.intune.enable = true;
 
   # Hyprland sometimes needs this for VirtualBox/VMware
@@ -66,26 +66,40 @@
 # Allow PAM to unlock the keyring on login
 security.pam.services.login.enableGnomeKeyring = true;
 
+#programs.nix-ld.enable = true;
+#programs.nix-ld.libraries = with pkgs; [
+#  libGL
+#  glib
+#  nss
+#  nspr
+#  atk
+#  at-spi2-atk
+#  libdrm
+#  mesa
+#  expat
+#  libxkbcommon
+#  xorg.libX11
+#  xorg.libXcomposite
+#  xorg.libXdamage
+#  xorg.libXext
+#  xorg.libXfixes
+#  xorg.libXrandr
+  # These are the common ones needed by JavaFX/Electron apps
+#];
+
 programs.nix-ld.enable = true;
 programs.nix-ld.libraries = with pkgs; [
   libGL
+  stdenv.cc.cc
   glib
-  nss
-  nspr
-  atk
-  at-spi2-atk
-  libdrm
-  mesa
-  expat
   libxkbcommon
   xorg.libX11
-  xorg.libXcomposite
-  xorg.libXdamage
-  xorg.libXext
-  xorg.libXfixes
-  xorg.libXrandr
-  # These are the common ones needed by JavaFX/Electron apps
+  xorg.libXxf86vm
+  # Add these if it still fails (common JavaFX requirements)
+  fontconfig
+  freetype
 ];
 
+hardware.opengl.extraPackages = [ pkgs.mesa.drivers ];
 
 }
