@@ -29,6 +29,8 @@
     ntfs3g
     dnsmasq
     wireguard-tools
+    direnv # for python projects so vscode recognizes nix shell
+    nix-direnv 
   ];
 
 
