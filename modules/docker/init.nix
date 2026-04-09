@@ -42,7 +42,8 @@
     ../../apps/llm/comfyui/service.nix
     ../../apps/llm/open-webui/service.nix
     ../../apps/llm/qdrant/service.nix
-    ../../apps/opencloud/service.nix
+    ../../apps/cloud/opencloud/service.nix
+    ../../apps/cloud/onlyoffice/service.nix
     ../../apps/paperless/service.nix
     ../../apps/pgadmin/service.nix
     ../../apps/searxng/service.nix

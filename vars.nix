@@ -75,7 +75,10 @@ in {
     home-assistant.db.password = secrets.apps.home-assistant.db.password;
     immich.db.password = secrets.apps.immich.db.password;
     open-webui.app.secret = secrets.apps.open-webui.app.secret;
-    opencloud.app.admin_password = secrets.apps.opencloud.app.admin_password;
+    opencloud.app = {
+      admin_password = secrets.apps.opencloud.app.admin_password;
+      jwt_secret = secrets.apps.opencloud.app.jwt_secret;
+    };
     paperless = {
       app = {
         admin_password = secrets.apps.paperless.app.admin_password;

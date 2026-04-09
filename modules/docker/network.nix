@@ -21,6 +21,7 @@
       ${pkgs.docker}/bin/docker network create unifi-net || true
       ${pkgs.docker}/bin/docker network create dockerproxy-net || true
       ${pkgs.docker}/bin/docker network create logging-net || true
+      ${pkgs.docker}/bin/docker network create cloud-net || true
 
       # Macvlan Network
       # check if it exists first because macvlan settings are immutable
