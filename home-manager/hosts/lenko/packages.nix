@@ -1,10 +1,10 @@
 { config, pkgs, ... }:
 
 {
+  programs.discord.enable = true;
   home.packages = with pkgs; [
-    discord
     pamixer
-    #telegram-desktop
+    telegram-desktop
     esptool
     zoom-us
     filezilla
