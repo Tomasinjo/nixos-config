@@ -10,7 +10,7 @@ let
   appContainerConfig = (oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "traefik:v3.6.12";
+      image = "traefik:v3.6.13";
 
       environment = {
         CF_DNS_API_TOKEN = vars.apps.traefik.app.cloudflare_api_key;
