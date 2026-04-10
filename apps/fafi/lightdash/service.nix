@@ -46,7 +46,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort; })
     {
-      image = "lightdash/lightdash:0.2746.0";
+      image = "lightdash/lightdash:0.2746.2";
 
       environment = {
         "PGHOST" = "${serviceName}-db";
