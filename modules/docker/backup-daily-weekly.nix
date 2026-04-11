@@ -15,8 +15,9 @@ let
     cmd_logger	${pkgs.util-linux}/bin/logger
     cmd_du	${pkgs.coreutils}/bin/du
 
+    rsync_short_args	-v
     rsync_long_args	--stats	-a	--delete
-    loglevel	4
+    loglevel	5
     backup	${vars.dir.scripts}/	scripts/
     backup	${vars.dir.certs}/	certs/
     backup	${vars.dir.nixos_config}/	nixos-config/
@@ -66,6 +67,8 @@ in
       Type = "oneshot";
       User = "root";
       ExecStart = "${backupScriptServicesDaily}/bin/backup-services-daily";
+      StandardOutput = "journal+console";
+      StandardError = "journal+console";
     };
   };
 
