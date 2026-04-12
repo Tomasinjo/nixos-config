@@ -9,7 +9,7 @@ let
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     oci-framework.hardware.quicksync
     {
       image = "jellyfin/jellyfin:10.11.8";

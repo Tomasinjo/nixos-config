@@ -10,7 +10,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort; })    {
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })    {
       image = "onlyoffice/documentserver:9.3.1";
 
       environment = {

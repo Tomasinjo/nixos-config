@@ -13,7 +13,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
       image = "lscr.io/linuxserver/unifi-network-application:10.1.85-ls118";
 

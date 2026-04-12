@@ -3,7 +3,7 @@
 let
   oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
 
-  serviceName = "homeassistant";
+  serviceName = "home-assistant";
   serviceHostname = "ha";
   servicePort = 8123;
 
@@ -13,7 +13,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort; })
+    (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort serviceName; })
     {
       image = "homeassistant/home-assistant:2026.4.1";
 

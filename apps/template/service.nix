@@ -14,10 +14,10 @@ let
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     #oci-framework.base.linuxserver
-    #(oci-framework.web.base { inherit serviceHostname servicePort; })
-    (oci-framework.web.internal { inherit serviceHostname servicePort; })
-    #(oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort; })
-    #(oci-framework.web.exposed_mtls { inherit serviceHostname servicePort; })
+    #(oci-framework.web.base { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
+    #(oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    #(oci-framework.web.exposed_mtls { inherit serviceHostname servicePort serviceName; })
     #oci-framework.hardware.cuda
     #oci-framework.hardware.quicksync
     {

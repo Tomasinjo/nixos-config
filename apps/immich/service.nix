@@ -15,7 +15,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort; })
+    (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort serviceName; })
     oci-framework.hardware.quicksync
     {
       image = "ghcr.io/immich-app/immich-server:v2.7.3";

@@ -20,6 +20,7 @@ let
     (oci-framework.web.internal {  
             serviceHostname = grafanaServiceHostname;
             servicePort = grafanaServicePort;
+            serviceName = "Tesla";
         }
     )
     {
@@ -64,7 +65,8 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal {  
             serviceHostname = teslamateServiceHostname;
-            servicePort = teslamateServicePort;  
+            servicePort = teslamateServicePort;
+            serviceName = serviceName;
         }
     )
     {

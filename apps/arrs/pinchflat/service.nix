@@ -9,7 +9,7 @@ let
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
       image = "keglin/pinchflat:v2025.6.6";
 

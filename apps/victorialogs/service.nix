@@ -9,7 +9,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
       image = "docker.io/victoriametrics/victoria-logs:v1.49.0";
 

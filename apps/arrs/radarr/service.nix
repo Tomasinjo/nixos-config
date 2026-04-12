@@ -9,7 +9,7 @@ let
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
       image = "linuxserver/radarr:6.0.4.10291-ls293";
 

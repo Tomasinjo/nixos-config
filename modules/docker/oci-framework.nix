@@ -59,7 +59,7 @@ let
   };
 
   web = {
-    base = { serviceHostname, servicePort }: {
+    base = { serviceHostname, servicePort, serviceName }: {
       networks = [ "traefik-net" ];
       labels = {
         "traefik.enable" = "true";
@@ -67,26 +67,26 @@ let
         "traefik.http.routers.${serviceHostname}.entrypoints" = "https,http";
         "traefik.http.routers.${serviceHostname}.tls" = "true";
         "traefik.http.services.${serviceHostname}.loadbalancer.server.port" = toString servicePort;
+        "fikus.hostname" = serviceHostname; # custom label for automatic bookmarks
+        "fikus.name" = serviceName; # custom label for automatic bookmarks
       };
     };
 
-    internal = { serviceHostname, servicePort }: 
-      merge (web.base { inherit serviceHostname servicePort; }) {
+    internal = { serviceHostname, servicePort, serviceName }: 
+      merge (web.base { inherit serviceHostname servicePort serviceName; }) {
         labels = {
           "traefik.http.routers.${serviceHostname}.middlewares" = "internal-whitelist@file";
-          "fikus.dns.internal" = "true";
-          "fikus.dns.hostname" = serviceHostname;
         };
       };
 
-    exposed_gatekeeper = { serviceHostname, servicePort }: 
-      merge (web.base { inherit serviceHostname servicePort; }) {
+    exposed_gatekeeper = { serviceHostname, servicePort, serviceName }: 
+      merge (web.base { inherit serviceHostname servicePort serviceName; }) {
         labels = {
           "traefik.http.routers.${serviceHostname}.middlewares" = "dynamic-whitelist@file";
         };
       };
-    exposed_mtls = { serviceHostname, servicePort }: 
-      merge (web.base { inherit serviceHostname servicePort; }) {
+    exposed_mtls = { serviceHostname, servicePort, serviceName }: 
+      merge (web.base { inherit serviceHostname servicePort serviceName; }) {
         labels = {
           "traefik.http.routers.${serviceHostname}.tls.options" = "fikus_mtls@file";
         };

@@ -9,7 +9,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     {
       image = "docker.io/searxng/searxng:2026.2.28-a2108ce2e";
 

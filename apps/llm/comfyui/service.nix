@@ -10,7 +10,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     oci-framework.hardware.cuda
     {
       image = "yanwk/comfyui-boot:cu129-slim";

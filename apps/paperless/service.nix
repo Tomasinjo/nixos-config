@@ -13,7 +13,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     {
       image = "ghcr.io/paperless-ngx/paperless-ngx:2.20.13";
 

@@ -11,7 +11,7 @@ let
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
       image = "lscr.io/linuxserver/qbittorrent:5.1.4-r2-ls442";
 

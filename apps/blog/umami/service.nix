@@ -13,7 +13,7 @@ let
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
       image = "ghcr.io/umami-software/umami:3.0.3";
 
