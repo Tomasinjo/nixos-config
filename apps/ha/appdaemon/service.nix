@@ -14,7 +14,7 @@ let
       image = "acockburn/appdaemon:4.5.13";
 
       environment = {
-        "HA_URL" = "http://homeassistant-app:8123";
+        "HA_URL" = "http://home-assistant-app:8123";
         "HA_KEY" = vars.apps.appdaemon.hass_key;
       };
 
