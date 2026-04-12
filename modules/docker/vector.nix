@@ -46,7 +46,7 @@
 	      filter_docker_from_journal = {
 	        type = "filter";
 	        inputs = [ "journald" ];
-	        condition = ''!starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-") || starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-update") || string(._SYSTEMD_UNIT) ?? "" == "docker-backup.service"'';
+	        condition = ''!starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-") || starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-update") || starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-backup")'';
 	      };
       };
 
