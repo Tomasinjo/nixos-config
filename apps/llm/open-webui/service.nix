@@ -47,6 +47,8 @@ let
       environment = {
         "OLLAMA_KEEP_ALIVE" = "24h";
         "OLLAMA_DEBUG" = "0";
+        "OLLAMA_FLASH_ATTENTION" = "1";
+        "OLLAMA_KV_CACHE_TYPE" = "q4_0";
       };
 
       volumes = [
