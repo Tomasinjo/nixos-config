@@ -7,7 +7,7 @@ let
   zenkiContainers = zenkiConfig.virtualisation.oci-containers.containers;
 
   webServices = lib.filterAttrs (name: container: 
-    (container.labels."traefik.enable" or "false") == "true"
+    (container.labels ? "fikus.hostname" && container.labels ? "fikus.name")
   ) zenkiContainers;
 
   bookmarksList = lib.mapAttrsToList (name: container: 
