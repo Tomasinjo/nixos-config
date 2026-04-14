@@ -26,6 +26,7 @@
     ../../apps/arrs/prowlarr/service.nix
     ../../apps/arrs/qbittorrent/service.nix
     ../../apps/arrs/radarr/service.nix
+    ../../apps/arrs/sonarr/service.nix
     ../../apps/blog/umami/service.nix
     ../../apps/blog/web_server/service.nix
     ../../apps/fafi/lightdash/service.nix

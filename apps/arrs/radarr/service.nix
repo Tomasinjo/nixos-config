@@ -17,7 +17,6 @@ let
 
       volumes = [
         "${vars.dir.nixos_config}/apps/arrs/radarr/app-data:/config"
-        "${vars.dir.hoarder_data}/Downloads:/Downloads"
         "${vars.dir.hoarder_data}/media:/media"
       ];
 
