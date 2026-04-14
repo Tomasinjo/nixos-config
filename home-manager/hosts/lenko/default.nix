@@ -14,5 +14,6 @@
     ../../modules/desktop/hyprpaper.nix
     ../../modules/desktop/kitty.nix
     ../../modules/desktop/rofi.nix
+    ../../modules/desktop/hyprsunset.nix
   ];
 }
