@@ -32,6 +32,7 @@
     ../../apps/fafi/lightdash/service.nix
     ../../apps/fafi/metabase/service.nix
     ../../apps/fafi/nocodb/service.nix
+    ../../apps/fatracker/service.nix
     ../../apps/frigate/service.nix
     ../../apps/grocy/service.nix
     ../../apps/ha/appdaemon/service.nix
