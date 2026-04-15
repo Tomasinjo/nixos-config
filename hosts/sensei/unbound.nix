@@ -40,7 +40,7 @@
           ''"reo-sredina.${vars.net.domain}. IN A 192.168.30.58"''
           ''"reo-doorbell.${vars.net.domain}. IN A 192.168.30.158"''
           ''"boarder.${vars.net.domain}. IN A 192.168.10.164"''
-
+          ''"fatracker.${vars.net.domain}. IN A ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}"''   # for esp32 kopalnica to send weight data from scale - iot vlan does not have hairpin rule
         ];
 
         # Prevents upstream from returning private addresses, protects from DNS rebinding

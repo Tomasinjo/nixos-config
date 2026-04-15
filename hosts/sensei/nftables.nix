@@ -91,6 +91,9 @@ in
           ${if vlan30_allow_out_ips != "" then "iifname \"${vars.net.sensei.iot-vlan.name}\" ip saddr { ${vlan30_allow_out_ips} } ip daddr != { ${aliases.internal_ipv4} } accept" else ""}
           iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${vars.net.zenki.common-vlan.ipv4Address} tcp dport 1883 accept
           iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${vars.net.zenki.common-vlan.ipv4Address} accept
+          
+          # zg.kopalnica esp32 for sending weight data from scale
+	  iifname "${vars.net.sensei.iot-vlan.name}" ip saddr 192.168.30.71 ip daddr == ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address} tcp dport 443 accept
 
           # wireguard
           iifname "wg0" accept
