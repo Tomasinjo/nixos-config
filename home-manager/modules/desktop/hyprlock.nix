@@ -24,6 +24,15 @@ in
           hide_cursor = false;
         };
 
+        auth = {
+          pam = {
+            enabled = true;
+          };
+          fingerprint = {
+            enabled = true;
+          };
+        };
+
         animations = {
           enabled = true;
           bezier = [ "linear, 1, 1, 0, 0" ];
@@ -59,7 +68,7 @@ in
 
             font_family = "$font";
             placeholder_text = "Man is not what he thinks he is, he is what he hides.";
-            fail_text = "$PAMFAIL";
+            fail_text = "Fuck off: $FAIL";
 
             dots_spacing = 0.9;
 
