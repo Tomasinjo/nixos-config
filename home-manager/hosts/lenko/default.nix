@@ -15,5 +15,7 @@
     ../../modules/desktop/kitty.nix
     ../../modules/desktop/rofi.nix
     ../../modules/desktop/hyprsunset.nix
+    ../../modules/protonmail-bridge.nix
+    ../../modules/thunderbird.nix
   ];
 }
