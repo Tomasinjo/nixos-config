@@ -11,8 +11,8 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|/)service\.nix$/",
-        "/(^|/)oci-framework\.nix$/"
+        "/(^|/)service\\.nix$/",
+        "/(^|/)oci-framework\\.nix$/"
       ],
       "matchStrings": [
         "image\\s*=\\s*\"(?<depName>[^\"]+):(?<currentValue>[^\"]+)\";"
@@ -21,6 +21,13 @@
     }
   ],
   "packageRules": [
+    {
+      "description": "Parses linuxserver unusual image names. Rules above apply normally.",
+      "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)((\\.|-r)(?<build>\\d+))?-ls(?<revision>\\d+)$",
+      "matchPackageNames": [
+        "/^(gh|ls)cr\\.io\\/linuxserver\\//"
+      ]
+    },
     {
       "description": "Weekly PR for Nix updates (grouped)",
       "matchManagers": ["nix"],
