@@ -18,4 +18,5 @@
     ../../modules/protonmail-bridge.nix
     ../../modules/thunderbird.nix
   ];
+
 }

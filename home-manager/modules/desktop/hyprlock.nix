@@ -24,14 +24,6 @@ in
           hide_cursor = false;
         };
 
-        auth = {
-          pam = {
-            enabled = true;
-          };
-          fingerprint = {
-            enabled = true;
-          };
-        };
 
         animations = {
           enabled = true;

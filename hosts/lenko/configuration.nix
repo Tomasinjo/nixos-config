@@ -22,8 +22,6 @@
   # Gnome keyring daemon for secrets management
   services.gnome.gnome-keyring.enable = true;
 
-  services.fprintd.enable = true;  # add fingers with fprintd-enroll
-
   hardware.bluetooth.enable = true;
   programs.kdeconnect.enable = true;
 
