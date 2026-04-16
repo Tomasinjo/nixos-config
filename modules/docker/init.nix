@@ -29,6 +29,7 @@
     ../../apps/arrs/sonarr/service.nix
     ../../apps/blog/umami/service.nix
     ../../apps/blog/web_server/service.nix
+    ../../apps/dawarich/service.nix
     ../../apps/fafi/lightdash/service.nix
     ../../apps/fafi/metabase/service.nix
     ../../apps/fafi/nocodb/service.nix

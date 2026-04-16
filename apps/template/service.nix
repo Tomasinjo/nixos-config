@@ -59,6 +59,12 @@ let
       # use for rarely used service, systemd service must be manually started:
       # autoStart = false;
 
+      # same as "command" compose directive
+      #cmd = [
+      #  "-loglevel=info"
+      #  "-allowfrom=traefik"
+      #];
+
       # FQDN: ${serviceHostname}.${vars.net.domain}
       # IP ${vars.net.zenki.common-vlan.ipv4Address}
     }

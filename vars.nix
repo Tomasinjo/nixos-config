@@ -98,5 +98,9 @@ in {
     };
     traefik.app.cloudflare_api_key = secrets.apps.traefik.app.cloudflare_api_key;
     fatracker.db.password = secrets.apps.fatracker.db.password;
+    dawarich = {
+      app.secret = secrets.apps.dawarich.app.secret;
+      db.password = secrets.apps.dawarich.db.password;
+    };
   };
 }

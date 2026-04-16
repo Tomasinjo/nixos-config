@@ -21,7 +21,9 @@ let
         "DATABASE_URL" = "postgresql://${dbUser}:${vars.apps.fatracker.db.password}@${serviceName}-db:5432/${dbName}";
       };
 
-      volumes = [];
+      volumes = [
+        "${vars.dir.impo_data}/opencloud/storage/users/projects/a8a52960-d285-432b-a4fa-3ce95654fe1e/consume_healthconnect:/consume_healthconnect"
+      ];
       ports = [];
 
       networks = [
