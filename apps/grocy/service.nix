@@ -11,7 +11,7 @@ let
     oci-framework.base.linuxserver
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "lscr.io/linuxserver/grocy:v4.5.0-ls316";
+      image = "lscr.io/linuxserver/grocy:v4.6.0-ls321";
 
       environment = {};
 
