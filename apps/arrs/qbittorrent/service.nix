@@ -13,7 +13,7 @@ let
     oci-framework.base.linuxserver
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "lscr.io/linuxserver/qbittorrent:5.1.4-r2-ls442";
+      image = "lscr.io/linuxserver/qbittorrent:5.1.4-r3-ls450";
 
       environment = {
         "WEBUI_PORT" = toString servicePort;
