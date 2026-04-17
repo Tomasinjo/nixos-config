@@ -15,7 +15,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "ghcr.io/umami-software/umami:3.0.3";
+      image = "ghcr.io/umami-software/umami:3.1.0";
 
       environment = {
         "DATABASE_URL" = "postgresql://${dbUser}:${dbPass}@${serviceName}-db:5432/${dbName}";
