@@ -46,6 +46,11 @@
         okular = [
           { run = "okular \"$@\""; block = false; desc = "Okular"; }
         ];
+
+        csv = [
+          { run = "hyprctl dispatch exec onlyoffice-desktopeditors \"$@\""; block = false; desc = "onlyoffice"; }
+        ];
+
       };
 
       open = {
@@ -55,6 +60,7 @@
           { mime = "video/*"; use = [ "vlc" ]; }
           { mime = "text/*"; use = [ "edit" "VScode" ]; }
           { mime = "application/pdf"; use = [ "okular" ]; }
+          { mime = "text/csv"; use = [ "csv" ]; }
         ];
 	      append_rules = [
           { name = "*.AppImage"; use = [ "appimage" ]; }
