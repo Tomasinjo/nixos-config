@@ -9,7 +9,7 @@
     };
     Service = {
       Restart = "always";
-      ExecStart = "${pkgs.protonmail-bridge}/bin/protonmail-bridge --non-interactive";
+      ExecStart = "${pkgs.protonmail-bridge}/bin/protonmail-bridge --noninteractive";
     };
     Install = {
       WantedBy = [ "default.target" ];
