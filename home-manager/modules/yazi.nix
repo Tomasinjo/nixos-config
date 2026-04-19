@@ -1,9 +1,12 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   home.packages = [ pkgs.exiftool ];
   programs.yazi = {
     enable = true;
+    package = inputs.yazi.packages.${pkgs.system}.default.override {
+      _7zz = pkgs._7zz-rar; 
+    };
     enableZshIntegration = true;
 
     settings = {
@@ -47,10 +50,13 @@
           { run = "okular \"$@\""; block = false; desc = "Okular"; }
         ];
 
-        csv = [
+        office = [
           { run = "hyprctl dispatch exec onlyoffice-desktopeditors \"$@\""; block = false; desc = "onlyoffice"; }
         ];
 
+        firefox = [
+          { run = "firefox \"$@\""; block = false; desc = "firefox"; }
+        ];
       };
 
       open = {
@@ -58,13 +64,17 @@
 	        { mime = "application/x-*"; use = [ "executable" ]; }
           { mime = "image/*"; use = [ "imv" "gimp" ]; }
           { mime = "video/*"; use = [ "vlc" ]; }
-          { mime = "text/*"; use = [ "edit" "VScode" ]; }
+          { mime = "application/json"; use = [ "edit" "VScode" ]; }
           { mime = "application/pdf"; use = [ "okular" ]; }
-          { mime = "text/csv"; use = [ "csv" ]; }
+          { mime = "text/csv"; use = [ "office" "edit" "VScode" ]; }
+          { url = "*.csv"; use = [ "office" "edit" "VScode" ]; }
+          { url = "*.html"; use = [ "firefox" "edit" "VScode" ]; }
+          { url = "*.htm"; use = [ "firefox" "edit" "VScode" ]; }
+          { mime = "text/*"; use = [ "edit" "VScode" ]; }
         ];
 	      append_rules = [
-          { name = "*.AppImage"; use = [ "appimage" ]; }
-          { name = "*.appimage"; use = [ "appimage" ]; }
+          { url = "*.AppImage"; use = [ "appimage" ]; }
+          { url = "*.appimage"; use = [ "appimage" ]; }
 	      ];
       };
     };
