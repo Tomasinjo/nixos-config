@@ -1,5 +1,7 @@
 { lib, config, pkgs, vars, ... }:
 
+# must download manually: docker pull ghcr.io/tomasinjo/fatracker:main
+
 let
   oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
 
@@ -23,7 +25,9 @@ let
 
       volumes = [
         "${vars.dir.impo_data}/opencloud/storage/users/projects/a8a52960-d285-432b-a4fa-3ce95654fe1e/consume_healthconnect:/consume_healthconnect"
+        "${vars.dir.impo_data}/opencloud/storage/users/projects/a8a52960-d285-432b-a4fa-3ce95654fe1e/consume_strong:/consume_strong"
       ];
+      
       ports = [];
 
       networks = [
@@ -40,6 +44,10 @@ let
     {
       volumes = [
         "${vars.dir.nixos_config}/apps/fatracker/db-data:/data/postgres"
+      ];
+
+      ports = [
+        "${vars.net.zenki.common-vlan.ipv4Address}:5430:5432"
       ];
 
       networks = [

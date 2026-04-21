@@ -28,6 +28,7 @@ let
       networks = [
         "ha-net"
         "fafi-net"
+        "fat-net"
       ];
       
       labels = {};
