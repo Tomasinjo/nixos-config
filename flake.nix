@@ -12,9 +12,10 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    yazi.url = "github:sxyazi/yazi";
   };
 
-  outputs = { self, nixpkgs, nixvim, nur, home-manager, ... }@inputs: let
+  outputs = { self, nixpkgs, nixvim, nur, home-manager, yazi, ... }@inputs: let
     vars = import ./vars.nix;
   in {
     nixosConfigurations = {
