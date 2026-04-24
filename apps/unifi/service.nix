@@ -15,7 +15,7 @@ let
     oci-framework.base.linuxserver
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "lscr.io/linuxserver/unifi-network-application:10.1.89-ls124";
+      image = "lscr.io/linuxserver/unifi-network-application:10.3.55-ls126";
 
       environment = {
         "MONGO_USER" = mongoUser;
