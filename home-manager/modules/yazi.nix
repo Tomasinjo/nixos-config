@@ -27,35 +27,35 @@
         ];
 
         edit = [
-          { run = "nvim \"$@\""; block = true; desc = "nvim"; }
+          { run = ''nvim "$@"''; block = true; desc = "nvim"; }
         ];
 
         VScode = [
-          { run = "hyprctl dispatch exec code \"$@\""; block = false; desc = "VScode"; }
+          { run = ''code "$@"''; orphan = true; desc = "VScode"; }
         ];
 
         imv = [
-          { run = "hyprctl dispatch exec imv %s %d"; block = false; desc = "imv"; }
+          { run = ''imv "%s" "%d"''; orphan = true; desc = "imv"; }
         ];
 
         gimp = [
-          { run = "hyprctl dispatch exec gimp \"$@\""; block = false; desc = "gimp"; }
+          { run = ''gimp "$@"''; orphan = true; desc = "gimp"; }
         ];
 
         vlc = [
-          { run = "hyprctl dispatch exec vlc \"$@\""; block = false; desc = "vlc"; }
+          { run = ''vlc "$@"''; orphan = true; desc = "vlc"; }
         ];
 
         okular = [
-          { run = "okular \"$@\""; block = false; desc = "Okular"; }
+          { run = ''okular "$@"''; orphan = true; desc = "Okular"; }
         ];
 
         office = [
-          { run = "hyprctl dispatch exec onlyoffice-desktopeditors \"$@\""; block = false; desc = "onlyoffice"; }
+          { run = ''onlyoffice-desktopeditors "$@"''; orphan = true; desc = "onlyoffice"; }
         ];
 
         firefox = [
-          { run = "firefox \"$@\""; block = false; desc = "firefox"; }
+          { run = ''firefox "$@"''; orphan = true; desc = "firefox"; }
         ];
       };
 
