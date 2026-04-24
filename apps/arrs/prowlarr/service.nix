@@ -11,7 +11,7 @@ let
     oci-framework.base.linuxserver
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "lscr.io/linuxserver/prowlarr:2.3.5.5327-ls142";
+      image = "lscr.io/linuxserver/prowlarr:2.3.5.5327-ls143";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/arrs/prowlarr/app-data:/config"
