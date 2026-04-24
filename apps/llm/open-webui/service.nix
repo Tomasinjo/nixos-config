@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     {
-      image = "ghcr.io/open-webui/open-webui:0.8-slim";
+      image = "ghcr.io/open-webui/open-webui:0.9-slim";
 
       environment = {
         "OLLAMA_BASE_URLS" = "http://ollama:11434";
