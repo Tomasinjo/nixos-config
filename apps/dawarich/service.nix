@@ -48,6 +48,7 @@ let
 
       networks = [
         "dawarich-net"
+	"immich-net"
       ];
       
       labels = {};

@@ -26,6 +26,7 @@ let
 
       networks = [
         "logging-net"
+        "fat-net"
       ];
       
       labels = {};
