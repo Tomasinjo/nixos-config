@@ -173,6 +173,26 @@
     };
   };
 
+
+
+  systemd.services.scheduled-sleep = {
+    description = "Sleep for 7 hours";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.utillinux}/bin/rtcwake -m mem -s 25200";
+    };
+  };
+  
+  systemd.timers.scheduled-sleep = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "23:59:00";
+      Unit = "scheduled-sleep.service";
+    };
+  };
+
+
+
   users.users.${vars.username}.extraGroups = [ 
     "video"
     "input"
