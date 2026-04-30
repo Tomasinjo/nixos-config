@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "esphome/esphome:2026.4.2";
+      image = "esphome/esphome:2026.4.3";
 
       environment = {
         "USERNAME" = vars.apps.esphome.username;
