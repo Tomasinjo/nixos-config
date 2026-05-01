@@ -30,10 +30,11 @@
     ../../apps/blog/umami/service.nix
     ../../apps/blog/web_server/service.nix
     ../../apps/dawarich/service.nix
-    ../../apps/fafi/lightdash/service.nix
+#    ../../apps/fafi/lightdash/service.nix
     ../../apps/fafi/metabase/service.nix
     ../../apps/fafi/nocodb/service.nix
-    ../../apps/fatracker/service.nix
+#    ../../apps/fatracker/service.nix
+    ../../apps/fatracker2/service.nix
     ../../apps/frigate/service.nix
     ../../apps/grocy/service.nix
     ../../apps/ha/appdaemon/service.nix

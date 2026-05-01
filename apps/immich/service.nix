@@ -29,7 +29,9 @@ let
       };
 
       volumes = [
-        "${vars.dir.impo_data}/immich:/usr/src/app/upload"
+        #"${vars.dir.impo_data}/immich:/usr/src/app/upload"
+        "${vars.dir.impo_data}/immich:/data"
+        "${vars.dir.nixos_config}/apps/immich/app-data/thumbs:/data/thumbs"
       ];
 
       ports = [];
