@@ -69,6 +69,10 @@ let
         "traefik.http.services.${serviceHostname}.loadbalancer.server.port" = toString servicePort;
         "fikus.hostname" = serviceHostname; # custom label for automatic bookmarks
         "fikus.name" = serviceName; # custom label for automatic bookmarks
+        "glance.hide" = "false";
+        "glance.name" = lib.concatStringsSep " " (map (s: (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (-1) s)) (lib.splitString " " (builtins.replaceStrings ["-"] [" "] serviceName)));
+        "glance.url" = "https://${serviceHostname}.${vars.net.domain}";
+        "glance.icon" = "di:${serviceName}";
       };
     };
 

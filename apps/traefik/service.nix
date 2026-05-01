@@ -77,9 +77,9 @@ let
 
       cmd = [
         "-loglevel=info"
-        "-allowfrom=traefik"
+        "-allowfrom=traefik,glance-app"
         "-listenip=0.0.0.0"
-        "-allowGET=/v1\..{1,2}/(version|containers/.*|events.*)" # this regexp allows readonly access only for requests that traefik needs
+        "-allowGET=/(v1\..{1,2}/)?(version|containers/.*|events.*)"  # this regexp allows readonly access only for requests from traefik and glance 
         "-allowHEAD=/_ping"
         "-shutdowngracetime=5"
         "-watchdoginterval=600"
