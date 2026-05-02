@@ -17,6 +17,7 @@
     ../../modules/desktop/hyprsunset.nix
     ../../modules/protonmail-bridge.nix
     ../../modules/thunderbird.nix
+    ../../modules/yazi.nix
   ];
 
 }

@@ -4,7 +4,6 @@
   imports = [
     # Import base modules
     ../../home-manager/modules/packages-base.nix
-    ../../home-manager/modules/yazi.nix
     ../../home-manager/modules/git.nix
     ../../home-manager/modules/python.nix
 

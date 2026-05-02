@@ -47,5 +47,10 @@
     '';
   };
 
+  swapDevices = [ {
+    device = "/var/lib/swapfile";
+    size = 4096;
+  }];
+
   system.stateVersion = "25.11";
 }
