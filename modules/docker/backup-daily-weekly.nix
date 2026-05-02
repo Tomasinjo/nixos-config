@@ -15,7 +15,7 @@ let
     cmd_logger	${pkgs.util-linux}/bin/logger
     cmd_du	${pkgs.coreutils}/bin/du
 
-    rsync_short_args	-va
+    rsync_short_args	-a
     rsync_long_args	--stats	--delete
     loglevel	5
     backup	${vars.dir.scripts}/	scripts/
