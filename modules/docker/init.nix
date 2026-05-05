@@ -60,5 +60,6 @@
     ../../apps/kiwix/service.nix
     ../../apps/grafana/service.nix
     ../../apps/glance/service.nix
+    ../../apps/openshot/service.nix
   ];
 }
