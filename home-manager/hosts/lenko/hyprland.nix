@@ -28,7 +28,7 @@
       ];
 
       bind = [
-        ", PRINT, exec, hyprshot -m region -o ${vars.dir.home}/screenshots/"
+        ", PRINT, exec, hyprshot -z -m region -o ${vars.dir.home}/screenshots/"
         ", XF86MonBrightnessUp, exec, brightnessctl set 5%+"
         ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
         ", XF86AudioMicMute, exec, pamixer --default-source --toggle-mute"
