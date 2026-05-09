@@ -55,7 +55,7 @@ let
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "mongo:8.2";
+      image = "mongo:8.3";
 
       environment = {
         "MONGO_INITDB_ROOT_USERNAME" = "root";
