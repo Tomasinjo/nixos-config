@@ -64,7 +64,7 @@ let
   redisContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "docker.io/library/redis:7.4.8";
+      image = "docker.io/library/redis:7.4.9";
 
       environment = {};
 
