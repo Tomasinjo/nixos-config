@@ -45,6 +45,10 @@ let
         "${vars.dir.nixos_config}/apps/fafi/nocodb/db-data:/data/postgres"
       ];
 
+      ports = [
+        "${vars.net.zenki.common-vlan.ipv4Address}:4432:5432"
+      ];
+
       networks = [
         "fafi-net"
       ];
