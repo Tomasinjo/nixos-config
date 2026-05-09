@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "ghcr.io/qdrant/qdrant/qdrant:v1.17.1-unprivileged";
+      image = "ghcr.io/qdrant/qdrant/qdrant:v1.18.0-unprivileged";
 
       environment = {};
 
