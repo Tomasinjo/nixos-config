@@ -100,7 +100,7 @@ let
   # App-specific base configurations
   apps = {
     postgres = { dbUser, dbPass, dbName }: {
-      image = "postgres:16.13";
+      image = "postgres:16.14";
       environment = {
         POSTGRES_USER = dbUser;
         POSTGRES_PASSWORD = dbPass;
