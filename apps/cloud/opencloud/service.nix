@@ -71,7 +71,7 @@ let
   radicaleContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "opencloudeu/radicale:3.5.7";
+      image = "opencloudeu/radicale:v3.7.3";
 
       environment = {};
 
