@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "dpage/pgadmin4:9.14";
+      image = "dpage/pgadmin4:9.15";
 
       environment = {
         "PGADMIN_DEFAULT_EMAIL" = vars.email.tom;
