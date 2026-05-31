@@ -137,6 +137,7 @@ in
   config = mkIf cfg.enable {
     wayland.windowManager.hyprland = {
       enable = true;
+      #configType = "lua";
       settings = recursiveUpdate baseSettings cfg.settings // {
         # recursiveUpdate merges sets, but it overwrites lists.
         # So we manually concatenate the important lists:
