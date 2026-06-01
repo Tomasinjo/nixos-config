@@ -25,11 +25,8 @@ in
         splash = false;
         wallpaper = [
           {
-	    preload = (toString cfg.wallpaper);
-	    wallpaper = ", ${toString cfg.wallpaper}";
-	    # new config for future
-            #monitor = ""; # all monitors
-            #path = "${cfg.wallpaper}";
+            monitor = ""; # all monitors
+            path = "${cfg.wallpaper}";
           }
         ];
       };

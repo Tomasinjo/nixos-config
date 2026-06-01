@@ -4,117 +4,109 @@ with lib;
 
 let
   cfg = config.wayland.hyprland;
+  lua = lib.generators.mkLuaInline;
+
 
   baseSettings = {
-    monitor = [];
+    config = {
+      general = {
+        gaps_in = 5;
+        gaps_out = 5;
+        border_size = 2;
+        col.active_border = {
+          colors = ["rgba(33ccffee)" "rgba(00ff99ee)"]; 
+          angle = 90;
+        };
+        col.inactive_border = "rgba(595959aa)";
+        layout = "dwindle";
+      };
 
-    "$terminal" = "kitty";
-    "$fileManager" = "kitty yazi";
-    "$menu" = "rofi -show drun";
+      decoration = {
+        rounding = 10;
+        blur = { enabled = true; size = 3; passes = 1; };
+      };
 
-    general = {
-      gaps_in = 5;
-      gaps_out = 5;
-      border_size = 2;
-      "col.active_border" = "rgba(33ccffee) rgba(00ff99ee) 90deg";
-      "col.inactive_border" = "rgba(595959aa)";
-      layout = "dwindle";
+      input = {
+        kb_layout = "si";
+        follow_mouse = 1;
+        touchpad.natural_scroll = false;
+      };
     };
 
-    decoration = {
-      rounding = 10;
-      blur = { enabled = true; size = 3; passes = 1; };
-    };
-
-    input = {
-      kb_layout = "si";
-      follow_mouse = 1;
-      touchpad.natural_scroll = false;
-    };
-    "$mainMod" = "SUPER";
     bind = [
-      "$mainMod, L, exec, hyprlock"
-      "$mainMod,Q,exec,$terminal"
-      "$mainMod,C,killactive,"
-      "$mainMod,M,exec,command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit"
-      "$mainMod,E,exec,$fileManager"
-      "$mainMod,V,exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
-      "$mainMod,R,exec,$menu"
-      "$mainMod,P,pseudo,"
- #     "$mainMod,J,togglesplit,"
-      "$mainMod,left,movefocus,l"
-      "$mainMod,right,movefocus,r"
-      "$mainMod,up,movefocus,u"
-      "$mainMod,down,movefocus,d"
-      "$mainMod ALT,up,resizeactive,0 -60"
-      "$mainMod ALT,down,resizeactive,0 60"
-      "$mainMod ALT,left,resizeactive,-60 0"
-      "$mainMod ALT,right,resizeactive,60 0"
-      "$mainMod,1,workspace,1"
-      "$mainMod,2,workspace,2"
-      "$mainMod,3,workspace,3"
-      "$mainMod,4,workspace,4"
-      "$mainMod,5,workspace,5"
-      "$mainMod,6,workspace,6"
-      "$mainMod,7,workspace,7"
-      "$mainMod,8,workspace,8"
-      "$mainMod,9,workspace,9"
-      "$mainMod,0,workspace,10"
-      "$mainMod SHIFT,1,movetoworkspace,1"
-      "$mainMod SHIFT,2,movetoworkspace,2"
-      "$mainMod SHIFT,3,movetoworkspace,3"
-      "$mainMod SHIFT,4,movetoworkspace,4"
-      "$mainMod SHIFT,5,movetoworkspace,5"
-      "$mainMod SHIFT,6,movetoworkspace,6"
-      "$mainMod SHIFT,7,movetoworkspace,7"
-      "$mainMod SHIFT,8,movetoworkspace,8"
-      "$mainMod SHIFT,9,movetoworkspace,9"
-      "$mainMod SHIFT,0,movetoworkspace,10"
-      "$mainMod,S,togglespecialworkspace,magic"
-      "$mainMod SHIFT,S,movetoworkspace,special:magic"
-      "$mainMod,mouse_down,workspace,e+1"
-      "$mainMod,mouse_up,workspace,e-1"
-      "$mainMod,KP_End,workspace,1"
-      "$mainMod,KP_Down,workspace,2"
-      "$mainMod,KP_Next,workspace,3"
-      "$mainMod,KP_Left,workspace,4"
-      "$mainMod,KP_Begin,workspace,5"
-      "$mainMod,KP_Right,workspace,6"
-      "$mainMod,KP_Home,workspace,7"
-      "$mainMod,KP_Up,workspace,8"
-      "$mainMod,KP_Prior,workspace,9"
-      ",KP_End,movetoworkspace,1"
-      ",KP_Down,movetoworkspace,2"
-      ",KP_Next,movetoworkspace,3"
-      ",KP_Left,movetoworkspace,4"
-      ",KP_Begin,movetoworkspace,5"
-      ",KP_Right,movetoworkspace,6"
-      ",KP_Home,movetoworkspace,7"
-      ",KP_Up,movetoworkspace,8"
-      ",KP_Prior,movetoworkspace,9"
-      ",XF86Calculator, exec, rofi -show calc -modi calc -no-show-match -no-sort"
-    ];
-    
-    bindel = [ 
-      ",XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+" 
-      ",XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-    ];
-    bindl = [ 
-      ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-      ", XF86AudioPlay, exec, playerctl play-pause"
-      ", XF86AudioPrev, exec, playerctl previous"
-      ", XF86AudioNext, exec, playerctl next"    
-    ];
-    
-    bindm = [ "$mainMod,mouse:272,movewindow" ];
-  };
+      {_args = ["SUPER + L" (lua ''hl.dsp.exec_cmd("hyprlock")'')];}
+      {_args = ["SUPER + Q" (lua ''hl.dsp.exec_cmd("kitty")'')];}
+      {_args = ["SUPER + M" (lua ''hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit")'')];}
+      {_args = ["SUPER + E" (lua ''hl.dsp.exec_cmd("kitty yazi")'')];}
+      {_args = ["SUPER + V" (lua ''hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy")'')];}
+      {_args = ["SUPER + R" (lua ''hl.dsp.exec_cmd("rofi -show drun")'')];}
+      {_args = ["SUPER+C" (lua ''hl.dsp.window.close()'')];}
+      {_args = ["SUPER + left" (lua ''hl.dsp.focus { direction = "l" }'')];}
+      {_args = ["SUPER + right" (lua ''hl.dsp.focus { direction = "r" }'')];}
+      {_args = ["SUPER + up" (lua ''hl.dsp.focus { direction = "u" }'')];}
+      {_args = ["SUPER + down" (lua ''hl.dsp.focus { direction = "d" }'')];}
+      {_args = ["SUPER + SHIFT + 1" (lua ''hl.dsp.window.move({ workspace = "1" })'')];}
+      {_args = ["SUPER + SHIFT + 2" (lua ''hl.dsp.window.move({ workspace = 2 })'')];}
+      {_args = ["SUPER + SHIFT + 3" (lua ''hl.dsp.window.move({ workspace = 3 })'')];}
+      {_args = ["SUPER + SHIFT + 4" (lua ''hl.dsp.window.move({ workspace = 4 })'')];}
+      {_args = ["SUPER + SHIFT + 5" (lua ''hl.dsp.window.move({ workspace = 5 })'')];}
+      {_args = ["SUPER + SHIFT + 6" (lua ''hl.dsp.window.move({ workspace = 6 })'')];}
+      {_args = ["SUPER + SHIFT + 7" (lua ''hl.dsp.window.move({ workspace = 7 })'')];}
+      {_args = ["SUPER + SHIFT + 8" (lua ''hl.dsp.window.move({ workspace = 8 })'')];}
+      {_args = ["SUPER + SHIFT + 9" (lua ''hl.dsp.window.move({ workspace = 9 })'')];}
+      {_args = ["SUPER + ALT + up" (lua ''hl.dsp.window.resize({ x = 0, y = -60, relative = true })'')];}
+      {_args = ["SUPER + ALT + down" (lua ''hl.dsp.window.resize({ x = 0, y = 60, relative = true })'')];}
+      {_args = ["SUPER + ALT + left" (lua ''hl.dsp.window.resize({ x = -60, y = 0, relative = true })'')];}
+      {_args = ["SUPER + ALT + right" (lua ''hl.dsp.window.resize({ x = 60, y = 0, relative = true })'')];}
+      {_args = ["SUPER + S" (lua ''hl.dsp.workspace.toggle_special("magic")'')];}
+      {_args = ["SUPER + 1" (lua ''hl.dsp.focus { workspace = 1 }'')];}
+      {_args = ["SUPER + 2" (lua ''hl.dsp.focus { workspace = 2 }'')];}
+      {_args = ["SUPER + 3" (lua ''hl.dsp.focus { workspace = 3 }'')];}
+      {_args = ["SUPER + 4" (lua ''hl.dsp.focus { workspace = 4 }'')];}
+      {_args = ["SUPER + 5" (lua ''hl.dsp.focus { workspace = 5 }'')];}
+      {_args = ["SUPER + 6" (lua ''hl.dsp.focus { workspace = 6 }'')];}
+      {_args = ["SUPER + 7" (lua ''hl.dsp.focus { workspace = 7 }'')];}
+      {_args = ["SUPER + 8" (lua ''hl.dsp.focus { workspace = 8 }'')];}
+      {_args = ["SUPER + 9" (lua ''hl.dsp.focus { workspace = 9 }'')];}
+      {_args = ["KP_End" (lua ''hl.dsp.window.move({ workspace = 1 })'')];}
+      {_args = ["KP_Down" (lua ''hl.dsp.window.move({ workspace = 2 })'')];}
+      {_args = ["KP_Next" (lua ''hl.dsp.window.move({ workspace = 3 })'')];}
+      {_args = ["KP_Left" (lua ''hl.dsp.window.move({ workspace = 4 })'')];}
+      {_args = ["KP_Begin" (lua ''hl.dsp.window.move({ workspace = 5 })'')];}
+      {_args = ["KP_Right" (lua ''hl.dsp.window.move({ workspace = 6 })'')];}
+      {_args = ["KP_Home" (lua ''hl.dsp.window.move({ workspace = 7 })'')];}
+      {_args = ["KP_Up" (lua ''hl.dsp.window.move({ workspace = 8 })'')];}
+      {_args = ["KP_Prior" (lua ''hl.dsp.window.move({ workspace = 9 })'')];}
+      {_args = ["XF86Calculator" (lua ''hl.dsp.exec_cmd("rofi -show calc -modi calc -no-show-match -no-sort")'')];}
 
-  baseExecOnce = [
-    "wl-paste --type text --watch cliphist store"
-    "wl-paste --type image --watch cliphist store"
-  ] ++ optionals (attrByPath [ "wayland" "hyprpaper" "enable" ] false config) [ "hyprpaper" ] # conditional exec-once commands depending on loaded modules
-    ++ optionals (attrByPath [ "wayland" "hyprlock" "enable" ] false config) [ "hyprlock" ]
-    ++ optionals (attrByPath [ "wayland" "waybar" "enable" ] false config) [ "waybar" ];
+      {_args = ["XF86AudioRaiseVolume" (lua ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+")'') {locked = true; repeating = true;} ];}
+      {_args = ["XF86AudioLowerVolume" (lua ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")'') {locked = true; repeating = true;} ];}
+
+      {_args = ["XF86AudioMute" (lua ''hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")'') {locked = true;} ];}
+      {_args = ["XF86AudioPlay" (lua ''hl.dsp.exec_cmd("playerctl play-pause")'') {locked = true;} ];}
+      {_args = ["XF86AudioPrev" (lua ''hl.dsp.exec_cmd("playerctl previous")'') {locked = true;} ];}
+      {_args = ["XF86AudioNext" (lua ''hl.dsp.exec_cmd("playerctl next")'') {locked = true;} ];}
+
+      {_args = ["SUPER + mouse:272" (lua ''hl.dsp.window.drag()'')];}
+    ];
+
+    on = [
+      {
+        _args = [
+          "hyprland.start"
+          (lua ''
+            function()
+              hl.exec_cmd("wl-paste --type text --watch cliphist store")
+              hl.exec_cmd("wl-paste --type image --watch cliphist store")
+              ${optionalString (attrByPath [ "wayland" "hyprpaper" "enable" ] false config) ''hl.exec_cmd("hyprpaper")''}
+              ${optionalString (attrByPath [ "wayland" "hyprlock" "enable" ] false config) ''hl.exec_cmd("hyprlock")''}
+              ${optionalString (attrByPath [ "wayland" "waybar" "enable" ] false config) ''hl.exec_cmd("waybar")''}
+            end
+          '')
+        ];
+      }
+    ];
+  };
 
 in
 {
@@ -137,15 +129,14 @@ in
   config = mkIf cfg.enable {
     wayland.windowManager.hyprland = {
       enable = true;
-      #configType = "lua";
+      configType = "lua";
       settings = recursiveUpdate baseSettings cfg.settings // {
         # recursiveUpdate merges sets, but it overwrites lists.
         # So we manually concatenate the important lists:
-        exec-once = baseExecOnce ++ (cfg.settings.exec-once or []);
+        on = baseSettings.on ++ (cfg.settings.on or []);
         bind = (baseSettings.bind or []) ++ (cfg.settings.bind or []);
-        bindel = (baseSettings.bindel or []) ++ (cfg.settings.bindel or []);
-        windowrule = (baseSettings.windowrule or []) ++ (cfg.settings.windowrule or []);
-        workspace = (baseSettings.workspace or []) ++ (cfg.settings.workspace or []);
+        window_rule = (baseSettings.window_rule or []) ++ (cfg.settings.window_rule or []);
+        workspace_rule = (baseSettings.workspace_rule or []) ++ (cfg.settings.workspace_rule or []);
 	      monitor =  (baseSettings.monitor or []) ++ (cfg.settings.monitor or []);
 	      env =  (baseSettings.env or []) ++ (cfg.settings.env or []);
       };

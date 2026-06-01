@@ -27,14 +27,14 @@ in
   };
 
   wayland.windowManager.hyprland.settings = {
-    exec-once = [
+    exec_cmd = [
       "hyprctl setcursor catppuccin-mocha-dark-cursors 24"
     ];
     env = [
-      "HYPRCURSOR_THEME,${cursorName}"
-      "HYPRCURSOR_SIZE,24"
-      "XCURSOR_THEME,${cursorName}"
-      "XCURSOR_SIZE,24"
+      {_args = ["HYPRCURSOR_THEME" "${cursorName}"];}
+      {_args = ["HYPRCURSOR_SIZE" "24"];}
+      {_args = ["XCURSOR_THEME" "${cursorName}"];}
+      {_args = ["XCURSOR_SIZE" "24"];}
     ];
   };
 }
