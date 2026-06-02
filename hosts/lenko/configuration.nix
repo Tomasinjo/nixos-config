@@ -33,6 +33,13 @@
     nix-direnv 
   ];
 
+  # for platformio
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    zlib
+    glibc
+  ];
 
   boot.kernelModules = [ "drivetemp" ];  # for reading HDD temps
   users.users.${vars.username}.extraGroups = [ "dialout" ]; # for flashing microcontrolers

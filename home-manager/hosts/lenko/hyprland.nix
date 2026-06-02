@@ -1,6 +1,10 @@
-{ config, pkgs, vars, ... }:
+{ config, pkgs, vars, lib, ... }:
 
+let 
+  lua = lib.generators.mkLuaInline;
+in 
 {
+
   imports = [
     ./waybar.nix
     ../../modules/desktop/hypridle.nix
@@ -9,67 +13,134 @@
   wayland.hyprland = {
     settings = {
       monitor = [
-        "desc:LG Electronics LG ULTRAWIDE 0x01010101, 2560x1080@75, 0x0, 1"
-        "desc:LG Electronics LG ULTRAWIDE 0x00037CB8, 2560x1080@75, 2560x0, 1"
-        "eDP-1, 1920x1080@60, 0x1080, 1"
+        {
+          output = "desc:LG Electronics LG ULTRAWIDE 0x01010101";
+          mode = "2560x1080@75";
+          position = "0x0";
+          scale = 1;
+        }
+        {
+          output = "desc:LG Electronics LG ULTRAWIDE 0x00037CB8";
+          mode = "2560x1080@75";
+          position = "2560x0";
+          scale = 1;
+        }
+        {
+          output = "eDP-1";
+          mode = "1920x1080@60";
+          position = "0x1080";
+          scale = 1;
+        }
       ];
       
-      exec-once = [
-        "hypridle"
-        "[workspace 6 silent] Telegram"
-        "[workspace 6 silent] discord"
-        "[workspace 5 silent] kitty yazi"
-        "[workspace 5 silent] kitty"
-        "kdeconnect-indicator"
-        "[workspace 1 silent] firefox"
-        "dbus-update-activation-environment --all"
-        "gnome-keyring-daemon --start --components=secrets"
-        "opencloud"
+      on = [
+        {
+          _args = [
+            "hyprland.start"
+            (lua /* lua */ ''
+              function()
+                hl.exec_cmd("hypridle")
+                hl.exec_cmd("[workspace 6 silent] Telegram")
+                hl.exec_cmd("[workspace 6 silent] discord")
+                hl.exec_cmd("[workspace 5 silent] kitty yazi")
+                hl.exec_cmd("[workspace 5 silent] kitty")
+                hl.exec_cmd("kdeconnect-indicator")
+                hl.exec_cmd("[workspace 1 silent] firefox")
+                hl.exec_cmd("dbus-update-activation-environment --all")
+                hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
+                hl.exec_cmd("opencloud")
+              end
+            '')
+          ];
+        }
       ];
 
       bind = [
-        ", PRINT, exec, hyprshot -z -m region -o ${vars.dir.home}/screenshots/"
-        ", XF86MonBrightnessUp, exec, brightnessctl set 5%+"
-        ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
-        ", XF86AudioMicMute, exec, pamixer --default-source --toggle-mute"
-        "$mainMod, plus, fullscreen"
+        {_args = ["PRINT" (lua ''hl.dsp.exec_cmd("hyprshot -z -m region -o ${vars.dir.home}/screenshots/")'')];}
+        {_args = ["XF86MonBrightnessUp" (lua ''hl.dsp.exec_cmd("brightnessctl set 5%+")'')];}
+        {_args = ["XF86MonBrightnessDown" (lua ''hl.dsp.exec_cmd("brightnessctl set 5%-")'')];}
+        {_args = ["XF86AudioMicMute" (lua ''hl.dsp.exec_cmd("pamixer --default-source --toggle-mute")'')];}
+        {_args = ["SUPER + plus" (lua ''hl.dsp.window.fullscreen( { mode = fullscreen, action = toggle } )'')];}
       ];
 
-      workspace = [
-        "1, monitor:desc:LG Electronics LG ULTRAWIDE 0x01010101, default:true, persistent:true"
-        "2, monitor:desc:LG Electronics LG ULTRAWIDE 0x01010101, persistent:true"
-        "3, monitor:desc:LG Electronics LG ULTRAWIDE 0x01010101, persistent:true"
-        "4, monitor:desc:LG Electronics LG ULTRAWIDE 0x00037CB8, default:true, persistent:true"
-        "5, monitor:desc:LG Electronics LG ULTRAWIDE 0x00037CB8, persistent:true"
-        "6, monitor:desc:LG Electronics LG ULTRAWIDE 0x00037CB8, persistent:true"
-        "7, monitor:eDP-1, default:true, persistent:true"
-        "8, monitor:eDP-1, persistent:true"
-        "9, monitor:eDP-1, persistent:true"
+      workspace_rule = [
+        {
+          workspace = "1";
+          monitor = "desc:LG Electronics LG ULTRAWIDE 0x01010101";
+          default = true;
+          persistent = true;
+        }
+        {
+          workspace = "2";
+          monitor = "desc:LG Electronics LG ULTRAWIDE 0x01010101";
+          persistent = true;
+        }
+        {
+          workspace = "3";
+          monitor = "desc:LG Electronics LG ULTRAWIDE 0x01010101";
+          persistent = true;
+        }
+        {
+          workspace = "4";
+          monitor = "desc:LG Electronics LG ULTRAWIDE 0x00037CB8";
+          default = true;
+          persistent = true;
+        }
+        {
+          workspace = "5";
+          monitor = "desc:LG Electronics LG ULTRAWIDE 0x00037CB8";
+          persistent = true;
+        }
+        {
+          workspace = "6";
+          monitor = "desc:LG Electronics LG ULTRAWIDE 0x00037CB8";
+          persistent = true;
+        }
+        {
+          workspace = "7";
+          monitor = "eDP-1";
+          default = true;
+          persistent = true;
+        }
+        {
+          workspace = "8";
+          monitor = "eDP-1";
+          persistent = true;
+        }
+        {
+          workspace = "9";
+          monitor = "eDP-1";
+          persistent = true;
+        }
       ];
 
 
-      windowrulev2 = [
-	      "workspace 6, class:^discord$"
-	      "opacity 0.93, class:^(code)$"
-	      "opacity 0.87, class:^(discord)$"
-	      "opacity 0.87, class:^(org\.telegram\.desktop)$"
-	      "opacity 0.94 0.94 1.00, class:^(firefox)$"
-	      "opacity 0.87, class:^(Proton\.Mail)$"
-	      "opacity 0.80, class:^(kitty)$"
+      window_rule = [
+        {
+          match = { class = "code"; };
+          opacity = "0.93";
+        }
+        {
+          match = { class = "discord"; };
+          opacity = "0.87";
+        }
+        {
+          match = { class = "^org\.telegram\.desktop$"; };
+          opacity = "0.87";
+        }
+        {
+          match = { class = "firefox"; };
+          opacity = "0.94 0.94 1.00";
+        }
+        {
+          match = { class = "^Proton\.Mail$"; };
+          opacity = "0.87";
+        }
+        {
+          match = { class = "kitty"; };
+          opacity = "0.80";
+        }
       ];
-
-### NEWER VERSION, KEPT for future
-#      windowrule = [
-#        #"match:initial_class ^kitty$, match:initial_title ^kitty$, workspace 5"
-#        "workspace 6, match:class ^discord$"  # discord ignores exec-one workspace
-#        #"workspace 7, match:class ^org\.telegram\.desktop$"
-#        "match:class code, opacity 0.93"
-#        "match:class discord, opacity 0.87"
-#        "match:class ^org\.telegram\.desktop$, opacity 0.87"
-#        "match:class firefox, opacity 0.94 0.94 1.00"
-#        "match:class ^Proton\.Mail$, opacity 0.87"
-#        "match:class kitty, opacity 0.80"
-#      ];
       
       # overriding a base value instead of appending
       #general.gaps_in = 10; 

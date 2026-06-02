@@ -12,11 +12,18 @@
     settings = {
     # Zenki specific Hyprland settings
       monitor = [
-        "desc:LG Electronics LG ULTRAWIDE 0x01010101, 2560x1080@75, 0x0, 1"
+        {
+          output = "desc:LG Electronics LG ULTRAWIDE 0x01010101";
+          mode = "2560x1080@75";
+          position = "0x0";
+          scale = 1;
+        }
       ];
+
       env = [
-        "AQ_DRM_DEVICES,${config.xdg.configHome}/hypr/igpu" # prefer iGPU (00:02) over dGPU
+        {_args = ["AQ_DRM_DEVICES" "${config.xdg.configHome}/hypr/igpu"]; } # prefer iGPU (00:02) over dGPU
       ];
+      
     };
   };
 }
