@@ -29,7 +29,7 @@ in
   hardware.graphics.enable32Bit = true;
 
   # Add scripts to PATH
-  environment.systemPackages = [ gameStart gameEnd ];
+  environment.systemPackages = [ gameStart gameEnd pkgs.bottles ];
 
   # Configure GameMode to use these scripts
   programs.gamemode.enable = true;
