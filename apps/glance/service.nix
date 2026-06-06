@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "glanceapp/glance:v0.8.4";
+      image = "glanceapp/glance:v0.8.5";
 
       environment = {
         "GITHUB_TOKEN" = vars.apps.glance.app.github_token;
