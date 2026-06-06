@@ -8,24 +8,18 @@
 
     settings = {
       sunrise = {
-        calendar = "*-*-* 07:00:00";
-        requests = [
-          [ "temperature" "6500" ]
-        ];
+        time = "7:00";
+	temperature = 6500;
       };
 
-      sunset = {
-        calendar = "*-*-* 20:15:00";
-        requests = [
-          [ "temperature" "3500" ]
-        ];
+      sunset= {
+        time = "20:15";
+	temperature = 3500;
       };
 
       night = {
-        calendar = "*-*-* 23:00:00";
-        requests = [
-          [ "temperature" "2500" ]
-        ];
+        time = "20:15";
+	temperature = 2500;
       };
     };
   };
