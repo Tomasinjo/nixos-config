@@ -50,7 +50,7 @@
     ../../apps/cloud/onlyoffice/service.nix
     ../../apps/paperless/service.nix
     ../../apps/pgadmin/service.nix
-    ../../apps/searxng/service.nix
+#    ../../apps/searxng/service.nix   # deprecated for degoog
     ../../apps/teslamate/service.nix
     ../../apps/traefik/service.nix
     ../../apps/trilium/service.nix
@@ -61,5 +61,6 @@
     ../../apps/grafana/service.nix
     ../../apps/glance/service.nix
     ../../apps/openshot/service.nix
+    ../../apps/degoog/service.nix
   ];
 }

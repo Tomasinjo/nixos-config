@@ -3,32 +3,32 @@
 let
   oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
 
-  serviceName = "searxng-unused";
-  serviceHostname = "search-unused";
-  servicePort = 8080;
+  serviceName = "degoog";
+  serviceHostname = "search";
+  servicePort = 4444;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     {
-      image = "docker.io/searxng/searxng:2026.2.28-a2108ce2e";
+      image = "ghcr.io/degoog-org/degoog:0.21.0";
 
       environment = {
-        "SEARXNG_BASE_URL" = "https://${serviceHostname}.${vars.net.domain}/";
-        "SEARXNG_BIND_ADDRESS" = "0.0.0.0";
-        "SEARXNG_SECRET" = vars.apps.searxng.app.secret;
+        "DEGOOG_DISTRUST_PROXY" = "0";
+        "PUID" = toString vars.dockerUser.uid;
+        "PGID" = toString vars.dockerUser.gid;
       };
 
       volumes = [
-        "${vars.dir.nixos_config}/apps/searxng/app-data:/etc/searxng:rw"
+        "${vars.dir.nixos_config}/apps/degoog/app-data:/app/data"
       ];
 
       ports = [];
       networks = [];
+      
       labels = {};
       dependsOn = [];
-      
-      user = "";  # the image runs as non-root by default (uid 977)
+      user = "";
     }
   ];
 
