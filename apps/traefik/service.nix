@@ -48,7 +48,7 @@ let
 
   dockerproxyContainerConfig = oci-framework.mergeAll [
     {
-      image = "wollomatic/socket-proxy:1.12.1";
+      image = "wollomatic/socket-proxy:1.12.2";
 
       environment = {};
 
