@@ -24,7 +24,7 @@ let
         }
     )
     {
-      image = "teslamate/grafana:3.0.0";
+      image = "teslamate/grafana:3.1.0";
 
       environment = {
         "DATABASE_USER" = dbUser;
