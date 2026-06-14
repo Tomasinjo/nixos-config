@@ -24,7 +24,7 @@ let
         }
     )
     {
-      image = "teslamate/grafana:3.1.0";
+      image = "teslamate/grafana:4.0.0";
 
       environment = {
         "DATABASE_USER" = dbUser;
@@ -70,7 +70,7 @@ let
         }
     )
     {
-      image = "teslamate/teslamate:3.1.0";
+      image = "teslamate/teslamate:4.0.0";
 
       environment = {
         "ENCRYPTION_KEY" = vars.apps.teslamate.app.key;
