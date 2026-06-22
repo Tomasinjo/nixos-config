@@ -40,7 +40,7 @@ let
       {_args = ["SUPER + E" (lua ''hl.dsp.exec_cmd("kitty yazi")'')];}
       {_args = ["SUPER + V" (lua ''hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy")'')];}
       {_args = ["SUPER + R" (lua ''hl.dsp.exec_cmd("rofi -show drun")'')];}
-      {_args = ["SUPER+C" (lua ''hl.dsp.window.close()'')];}
+      {_args = ["SUPER + C" (lua ''hl.dsp.window.close()'')];}
       {_args = ["SUPER + left" (lua ''hl.dsp.focus { direction = "l" }'')];}
       {_args = ["SUPER + right" (lua ''hl.dsp.focus { direction = "r" }'')];}
       {_args = ["SUPER + up" (lua ''hl.dsp.focus { direction = "u" }'')];}
