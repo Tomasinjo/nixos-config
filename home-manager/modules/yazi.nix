@@ -51,8 +51,8 @@
           { run = ''okular "$@"''; orphan = true; desc = "Okular"; }
         ];
 
-        office = [
-          { run = ''onlyoffice-desktopeditors "$@"''; orphan = true; desc = "onlyoffice"; }
+        default_open = [
+          { run = ''xdg-open "$@"''; orphan = true; desc = "Open"; }
         ];
 
         firefox = [
@@ -62,13 +62,27 @@
 
       open = {
         prepend_rules = [
-	        { mime = "application/x-*"; use = [ "executable" ]; }
+          { mime = "application/x-*"; use = [ "executable" ]; }
           { mime = "image/*"; use = [ "imv" "gimp" ]; }
           { mime = "video/*"; use = [ "vlc" ]; }
           { mime = "application/json"; use = [ "edit" "VScode" ]; }
           { mime = "application/pdf"; use = [ "okular" ]; }
-          { mime = "text/csv"; use = [ "office" "edit" "VScode" ]; }
-          { url = "*.csv"; use = [ "office" "edit" "VScode" ]; }
+          { url = "*.doc"; use = [ "default_open" ]; }
+          { url = "*.docx"; use = [ "default_open" ]; }
+          { url = "*.xls"; use = [ "default_open" ]; }
+          { url = "*.xlsx"; use = [ "default_open" ]; }
+          { url = "*.ppt"; use = [ "default_open" ]; }
+          { url = "*.pptx"; use = [ "default_open" ]; }
+          { url = "*.odt"; use = [ "default_open" ]; }
+          { url = "*.ods"; use = [ "default_open" ]; }
+          { url = "*.odp"; use = [ "default_open" ]; }
+          { mime = "application/vnd.openxmlformats-officedocument.*"; use = [ "default_open" ]; }
+          { mime = "application/msword"; use = [ "default_open" ]; }
+          { mime = "application/vnd.ms-excel"; use = [ "default_open" ]; }
+          { mime = "application/vnd.ms-powerpoint"; use = [ "default_open" ]; }
+          { mime = "application/vnd.oasis.opendocument.*"; use = [ "default_open" ]; }
+          { mime = "text/csv"; use = [ "default_open" "edit" "VScode" ]; }
+          { url = "*.csv"; use = [ "default_open" "edit" "VScode" ]; }
           { url = "*.html"; use = [ "firefox" "edit" "VScode" ]; }
           { url = "*.htm"; use = [ "firefox" "edit" "VScode" ]; }
           { mime = "text/*"; use = [ "edit" "VScode" ]; }
