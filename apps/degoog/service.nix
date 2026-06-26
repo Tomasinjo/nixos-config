@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     {
-      image = "ghcr.io/degoog-org/degoog:0.21.0";
+      image = "ghcr.io/degoog-org/degoog:0.22.0";
 
       environment = {
         "DEGOOG_DISTRUST_PROXY" = "0";
