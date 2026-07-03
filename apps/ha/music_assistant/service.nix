@@ -19,7 +19,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     {
-      image = "ghcr.io/music-assistant/server:2.9.3";
+      image = "ghcr.io/music-assistant/server:2.9.5";
 
       environment = {
         "LOG_LEVEL" = "info"; # possible=(critical, error, warning, info, debug, verbose)

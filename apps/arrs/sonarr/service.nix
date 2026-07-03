@@ -11,7 +11,7 @@ let
     oci-framework.base.linuxserver
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "lscr.io/linuxserver/sonarr:4.0.17.2952-ls314";
+      image = "lscr.io/linuxserver/sonarr:4.0.19.2979-ls316";
 
       environment = {};
 
