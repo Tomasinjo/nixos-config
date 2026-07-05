@@ -30,15 +30,16 @@ let
         "OC_SHARING_PUBLIC_WRITEABLE_SHARE_MUST_HAVE_PASSWORD" = "false";
         "OC_PASSWORD_POLICY_DISABLED" = "true";
         "OC_DEFAULT_LANGUAGE" = "en";
-        # Onlyofice integration
-        "COLLABORA_DOMAIN" = "office.${vars.net.domain}";
-        "COLLABORATION_APP_NAME" = "OnlyOffice";
+        # Euro-office integration
+        "EURO_OFFICE_DOMAIN" = "office.${vars.net.domain}";
+        "COLLABORATION_APP_NAME" = "Euro-Office";
         "COLLABORATION_APP_PRODUCT" = "OnlyOffice";
         "COLLABORATION_APP_ADDR" = "https://office.${vars.net.domain}";
         "COLLABORATION_APP_INSECURE" = "false";
         "COLLABORATION_CS3API_DATAGATEWAY_INSECURE" = "false";
         "COLLABORATION_WOPI_SRC" = "http://${serviceName}-app:9300";
         "COLLABORATION_HTTP_ADDR" = "0.0.0.0:9300";
+	"COLLABORATION_APP_PROOF_DISABLE" = "true";
       };
 
       volumes = [

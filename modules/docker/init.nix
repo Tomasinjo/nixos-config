@@ -47,7 +47,8 @@
     ../../apps/llm/open-webui/service.nix
     ../../apps/llm/qdrant/service.nix
     ../../apps/cloud/opencloud/service.nix
-    ../../apps/cloud/onlyoffice/service.nix
+#    ../../apps/cloud/onlyoffice/service.nix  # deprecated for euro-office
+    ../../apps/cloud/euro-office/service.nix
     ../../apps/paperless/service.nix
     ../../apps/pgadmin/service.nix
 #    ../../apps/searxng/service.nix   # deprecated for degoog
