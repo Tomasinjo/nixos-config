@@ -26,6 +26,12 @@
         # Docker container logs
         docker_containers = {
           type = "docker_logs";
+          multiline = {
+            start_pattern = "^[^[:space:]]"; # New log starts with a non-space character (e.g., date/timestamp)
+            condition_pattern = "^[[:space:]]"; # Continue merging if line starts with space/tab (e.g., stack trace lines)
+            mode = "continue_through";
+            timeout_ms = 1000; # Max time to wait for next line before flushing
+          };
         };
 
         # Tailing specific local files
