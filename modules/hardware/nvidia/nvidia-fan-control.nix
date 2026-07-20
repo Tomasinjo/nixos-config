@@ -7,13 +7,13 @@ let
   ##########################
   nvidia-fan-control = pkgs.buildGoModule rec {
     pname = "nvidia-fan-control";
-    version = "2026-02-06"; # date of commit
+    version = "2026-07-12"; # date of commit
 
     src = pkgs.fetchFromGitHub {
-      owner = "ZanMax";
+      owner = "Tomasinjo";
       repo = "nvidia-fan-control";
-      rev = "refs/pull/12/head"; # my pull request, change when merged.
-      sha256 = "sha256-OeqbRvagxpWff/Ff3vWGayCcmJh6wKPh22TyP+lENQc="; 
+      rev = "main";
+      sha256 = "sha256-biUy4EF8GxYMWAslyfURq48zSMbR7AUuY577GJIQq8A="; 
     };
 
     vendorHash = "sha256-2558crqhdYW9PY5Nd2hskjBTiotR9nj0ZjAHyM/l/vo="; 
@@ -33,9 +33,9 @@ let
     time_to_update = 5;
     temperature_ranges = [
       { min_temperature = 0;  max_temperature = 35;  fan_speed = 0;   hysteresis = 3; }
-      { min_temperature = 35; max_temperature = 50;  fan_speed = 30;  hysteresis = 3; }
-      { min_temperature = 50; max_temperature = 65;  fan_speed = 75;  hysteresis = 3; }
-      { min_temperature = 65; max_temperature = 400; fan_speed = 100; hysteresis = 3; }
+      { min_temperature = 35; max_temperature = 45;  fan_speed = 30;  hysteresis = 3; }
+      { min_temperature = 45; max_temperature = 65;  fan_speed = 85;  hysteresis = 0; }
+      { min_temperature = 65; max_temperature = 400; fan_speed = 100; hysteresis = 0; }
     ];
   };
 

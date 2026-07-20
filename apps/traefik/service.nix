@@ -10,7 +10,7 @@ let
   appContainerConfig = (oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "traefik:v3.7.7";
+      image = "traefik:v3.7.8";
 
       environment = {
         CF_DNS_API_TOKEN = vars.apps.traefik.app.cloudflare_api_key;
@@ -48,7 +48,7 @@ let
 
   dockerproxyContainerConfig = oci-framework.mergeAll [
     {
-      image = "wollomatic/socket-proxy:1.12.2";
+      image = "wollomatic/socket-proxy:1.12.3";
 
       environment = {};
 
