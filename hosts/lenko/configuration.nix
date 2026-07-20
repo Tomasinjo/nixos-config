@@ -30,7 +30,8 @@
     dnsmasq
     wireguard-tools
     direnv # for python projects so vscode recognizes nix shell
-    nix-direnv 
+    nix-direnv
+    moonlight-qt
   ];
 
   # for platformio
