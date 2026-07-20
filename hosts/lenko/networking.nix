@@ -13,4 +13,9 @@
     allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];  # kde connect
   };
   users.users.${vars.username}.extraGroups = [ "networkmanager" ];
+
+  networking.extraHosts = 
+  ''
+    193.77.156.2 git.belca.net
+  '';
 }
