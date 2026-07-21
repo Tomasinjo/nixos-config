@@ -8,7 +8,7 @@
     privateKey = vars.wg.protonvpn.privatekey;
     peers = [{
       publicKey = "vH2i8RY1qc66XfqwrixBpvH4K9GYJatkugJj0GHgoUQ=";
-      allowedIPs = [ "0.0.0.0/0" "::/0" ];
+      allowedIPs = [ ];
       endpoint = "217.23.3.76:51820";
       persistentKeepalive = 25;
     }];
@@ -28,7 +28,13 @@
         # Wait for WireGuard handshake to complete
         timeout=30
         elapsed=0
-        while ! ${pkgs.wireguard-tools}/bin/wg show protonvpn latest-handshakes | grep -q "[1-9]"; do
+        while true; do
+          # Get the handshake timestamp (second field, should be > 0)
+          handshake=$(${pkgs.wireguard-tools}/bin/wg show protonvpn latest-handshakes | awk '{print $2}')
+          if [ "$handshake" -gt 0 ] 2>/dev/null; then
+            echo "WireGuard handshake completed at $handshake"
+            break
+          fi
           if [ $elapsed -ge $timeout ]; then
             echo "Timeout waiting for WireGuard handshake"
             exit 1
