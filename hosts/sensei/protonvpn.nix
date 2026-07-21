@@ -14,11 +14,15 @@
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       Type = "simple";
-      ExecStartPre = "${pkgs.proton-vpn-cli}/bin/protonvpn-cli c --fastest -p udp";
-      ExecStart = "${pkgs.proton-vpn-cli}/bin/protonvpn-cli status";
-      ExecStop = "${pkgs.proton-vpn-cli}/bin/protonvpn-cli d";
+      ExecStart = "${pkgs.proton-vpn-cli}/bin/protonvpn connect";
+      ExecStop = "${pkgs.proton-vpn-cli}/bin/protonvpn disconnect";
       Restart = "on-failure";
       RestartSec = "10s";
+      # Run as root since VPN requires privileges
+      User = "root";
+      Group = "root";
+      # Keep the service running
+      RemainAfterExit = true;
     };
   };
 
