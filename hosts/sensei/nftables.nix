@@ -134,7 +134,6 @@ in
 
           # Outbound NAT for VPN (VLAN 69 traffic)
           ip saddr ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} oifname "protonvpn" masquerade
-          ip6 saddr ${vars.net.sensei.lab-vlan.ipv6.subnet}/${vars.net.sensei.lab-vlan.ipv6.mask} oifname "protonvpn" masquerade
         }
       }
       table inet mss-clamp {
