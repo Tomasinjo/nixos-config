@@ -6,7 +6,7 @@
     proton-vpn-cli
     pass
     python314Packages.keyring
-    python314Packages.keyring.keyrings.alt
+    python314Packages.keyrings-alt
   ];
 
   # Use file-based keyring for headless operation
