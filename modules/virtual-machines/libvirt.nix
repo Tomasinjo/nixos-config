@@ -4,7 +4,7 @@
   virtualisation = {
     libvirtd = {
       enable = true;
-      allowedBridges = [ "virbr0" ];
+      allowedBridges = [ "virbr0" "virbr69" ];
       qemu = {
         package = pkgs.qemu_kvm;
         runAsRoot = true;
@@ -65,5 +65,35 @@
       iptables -F RESTRICTED_VM 2>/dev/null || true
       iptables -X RESTRICTED_VM 2>/dev/null || true
     '';
+  };
+
+  # Define libvirt network for lab VLAN 69 (transparent bridge mode)
+  environment.etc."libvirt/qemu/networks/virbr69.xml".text = ''
+    <network>
+      <name>virbr69</name>
+      <forward mode="bridge"/>
+      <bridge name="virbr69" stp="on" delay="0"/>
+    </network>
+  '';
+
+  # Create the bridge interface for VLAN 69 (transparent, no IP)
+  systemd.network.netdevs."virbr69" = {
+    netdevConfig = {
+      Name = "virbr69";
+      Kind = "bridge";
+    };
+  };
+
+  systemd.network.networks."virbr69" = {
+    matchConfig.Name = "virbr69";
+    networkConfig = {
+      IPForward = "yes";
+    };
+  };
+
+  # Connect VLAN 69 interface to the bridge
+  systemd.network.networks."eth10g.69-bridge" = {
+    matchConfig.Name = "eth10g.69";
+    networkConfig.Bridge = "virbr69";
   };
 }

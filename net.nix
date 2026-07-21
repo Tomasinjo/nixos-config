@@ -92,6 +92,21 @@
           mask = "64";
         };
       };
+      lab-vlan = {
+        id = 69;
+        name = "vlan69";
+        ipv4 = {
+          subnet = "192.168.69.0";
+          gateway = "192.168.69.1";
+          mask = "24";
+          dhcp_pool = "192.168.69.100 - 192.168.69.200";
+        };
+        ipv6 = {
+          subnet = "${secrets.net.ipv6}69::";
+          gateway = "${secrets.net.ipv6}69::1";
+          mask = "64";
+        };
+      };
 
       wireguard = {
         ipv4 = {
@@ -133,6 +148,11 @@
             ipv6Address = "${secrets.net.ipv6}10::25";
           };
         };
+      };
+      lab-vlan = {
+        interface_name = "eth10g.69";
+        ipv4Address = "192.168.69.15";
+        ipv6Address = "${secrets.net.ipv6}69::15";
       };
     };
 
