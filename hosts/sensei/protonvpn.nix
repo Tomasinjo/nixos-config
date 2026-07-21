@@ -4,11 +4,13 @@
   networking.wg-quick.interfaces.protonvpn = {
     table = "off";
     address = [ "10.2.0.2/32" "2a07:b944::2:2/128" ];
-    #dns = [ "10.2.0.1" "2a07:b944::2:1" ];
+    dns = [ "10.2.0.1" "2a07:b944::2:1" ];
     privateKey = vars.wg.protonvpn.privatekey;
     peers = [{
       publicKey = "vH2i8RY1qc66XfqwrixBpvH4K9GYJatkugJj0GHgoUQ=";
-      allowedIPs = [ "0.0.0.0/0" "::/0" ];
+      # Only allow VPN endpoint and gateway IPs through the interface
+      # This prevents wg-quick from removing the default route via ppp0
+      allowedIPs = [ "217.23.3.76/32" "10.2.0.1/32" "2a07:b944::2:1/128" ];
       endpoint = "217.23.3.76:51820";
       persistentKeepalive = 25;
     }];
