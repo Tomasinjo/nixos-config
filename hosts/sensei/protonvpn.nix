@@ -32,13 +32,6 @@
     200 vpn
   '';
 
-  # Setup routing rules via systemd-networkd
-  systemd.network.config = {
-    route-tables."vpn" = {
-      tableId = 200;
-    };
-  };
-
   # Add network configuration for VPN routing
   systemd.network.networks."vpn-routing" = {
     matchConfig.Name = "vlan69";
@@ -52,4 +45,6 @@
 
   # Note: The actual VPN interface name (e.g., proton0) will be determined by Proton VPN
   # Additional routing configuration may be needed after VPN connection is established
+  # You may need to manually add routes like:
+  # ip route add default via <vpn_gateway_ip> dev <vpn_interface> table 200
 }
