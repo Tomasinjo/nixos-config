@@ -1,5 +1,8 @@
 { config, lib, pkgs, vars, ... }:
 
+let
+  internal_ipv4 = [ "10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16" ];
+in
 {
   networking.wg-quick.interfaces.protonvpn = {
     table = "off";
@@ -50,11 +53,19 @@
         ${pkgs.iproute2}/bin/ip route add default dev protonvpn table vpn
         
         # Policy rules: traffic from VLAN 69 uses VPN table
-        ${pkgs.iproute2}/bin/ip rule add from ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} lookup vpn
+        # First, exempt internal networks from VPN routing (higher priority = lower number)
+        ${lib.concatMapStrings (net: ''
+        ${pkgs.iproute2}/bin/ip rule add from ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} to ${net} lookup main prio 100
+        '') internal_ipv4}
+        # Then, send all other traffic from VLAN 69 to VPN
+        ${pkgs.iproute2}/bin/ip rule add from ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} lookup vpn prio 200
       '';
       ExecStop = pkgs.writeShellScript "protonvpn-routes-stop" ''
         # Remove policy rules
-        ${pkgs.iproute2}/bin/ip rule del from ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} lookup vpn 2>/dev/null || true
+        ${pkgs.iproute2}/bin/ip rule del from ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} lookup vpn prio 200 2>/dev/null || true
+        ${lib.concatMapStrings (net: ''
+        ${pkgs.iproute2}/bin/ip rule del from ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} to ${net} lookup main prio 100 2>/dev/null || true
+        '') internal_ipv4}
         
         # Flush VPN routing table
         ${pkgs.iproute2}/bin/ip route flush table vpn 2>/dev/null || true

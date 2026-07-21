@@ -54,7 +54,7 @@
     ];
   };
 
-  # Configure VLAN 69 Interface (Lab)
+  # Configure VLAN 69 Interface (Lab) - Bridge port for virbr69
   systemd.network.netdevs."10-${vars.net.sensei.lab-vlan.name}" = {
     netdevConfig = {
       Name = vars.net.zenki.lab-vlan.interface_name;
@@ -63,19 +63,10 @@
     vlanConfig.Id = vars.net.sensei.lab-vlan.id;
   };
 
-  # IP Configuration for VLAN 69 (Lab)
+  # Bridge port configuration for VLAN 69 (no IP - handled by external DHCP on virbr69)
   systemd.network.networks."20-${vars.net.sensei.lab-vlan.name}" = {
     matchConfig.Name = vars.net.zenki.lab-vlan.interface_name;
-    address = [
-      "${vars.net.zenki.lab-vlan.ipv4Address}/${vars.net.sensei.lab-vlan.ipv4.mask}"
-    ];
-    routes = [
-      { Gateway = vars.net.sensei.lab-vlan.ipv4.gateway; }
-    ];
-    # DNS settings
-    networkConfig.DNS = [
-      vars.net.sensei.ipv4DNS
-    ];
+    networkConfig.Bridge = "virbr69";
   };
 
   # Firewall

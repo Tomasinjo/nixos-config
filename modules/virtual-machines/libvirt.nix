@@ -68,11 +68,16 @@
   };
 
   # Define libvirt network for lab VLAN 69 (transparent bridge mode)
+  # IMPORTANT, need to initiate it using:
+  # sudo virsh net-define /etc/libvirt/qemu/networks/virbr69.xml
+  # sudo virsh net-start virbr69
+  # sudo virsh net-autostart virbr69
+
   environment.etc."libvirt/qemu/networks/virbr69.xml".text = ''
     <network>
       <name>virbr69</name>
       <forward mode="bridge"/>
-      <bridge name="virbr69" stp="on" delay="0"/>
+      <bridge name="virbr69"/>
     </network>
   '';
 
@@ -86,9 +91,7 @@
 
   systemd.network.networks."virbr69" = {
     matchConfig.Name = "virbr69";
-    networkConfig = {
-      IPForward = "yes";
-    };
+    linkConfig.RequiredForOnline = "no";
   };
 
   # Connect VLAN 69 interface to the bridge
