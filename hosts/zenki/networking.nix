@@ -68,19 +68,13 @@
     matchConfig.Name = vars.net.zenki.lab-vlan.interface_name;
     address = [
       "${vars.net.zenki.lab-vlan.ipv4Address}/${vars.net.sensei.lab-vlan.ipv4.mask}"
-      "${vars.net.zenki.lab-vlan.ipv6Address}/${vars.net.sensei.lab-vlan.ipv6.mask}"
     ];
     routes = [
       { Gateway = vars.net.sensei.lab-vlan.ipv4.gateway; }
-      { Gateway = vars.net.sensei.lab-vlan.ipv6.gateway; }
     ];
-    networkConfig = {
-      IPv6AcceptRA = true;
-    };
     # DNS settings
     networkConfig.DNS = [
       vars.net.sensei.ipv4DNS
-      vars.net.sensei.ipv6DNS
     ];
   };
 

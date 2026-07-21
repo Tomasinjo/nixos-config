@@ -192,21 +192,8 @@
         networkConfig = {
           Address = [
             "${vars.net.sensei.lab-vlan.ipv4.gateway}/${vars.net.sensei.lab-vlan.ipv4.mask}"
-            "${vars.net.sensei.lab-vlan.ipv6.gateway}/${vars.net.sensei.lab-vlan.ipv6.mask}"
           ];
-          IPv6SendRA = "yes";
         };
-        ipv6SendRAConfig = {
-          Managed = false;
-          OtherInformation = false;
-          EmitDNS = true;
-          DNS = "2606:4700:4700::1111";
-        };
-        ipv6Prefixes = [
-          {
-            Prefix = "${vars.net.sensei.lab-vlan.ipv6.subnet}/${vars.net.sensei.lab-vlan.ipv6.mask}";
-          }
-        ];
       };
 
       # loopback interface for DNS
