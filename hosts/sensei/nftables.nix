@@ -108,6 +108,8 @@ in
         chain prerouting {
           type nat hook prerouting priority dstnat; policy accept;
 
+          ip daddr 192.168.50.80 dnat to 193.77.156.2
+
           # Port forwarding
           iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", wg0 } ip daddr ${vars.net.sensei.ipv4_public} tcp dport 443 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:443
           iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", "wg0"} ip daddr ${vars.net.sensei.ipv4_public} tcp dport 80 dnat to ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}:80
@@ -117,7 +119,7 @@ in
 
         chain postrouting {
           type nat hook postrouting priority srcnat; policy accept;
-
+          
           # Hairpin NAT for Traefik
           ip saddr ${vars.net.sensei.common-vlan.ipv4.subnet}/${vars.net.sensei.common-vlan.ipv4.mask} ip daddr ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address} tcp dport { 80, 443 } snat to ${vars.net.sensei.common-vlan.ipv4.gateway}
           
