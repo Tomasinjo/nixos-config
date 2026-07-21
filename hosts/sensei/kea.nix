@@ -9,6 +9,7 @@
           vars.net.sensei.common-vlan.name
           vars.net.sensei.guest-vlan.name
           vars.net.sensei.iot-vlan.name
+          vars.net.sensei.lab-vlan.name
         ];
         dhcp-socket-type = "raw";
       };
@@ -57,6 +58,15 @@
             ip-address = m.ip;
             hostname = m.hostname;
           }) (builtins.filter (m: m ? mac) (builtins.attrValues vars.net.sensei.iot-vlan.members));
+        }
+        {
+          subnet = "${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask}";
+          id = vars.net.sensei.lab-vlan.id;
+          pools = [ { pool = vars.net.sensei.lab-vlan.ipv4.dhcp_pool; } ];
+          option-data = [
+            { name = "routers"; data = vars.net.sensei.lab-vlan.ipv4.gateway; }
+            { name = "domain-name-servers"; data = "1.1.1.1"; }
+          ];
         }
       ];
     };

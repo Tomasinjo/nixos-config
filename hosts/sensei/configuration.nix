@@ -7,6 +7,7 @@
     ./nftables.nix
     ./unbound.nix
     ./wireguard.nix
+    ./protonvpn.nix
     
     ../../modules/common.nix
     ../../modules/shell.nix

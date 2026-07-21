@@ -17,8 +17,11 @@
     # Ensure link is up
     linkConfig.RequiredForOnline = "no";
     networkConfig.LinkLocalAddressing = "no";
-    # Attach VLAN
-    vlan = [ vars.net.zenki.common-vlan.interface_name ];
+    # Attach VLANs
+    vlan = [
+      vars.net.zenki.common-vlan.interface_name
+      vars.net.zenki.lab-vlan.interface_name
+    ];
   };
 
   # Configure VLAN 10 Interface
@@ -48,6 +51,36 @@
     networkConfig.DNS = [ 
       vars.net.sensei.ipv4DNS 
 			vars.net.sensei.ipv6DNS 
+    ];
+  };
+
+  # Configure VLAN 69 Interface (Lab)
+  systemd.network.netdevs."10-${vars.net.sensei.lab-vlan.name}" = {
+    netdevConfig = {
+      Name = vars.net.zenki.lab-vlan.interface_name;
+      Kind = "vlan";
+    };
+    vlanConfig.Id = vars.net.sensei.lab-vlan.id;
+  };
+
+  # IP Configuration for VLAN 69 (Lab)
+  systemd.network.networks."20-${vars.net.sensei.lab-vlan.name}" = {
+    matchConfig.Name = vars.net.zenki.lab-vlan.interface_name;
+    address = [
+      "${vars.net.zenki.lab-vlan.ipv4Address}/${vars.net.sensei.lab-vlan.ipv4.mask}"
+      "${vars.net.zenki.lab-vlan.ipv6Address}/${vars.net.sensei.lab-vlan.ipv6.mask}"
+    ];
+    routes = [
+      { Gateway = vars.net.sensei.lab-vlan.ipv4.gateway; }
+      { Gateway = vars.net.sensei.lab-vlan.ipv6.gateway; }
+    ];
+    networkConfig = {
+      IPv6AcceptRA = true;
+    };
+    # DNS settings
+    networkConfig.DNS = [
+      vars.net.sensei.ipv4DNS
+      vars.net.sensei.ipv6DNS
     ];
   };
 

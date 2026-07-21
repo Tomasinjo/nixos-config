@@ -54,7 +54,10 @@ in
           # opt4 (IoT) rules
           iifname "${vars.net.sensei.iot-vlan.name}" udp dport 67 accept  # DHCPv4
 
-          # opt5 (lo-dns)
+          # opt5 (Lab) rules
+          iifname "${vars.net.sensei.lab-vlan.name}" udp dport 67 accept  # DHCPv4
+
+          # opt6 (lo-dns)
           ip daddr ${vars.net.sensei.ipv4DNS} udp dport { 53, 123 } accept
           ip daddr ${vars.net.sensei.ipv4DNS} tcp dport 53 accept
           ip6 daddr ${vars.net.sensei.ipv6DNS} udp dport { 53, 123 } accept
@@ -91,6 +94,9 @@ in
           ${if vlan30_allow_out_ips != "" then "iifname \"${vars.net.sensei.iot-vlan.name}\" ip saddr { ${vlan30_allow_out_ips} } ip daddr != { ${aliases.internal_ipv4} } accept" else ""}
           iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${vars.net.zenki.common-vlan.ipv4Address} tcp dport 1883 accept
           iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${vars.net.zenki.common-vlan.ipv4Address} accept
+
+          # Lab (VLAN 69) - All traffic allowed (will be routed through VPN)
+          iifname "${vars.net.sensei.lab-vlan.name}" accept
           
           # zg.kopalnica esp32 for sending weight data from scale
 	  iifname "${vars.net.sensei.iot-vlan.name}" ip saddr 192.168.30.71 ip daddr == ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address} tcp dport 443 accept
@@ -131,12 +137,13 @@ in
           chain forward {
               type filter hook forward priority filter; policy accept;
               tcp flags syn tcp option maxseg size set 1340 oifname "ppp*"
-              tcp flags syn tcp option maxseg size set 1340 iifname { 
-		              "bond0",
-		              "${vars.net.sensei.common-vlan.name}",
-		              "${vars.net.sensei.guest-vlan.name}",
-		              "${vars.net.sensei.iot-vlan.name}"
-	            }
+              tcp flags syn tcp option maxseg size set 1340 iifname {
+                "bond0",
+                "${vars.net.sensei.common-vlan.name}",
+                "${vars.net.sensei.guest-vlan.name}",
+                "${vars.net.sensei.iot-vlan.name}",
+                "${vars.net.sensei.lab-vlan.name}"
+              }
           }
       }
 
