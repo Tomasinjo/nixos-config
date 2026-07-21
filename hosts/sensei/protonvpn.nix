@@ -30,7 +30,7 @@
         elapsed=0
         while true; do
           # Get the handshake timestamp (second field, should be > 0)
-          handshake=$(${pkgs.wireguard-tools}/bin/wg show protonvpn latest-handshakes | awk '{print $2}')
+          handshake=$(${pkgs.wireguard-tools}/bin/wg show protonvpn latest-handshakes | ${pkgs.gawk}/bin/awk '{print $2}')
           if [ "$handshake" -gt 0 ] 2>/dev/null; then
             echo "WireGuard handshake completed at $handshake"
             break
