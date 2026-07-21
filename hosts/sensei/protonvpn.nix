@@ -5,8 +5,8 @@
   environment.systemPackages = with pkgs; [
     proton-vpn-cli
     pass
-    python3Packages.keyring
-    python3Packages.keyrings.alt
+    python314Packages.keyring
+    python314Packages.keyring.keyrings.alt
   ];
 
   # Use file-based keyring for headless operation
