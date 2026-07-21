@@ -1,9 +1,22 @@
 { config, lib, pkgs, vars, ... }:
 
 {
-  # Install Proton VPN CLI
+  # Install Proton VPN CLI and keyring utilities
   environment.systemPackages = with pkgs; [
     proton-vpn-cli
+    pass
+    python3Packages.keyring
+    python3Packages.keyrings.alt
+  ];
+
+  # Use file-based keyring for headless operation
+  environment.sessionVariables = {
+    PYTHON_KEYRING_BACKEND = "keyrings.alt.file.PlaintextKeyring";
+  };
+
+  # Create directory for plaintext keyring (for headless operation)
+  systemd.tmpfiles.rules = [
+    "d /root/.local/share/python_keyring 0700 root root -"
   ];
 
   # Create systemd service for Proton VPN connection
