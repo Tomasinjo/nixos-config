@@ -129,8 +129,12 @@ in
           
           ip saddr ${vars.net.sensei.wireguard.ipv4.subnet}/${vars.net.sensei.wireguard.ipv4.mask} ip daddr ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address} tcp dport { 80, 443 } snat to ${vars.net.sensei.wireguard.ipv4.gateway}
           
-	  # Outbound NAT (Masquerade on WAN)
+   # Outbound NAT (Masquerade on WAN)
           oifname "ppp0" masquerade
+
+          # Outbound NAT for VPN (VLAN 69 traffic)
+          ip saddr ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} oifname "protonvpn" masquerade
+          ip6 saddr ${vars.net.sensei.lab-vlan.ipv6.subnet}/${vars.net.sensei.lab-vlan.ipv6.mask} oifname "protonvpn" masquerade
         }
       }
       table inet mss-clamp {

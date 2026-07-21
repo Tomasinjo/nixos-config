@@ -1,67 +1,57 @@
 { config, lib, pkgs, vars, ... }:
 
 {
-  # Install Proton VPN CLI and keyring utilities
-  environment.systemPackages = with pkgs; [
-    proton-vpn-cli
-    pass
-    python314Packages.keyring
-    python314Packages.keyrings-alt
-  ];
-
-  # Use file-based keyring for headless operation
-  environment.sessionVariables = {
-    PYTHON_KEYRING_BACKEND = "keyrings.alt.file.PlaintextKeyring";
+  networking.wg-quick.interfaces.protonvpn = {
+    address = [ "10.2.0.2/32" "2a07:b944::2:2/128" ];
+    dns = [ "10.2.0.1" "2a07:b944::2:1" ];
+    privateKey = vars.wg.protonvpn.privatekey;
+    peers = [{
+      publicKey = "vH2i8RY1qc66XfqwrixBpvH4K9GYJatkugJj0GHgoUQ=";
+      allowedIPs = [ "0.0.0.0/0" "::/0" ];
+      endpoint = "217.23.3.76:51820";
+      persistentKeepalive = 25;
+    }];
+    autostart = true;
   };
 
-  # Create directory for plaintext keyring (for headless operation)
-  systemd.tmpfiles.rules = [
-    "d /root/.local/share/python_keyring 0700 root root -"
-  ];
-
-  # Create systemd service for Proton VPN connection
-  systemd.services.protonvpn-lab = {
-    description = "Proton VPN for Lab VLAN (69)";
-    after = [ "network-online.target" "systemd-networkd-wait-online.service" ];
-    wants = [ "network-online.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.proton-vpn-cli}/bin/protonvpn connect";
-      ExecStop = "${pkgs.proton-vpn-cli}/bin/protonvpn disconnect";
-      Restart = "on-failure";
-      RestartSec = "10s";
-      # Run as root since VPN requires privileges
-      User = "root";
-      Group = "root";
-      # Keep the service running
-      RemainAfterExit = true;
-    };
-  };
-
-  # Configure policy routing for VLAN 69 traffic through Proton VPN
-  boot.kernel.sysctl = {
-    "net.ipv4.conf.vlan69.rp_filter" = 2;
-  };
-
-  # Create custom routing table for VPN
-  environment.etc."iproute2/rt_tables".text = ''
-    200 vpn
+  # Policy routing to route VLAN 69 through VPN
+  networking.localCommands = ''
+    # Create custom routing table for VPN
+    echo "200 vpn" >> /etc/iproute2/rt_tables 2>/dev/null || true
+    
+    # Route all traffic from VLAN 69 through VPN
+    ip route add default via 10.2.0.1 dev protonvpn table vpn
+    ip -6 route add default via 2a07:b944::2:1 dev protonvpn table vpn
+    
+    # Policy rules: traffic from VLAN 69 uses VPN table
+    ip rule add from ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} lookup vpn
+    ip -6 rule add from ${vars.net.sensei.lab-vlan.ipv6.subnet}/${vars.net.sensei.lab-vlan.ipv6.mask} lookup vpn
   '';
 
-  # Add network configuration for VPN routing
-  systemd.network.networks."vpn-routing" = {
-    matchConfig.Name = "vlan69";
-    routingPolicyRules = [
-      {
-        From = "${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask}";
-        Table = 200;
-      }
-    ];
+  # Ensure commands run after network is up
+  systemd.services.wireguard-protonvpn-policy-routing = {
+    description = "Set up policy routing for VPN";
+    after = [ "network.target" "wg-quick-protonvpn.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      # Wait for interface to be ready
+      while ! ip link show protonvpn >/dev/null 2>&1; do sleep 1; done
+      
+      # Create custom routing table for VPN
+      grep -q "200 vpn" /etc/iproute2/rt_tables || echo "200 vpn" >> /etc/iproute2/rt_tables
+      
+      # Route all traffic from VLAN 69 through VPN
+      ip route flush table vpn 2>/dev/null || true
+      ip route add default via 10.2.0.1 dev protonvpn table vpn
+      ip -6 route flush table vpn 2>/dev/null || true
+      ip -6 route add default via 2a07:b944::2:1 dev protonvpn table vpn
+      
+      # Policy rules: traffic from VLAN 69 uses VPN table
+      ip rule del from ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} lookup vpn 2>/dev/null || true
+      ip rule add from ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} lookup vpn
+      ip -6 rule del from ${vars.net.sensei.lab-vlan.ipv6.subnet}/${vars.net.sensei.lab-vlan.ipv6.mask} lookup vpn 2>/dev/null || true
+      ip -6 rule add from ${vars.net.sensei.lab-vlan.ipv6.subnet}/${vars.net.sensei.lab-vlan.ipv6.mask} lookup vpn
+    '';
   };
-
-  # Note: The actual VPN interface name (e.g., proton0) will be determined by Proton VPN
-  # Additional routing configuration may be needed after VPN connection is established
-  # You may need to manually add routes like:
-  # ip route add default via <vpn_gateway_ip> dev <vpn_interface> table 200
 }

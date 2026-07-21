@@ -148,11 +148,11 @@
             ipv6Address = "${secrets.net.ipv6}10::25";
           };
         };
-        lab-vlan = {
-          interface_name = "eth10g.69";
-          ipv4Address = "192.168.69.15";
-          ipv6Address = "${secrets.net.ipv6}69::15";
-        };
+      };
+      lab-vlan = {
+        interface_name = "eth10g.69";
+        ipv4Address = "192.168.69.15";
+        ipv6Address = "${secrets.net.ipv6}69::15";
       };
     };
 
