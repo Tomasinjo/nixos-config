@@ -32,7 +32,7 @@ in {
     gid = 1111;
   };
 
-  wg.protonvpn.privatekey = secrets.wg.protonvpn.privatekey
+  wg.protonvpn.privatekey = secrets.wg.protonvpn.privatekey;
 
   apps = {
     umami = {
