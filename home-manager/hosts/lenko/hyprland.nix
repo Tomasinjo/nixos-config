@@ -57,6 +57,7 @@ in
 
       bind = [
         {_args = ["PRINT" (lua ''hl.dsp.exec_cmd("hyprshot -z -m region -o ${vars.dir.home}/screenshots/")'')];}
+        {_args = ["SUPER + SHIFT + S" (lua ''hl.dsp.exec_cmd("hyprshot -z -m region -o ${vars.dir.home}/screenshots/")'')];} # MX mechanical F7 fn key sends this combination
         {_args = ["XF86MonBrightnessUp" (lua ''hl.dsp.exec_cmd("brightnessctl set 5%+")'')];}
         {_args = ["XF86MonBrightnessDown" (lua ''hl.dsp.exec_cmd("brightnessctl set 5%-")'')];}
         {_args = ["XF86AudioMicMute" (lua ''hl.dsp.exec_cmd("pamixer --default-source --toggle-mute")'')];}
