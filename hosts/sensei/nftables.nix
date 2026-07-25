@@ -95,9 +95,13 @@ in
           iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${vars.net.zenki.common-vlan.ipv4Address} tcp dport 1883 accept
           iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${vars.net.zenki.common-vlan.ipv4Address} accept
 
-          # Lab (VLAN 69) - All traffic allowed (will be routed through VPN)
-          iifname "${vars.net.sensei.lab-vlan.name}" accept
-          
+          # Lab (VLAN 69) - routed via VPS
+          #iifname "${vars.net.sensei.lab-vlan.name}" accept
+          iifname "${vars.net.sensei.lab-vlan.name}" ip daddr ${vars.net.vps.ipv4Address} accept
+          # use below for SCP file transfer via sensei 
+	  #iifname "${vars.net.sensei.lab-vlan.name}" ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.subnet}/${vars.net.sensei.mgmt-vlan.ipv4.mask} accept
+
+
           # zg.kopalnica esp32 for sending weight data from scale
 	  iifname "${vars.net.sensei.iot-vlan.name}" ip saddr 192.168.30.71 ip daddr == ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address} tcp dport 443 accept
 
