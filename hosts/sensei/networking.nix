@@ -70,6 +70,10 @@
         netdevConfig = { Name = vars.net.sensei.iot-vlan.name; Kind = "vlan"; };
         vlanConfig = { Id = vars.net.sensei.iot-vlan.id; };
       };
+      "20-${vars.net.sensei.lab-vlan.name}" = {
+        netdevConfig = { Name = vars.net.sensei.lab-vlan.name; Kind = "vlan"; };
+        vlanConfig = { Id = vars.net.sensei.lab-vlan.id; };
+      };
 
       # Loopback for DNS
       "30-lo-dns" = {
@@ -112,6 +116,7 @@
             vars.net.sensei.common-vlan.name
             vars.net.sensei.guest-vlan.name
             vars.net.sensei.iot-vlan.name
+            vars.net.sensei.lab-vlan.name
           ];
           Address = [ 
             "${vars.net.sensei.mgmt-vlan.ipv4.gateway}/24" 
@@ -178,6 +183,16 @@
             "${vars.net.sensei.iot-vlan.ipv6.gateway}/${vars.net.sensei.iot-vlan.ipv6.mask}"
           ];
           IPv6SendRA = "no";
+        };
+      };
+
+      # VLAN 69 (Lab)
+      "30-${vars.net.sensei.lab-vlan.name}" = {
+        matchConfig.Name = vars.net.sensei.lab-vlan.name;
+        networkConfig = {
+          Address = [
+            "${vars.net.sensei.lab-vlan.ipv4.gateway}/${vars.net.sensei.lab-vlan.ipv4.mask}"
+          ];
         };
       };
 

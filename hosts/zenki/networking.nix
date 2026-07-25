@@ -17,8 +17,11 @@
     # Ensure link is up
     linkConfig.RequiredForOnline = "no";
     networkConfig.LinkLocalAddressing = "no";
-    # Attach VLAN
-    vlan = [ vars.net.zenki.common-vlan.interface_name ];
+    # Attach VLANs
+    vlan = [
+      vars.net.zenki.common-vlan.interface_name
+      vars.net.zenki.lab-vlan.interface_name
+    ];
   };
 
   # Configure VLAN 10 Interface
@@ -49,6 +52,21 @@
       vars.net.sensei.ipv4DNS 
 			vars.net.sensei.ipv6DNS 
     ];
+  };
+
+  # Configure VLAN 69 Interface (Lab) - Bridge port for virbr69
+  systemd.network.netdevs."10-${vars.net.sensei.lab-vlan.name}" = {
+    netdevConfig = {
+      Name = vars.net.zenki.lab-vlan.interface_name;
+      Kind = "vlan";
+    };
+    vlanConfig.Id = vars.net.sensei.lab-vlan.id;
+  };
+
+  # Bridge port configuration for VLAN 69 (no IP - handled by external DHCP on virbr69)
+  systemd.network.networks."20-${vars.net.sensei.lab-vlan.name}" = {
+    matchConfig.Name = vars.net.zenki.lab-vlan.interface_name;
+    networkConfig.Bridge = "virbr69";
   };
 
   # Firewall
