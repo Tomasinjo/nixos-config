@@ -19,6 +19,7 @@ let
 
       environment = {
         "PAPERLESS_REDIS" = "redis://${serviceName}-redis:6379";
+        "PAPERLESS_DBENGINE" = "postgresql";
         "PAPERLESS_DBHOST" = "${serviceName}-db";
         "USERMAP_UID" = toString vars.dockerUser.uid;
         "USERMAP_GID" = toString vars.dockerUser.gid;
@@ -26,6 +27,8 @@ let
         "PAPERLESS_URL" = "https://${serviceHostname}.${vars.net.domain}";
         "PAPERLESS_ADMIN_USER" = "fikus";
         "PAPERLESS_ADMIN_PASSWORD" = vars.apps.paperless.app.admin_password;
+        "PAPERLESS_SECRET_KEY" = vars.apps.paperless.app.secret_key;
+        "PAPERLESS_CONSUMER_DELETE_DUPLICATES" = "true";
       };
 
       volumes = [

@@ -85,6 +85,7 @@ in {
       app = {
         admin_password = secrets.apps.paperless.app.admin_password;
         api_key = secrets.apps.paperless.app.api_key;
+        secret_key = secrets.apps.paperless.app.secret_key;
       };
       db.password = secrets.apps.paperless.db.password;
     };
