@@ -27,7 +27,7 @@ let
       };
 
       input = {
-        kb_layout = "si";
+        kb_layout = "us,si";
         follow_mouse = 1;
         touchpad.natural_scroll = false;
       };
@@ -78,6 +78,7 @@ let
       {_args = ["KP_Up" (lua ''hl.dsp.window.move({ workspace = 8 })'')];}
       {_args = ["KP_Prior" (lua ''hl.dsp.window.move({ workspace = 9 })'')];}
       {_args = ["XF86Calculator" (lua ''hl.dsp.exec_cmd("rofi -show calc -modi calc -no-show-match -no-sort")'')];}
+      {_args = ["SUPER + F10" (lua ''hl.dsp.exec_cmd("hyprctl switchxkblayout all next")'')];}
 
       {_args = ["XF86AudioRaiseVolume" (lua ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+")'') {locked = true; repeating = true;} ];}
       {_args = ["XF86AudioLowerVolume" (lua ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")'') {locked = true; repeating = true;} ];}
