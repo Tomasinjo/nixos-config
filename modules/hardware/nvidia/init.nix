@@ -46,5 +46,6 @@
   #systemd.services.nvidia-persistenced.enable = true;
   imports = [
     ./nvidia-fan-control.nix
+    ./idle_power_reset.nix
   ];
 }

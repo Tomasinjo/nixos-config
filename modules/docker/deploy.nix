@@ -6,7 +6,6 @@ let
 
     echo "Starting NixOS auto-deploy..."
 
-    # Run git pull as the user (tom) with proper PATH
     echo "Pulling latest changes from GitHub..."
     ${pkgs.git}/bin/git -C ${vars.dir.nixos_config} pull
 

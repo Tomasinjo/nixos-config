@@ -19,6 +19,7 @@
     ./network.nix
     ./backup-daily-weekly.nix
     ./backup-quarterly.nix
+    ./image_prune.nix
     ./deploy.nix
     ./vector.nix
     ../../apps/arrs/jellyfin/service.nix
