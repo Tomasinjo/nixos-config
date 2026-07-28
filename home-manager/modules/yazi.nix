@@ -28,35 +28,35 @@
         ];
 
         edit = [
-          { run = ''nvim "$@"''; block = true; desc = "nvim"; }
+          { run = "nvim %s"; block = true; desc = "nvim"; }
         ];
 
         VScode = [
-          { run = ''code "$@"''; orphan = true; desc = "VScode"; }
+          { run = "code %s"; orphan = true; desc = "VScode"; }
         ];
 
         imv = [
-          { run = ''imv "%s" "%d"''; orphan = true; desc = "imv"; }
+          { run = "imv %s %d"; orphan = true; desc = "imv"; }
         ];
 
         gimp = [
-          { run = ''gimp "$@"''; orphan = true; desc = "gimp"; }
+          { run = "gimp %s"; orphan = true; desc = "gimp"; }
         ];
 
         vlc = [
-          { run = ''vlc "$@"''; orphan = true; desc = "vlc"; }
+          { run = "vlc %s"; orphan = true; desc = "vlc"; }
         ];
 
         okular = [
-          { run = ''okular "$@"''; orphan = true; desc = "Okular"; }
+          { run = "okular %s"; orphan = true; desc = "Okular"; }
         ];
 
         default_open = [
-          { run = ''xdg-open "$@"''; orphan = true; desc = "Open"; }
+          { run = "xdg-open %s"; orphan = true; desc = "Open"; }
         ];
 
         firefox = [
-          { run = ''firefox "$@"''; orphan = true; desc = "firefox"; }
+          { run = "firefox %s"; orphan = true; desc = "firefox"; }
         ];
       };
 
