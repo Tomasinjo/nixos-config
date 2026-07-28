@@ -114,9 +114,9 @@ let
 
   mlContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    oci-framework.hardware.cuda
+    oci-framework.hardware.quicksync
     {
-      image = "ghcr.io/immich-app/immich-machine-learning:v3.0.3-cuda";
+      image = "ghcr.io/immich-app/immich-machine-learning:v3.0.3-openvino";
       
       environment = {
         "MACHINE_LEARNING_MODEL_TTL" = "300";
