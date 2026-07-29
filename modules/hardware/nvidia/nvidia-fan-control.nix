@@ -52,7 +52,6 @@ let
     text = ''
       # --- CONFIGURATION ---
       TARGET_NAME="nct6798"
-      CONFIG_PATH="/etc/nvidia-fan-control/config.json"
       
       echo "Searching for hwmon device with name: $TARGET_NAME"
       
@@ -80,35 +79,29 @@ let
           exit
       }
       trap cleanup EXIT SIGINT SIGTERM
-
-      [[ ! -f "$CONFIG_PATH" ]] && echo "Config not found" && exit 1
       
       # Enable manual control (1)
       echo 1 > "$ENABLE_PATH"
 
-      while true; do
-          TEMP=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader 2>/dev/null || echo "error")
-          
-          if [[ "$TEMP" =~ ^[0-9]+$ ]]; then
-              # Calculate fan speed from JSON
-              FAN_VALUE=$(jq -r --argjson temp "$TEMP" '
-                  .temperature_ranges[] | 
-                  select($temp >= .min_temperature and $temp < .max_temperature) | 
-                  .fan_speed
-              ' "$CONFIG_PATH" | head -n 1)
+      # Initialize previous PWM value for change detection
+      PREV_PWM_VALUE=-1
 
-              if [ -n "$FAN_VALUE" ] && [ "$FAN_VALUE" != "null" ]; then
-                  # Map 0-100% to 0-255 PWM if your JSON uses percentages, 
-                  # but your current script assumes 0-255. 
-                  # Keeping your clamping logic:
-                  [[ "$FAN_VALUE" -gt 255 ]] && FAN_VALUE=255
-                  [[ "$FAN_VALUE" -lt 0 ]] && FAN_VALUE=0
-                  echo "$FAN_VALUE" > "$PWM_PATH"
+      while true; do
+          FAN_VALUE=$(nvidia-smi --query-gpu=fan.speed --format=csv,noheader,nounits 2>/dev/null || echo "error")
+          
+          if [ -n "$FAN_VALUE" ] && [ "$FAN_VALUE" != "null" ]; then
+              # Convert percentage (0-100) to PWM value (0-255)
+              PWM_VALUE=$((FAN_VALUE * 255 / 100))
+              
+              # Only update and log if PWM value changed
+              if [ "$PWM_VALUE" -ne "$PREV_PWM_VALUE" ]; then
+                  echo "Fan speed changed: $FAN_VALUE% (PWM: $PWM_VALUE)"
+                  echo "$PWM_VALUE" > "$PWM_PATH"
+                  PREV_PWM_VALUE=$PWM_VALUE
               fi
           fi
 
-          UPDATE_INTERVAL=$(jq -r '.time_to_update' "$CONFIG_PATH")
-          sleep "''${UPDATE_INTERVAL:-5}"
+          sleep 5
       done
     '';
   };
