@@ -95,7 +95,7 @@ let
               
               # Only update and log if PWM value changed
               if [ "$PWM_VALUE" -ne "$PREV_PWM_VALUE" ]; then
-                  echo "Fan speed changed: $FAN_VALUE% (PWM: $PWM_VALUE)"
+                  #echo "Fan speed changed: $FAN_VALUE% (PWM: $PWM_VALUE)"
                   echo "$PWM_VALUE" > "$PWM_PATH"
                   PREV_PWM_VALUE=$PWM_VALUE
               fi
