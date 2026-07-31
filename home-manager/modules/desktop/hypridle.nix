@@ -5,10 +5,7 @@ let
   hyprlock = "${pkgs.hyprlock}/bin/hyprlock";
   hyprctl = "${pkgs.hyprland}/bin/hyprctl";
   playerctl = "${pkgs.playerctl}/bin/playerctl";
-  
-  # Wrapper script to check if media is playing and execute command if not
-  # Returns 0 (success) if media is playing (skip command)
-  # Returns 1 (failure) if no media playing (execute command)
+
   checkPlayingAndRun = cmd: ''
     if ${playerctl} status 2>/dev/null | grep -q "Playing"; then
       exit 0
