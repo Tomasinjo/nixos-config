@@ -15,7 +15,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     {
-      image = "ghcr.io/paperless-ngx/paperless-ngx:3.0.2";
+      image = "ghcr.io/paperless-ngx/paperless-ngx:3.0.4";
 
       environment = {
         "PAPERLESS_REDIS" = "redis://${serviceName}-redis:6379";
@@ -67,7 +67,7 @@ let
   redisContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "docker.io/library/redis:7.4.9";
+      image = "docker.io/library/redis:7.4.10";
 
       environment = {};
 
