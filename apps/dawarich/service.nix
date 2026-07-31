@@ -15,7 +15,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     {
-      image = "freikin/dawarich:1.10.1";
+      image = "freikin/dawarich:1.10.3";
 
       environment = {
         "RAILS_ENV" = "production";
@@ -119,7 +119,7 @@ let
   sidekiqContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     {
-      image = "freikin/dawarich:1.10.1";
+      image = "freikin/dawarich:1.10.3";
 
       environment = {
         "RAILS_ENV" = "production";
