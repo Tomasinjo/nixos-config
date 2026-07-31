@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
     {
-      image = "vaultwarden/server:1.36.0";
+      image = "vaultwarden/server:1.37.1";
 
       environment = {
         "WEBSOCKET_ENABLED" = "true";
