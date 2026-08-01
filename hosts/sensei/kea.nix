@@ -3,7 +3,12 @@
 {
   services.kea.dhcp4 = {
     enable = true;
-    settings = {
+    settings = { 
+      lease-database = {
+        name = "/var/lib/kea/dhcp4.leases";
+        persist = true;
+        type = "memfile";
+      };
       interfaces-config = {
         interfaces = [
           vars.net.sensei.common-vlan.name
