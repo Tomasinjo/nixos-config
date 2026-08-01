@@ -80,8 +80,8 @@ let
       {_args = ["XF86Calculator" (lua ''hl.dsp.exec_cmd("rofi -show calc -modi calc -no-show-match -no-sort")'')];}
       {_args = ["SUPER + F10" (lua ''hl.dsp.exec_cmd("hyprctl switchxkblayout all next")'')];}
 
-      {_args = ["XF86AudioRaiseVolume" (lua ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+")'') {locked = true; repeating = true;} ];}
-      {_args = ["XF86AudioLowerVolume" (lua ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-")'') {locked = true; repeating = true;} ];}
+      {_args = ["XF86AudioRaiseVolume" (lua ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+")'') {locked = true; repeating = true;} ];}
+      {_args = ["XF86AudioLowerVolume" (lua ''hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%-")'') {locked = true; repeating = true;} ];}
 
       {_args = ["XF86AudioMute" (lua ''hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle")'') {locked = true;} ];}
       {_args = ["XF86AudioPlay" (lua ''hl.dsp.exec_cmd("playerctl play-pause")'') {locked = true;} ];}
