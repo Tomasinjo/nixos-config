@@ -75,6 +75,7 @@
     la = "eza -a";
     l = "eza -l";
     cat = "bat";
+    nixpull = "cd /home/tom/nixos-config && git pull";
     };
 
   programs.bat = {
