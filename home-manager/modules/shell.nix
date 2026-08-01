@@ -35,6 +35,17 @@
     '';
   };
 
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    defaultOptions = [
+      "--height 40%"
+      "--layout=reverse"
+      "--border"
+      "--preview 'bat --color=always {}'"
+    ];
+  };
+
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
@@ -73,7 +84,6 @@
       pager = "less -FR";
     };
   };
-
 
   programs.starship = {
     enable = true;
