@@ -10,7 +10,6 @@
     ./protonvpn.nix
     
     ../../modules/common.nix
-    ../../modules/shell.nix
     ../../modules/sudo.nix
     ../../modules/ssh.nix
     ../../modules/utilities.nix

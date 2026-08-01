@@ -3,7 +3,6 @@
   imports = [
     ./hardware-configuration.nix
     ./networking.nix
-    ../../modules/shell.nix
     ../../modules/common.nix
     ../../modules/docker/init.nix
     ../../modules/ssh.nix

@@ -4,7 +4,6 @@
     ./hardware-configuration.nix
     ./networking.nix
     ../../modules/common.nix
-    ../../modules/shell.nix
     ../../modules/desktop/hyprland.nix
     ../../modules/sudo.nix
     ../../modules/docker/init_base.nix

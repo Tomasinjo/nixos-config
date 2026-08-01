@@ -4,7 +4,6 @@
     ./hardware-configuration.nix
     ./networking.nix
     ../../modules/common.nix
-    ../../modules/shell.nix
     ../../modules/desktop/kiosk.nix
     ../../modules/sudo.nix
     ../../modules/utilities.nix

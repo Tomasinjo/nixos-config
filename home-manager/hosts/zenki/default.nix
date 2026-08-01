@@ -11,6 +11,7 @@
     ../../modules/desktop/hyprpaper.nix
     ../../modules/desktop/kitty.nix
     ../../modules/desktop/rofi.nix
+    ../../modules/shell.nix
   ];
 
   programs.zsh = {
