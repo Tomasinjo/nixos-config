@@ -14,7 +14,7 @@ in
     };
     modulesLeft = mkOption {
       type = types.listOf types.str;
-      default = [ "clock" "cpu" "memory" "temperature" ];
+      default = [ "clock" "cpu" "memory" "disk" ];
       description = "Modules to display on the left side";
     };
     modulesCenter = mkOption {

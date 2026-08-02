@@ -6,13 +6,7 @@ let
   hyprctl = "${pkgs.hyprland}/bin/hyprctl";
   playerctl = "${pkgs.playerctl}/bin/playerctl";
 
-  checkPlayingAndRun = cmd: ''
-    if ${playerctl} status 2>/dev/null | grep -q "Playing"; then
-      exit 0
-    else
-      ${cmd}
-    fi
-  '';
+  checkPlayingAndRun = cmd: "${playerctl} status 2>/dev/null | grep -q \"Playing\" || ${cmd}";
 in
 {
   services.hypridle = {
@@ -24,36 +18,36 @@ in
         # Lock before suspend
         before_sleep_cmd = "loginctl lock-session";
         # Turn on screen and restore brightness after waking up
-        after_sleep_cmd = "${hyprctl} dispatch dpms on && ${brightnessctl} -r";
+        after_sleep_cmd = "${hyprctl} dispatch \"dpms on\" && ${brightnessctl} -r";
         
         # Respect media players
         ignore_dbus_inhibit = false;
       };
 
       listener = [
-        # 1. DIM SCREEN & KBD (2.5 min)
+        # 1. DIM SCREEN & KBD
         {
           timeout = 150;
           on-timeout = checkPlayingAndRun "${brightnessctl} -s set 10 && ${brightnessctl} -sd tpacpi::kbd_backlight set 0";
           on-resume = "${brightnessctl} -r && ${brightnessctl} -rd tpacpi::kbd_backlight";
         }
 
-        # 2. LOCK SESSION (5 min)
+        # 2. LOCK SESSION
         {
-          timeout = 300;
+          timeout = 210;
           on-timeout = checkPlayingAndRun "loginctl lock-session";
         }
 
-        # 3. DPMS OFF (5.5 min)
+        # 3. Screen OFF
         {
-          timeout = 330;
-          on-timeout = checkPlayingAndRun "${hyprctl} dispatch dpms off";
-          on-resume = "${hyprctl} dispatch dpms on";
+          timeout = 300;
+          on-timeout = checkPlayingAndRun "${hyprctl} eval 'hl.dispatch(hl.dsp.dpms({ \"off\" }))'";
+          on-resume = "${hyprctl} eval 'hl.dispatch(hl.dsp.dpms({ \"on\" }))'";
         }
 
-        # 4. SUSPEND (30 min)
+        # 4. SUSPEND
         {
-          timeout = 1800;
+          timeout = 600;
           on-timeout = checkPlayingAndRun "systemctl suspend";
         }
       ];
