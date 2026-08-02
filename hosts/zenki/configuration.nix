@@ -8,7 +8,6 @@
     ../../modules/ssh.nix
     ../../modules/zfs/init.nix
     ../../modules/desktop/hyprland.nix
-    ../../modules/gaming.nix
     ../../modules/utilities.nix
     ../../modules/sudo.nix
     ../../modules/virtual-machines/libvirt.nix
@@ -16,6 +15,10 @@
     ../../modules/hardware/intel/intel-qsv.nix
     ../../modules/hardware/intel/efficiency.nix
     ../../modules/hardware/nvidia/init.nix
+
+    ../../modules/gaming/gamemode.nix
+    ../../modules/gaming/steam.nix
+    # ../../modules/gaming/sunshine.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
