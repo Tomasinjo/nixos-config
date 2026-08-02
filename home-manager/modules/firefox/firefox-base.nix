@@ -41,6 +41,19 @@
         "browser.translations.neverTranslateLanguages" = "sl";
         "devtools.toolbox.host" = "right";
 	      "browser.startup.homepage" = "https://home.${vars.net.domain}";
+        "browser.contentblocking.category" = "strict";
+        "media.peerconnection.enabled" = false;
+        "media.navigator.enabled" = false;
+        "media.peerconnection.ice.no_host" = true;
+        "app.shield.optoutstudies.enabled" = false;
+        "browser.crashReports.unsubmittedCheck.autoSubmit2" = false;
+        "extensions.pocket.enabled" = false;
+        "identity.fxaccounts.enabled" = false;
+        "browser.cache.disk.enable" = true;
+        "browser.cache.disk.smart_size.enabled" = true;
+        "browser.cache.disk.capacity" = 1048576;  # 1GB
+        "general.smoothScroll" = true;
+
       };
       search = {
         force = true;
