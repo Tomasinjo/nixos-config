@@ -24,6 +24,9 @@
       DisplayBookmarksToolbar = "always";
       DisplayMenuBar = "default-off"; 
       SearchBar = "unified";
+      DisableFirefoxSync = true;
+      PasswordManagerEnabled = false;
+      DisableFirefoxVPN = true;
     };
 
     profiles.myprofile = {
