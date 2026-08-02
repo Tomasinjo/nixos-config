@@ -26,13 +26,13 @@
       };
 
       temperature = {
-	align = 0;
-	justify = "left";
-	hwmon-path = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon4/temp1_input";
-	format = " {temperatureC}°C";
-	format-critical = " {temperatureC}°C";
-	interval = 5;
-	critical-threshold = 65;
+	      align = 0;
+	      justify = "left";
+	      hwmon-path = "/sys/devices/platform/thinkpad_hwmon/hwmon/hwmon4/temp1_input";
+	      format = " {temperatureC}°C";
+	      format-critical = " {temperatureC}°C";
+	      interval = 5;
+	      critical-threshold = 65;
       };
 
       bluetooth = {
