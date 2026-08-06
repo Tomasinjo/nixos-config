@@ -11,6 +11,7 @@
     ../../modules/printing.nix
     ../../modules/virtual-machines/virt-manager.nix
     ../../modules/wireshark.nix
+    ../../modules/hardware/intel/intel-qsv.nix
   ];
 
 
@@ -43,6 +44,10 @@
 
   boot.kernelModules = [ "drivetemp" ];  # for reading HDD temps
   users.users.${vars.username}.extraGroups = [ "dialout" ]; # for flashing microcontrolers
+
+  # CPU governor configuration for better performance
+  # schedutil provides good balance between performance and power efficiency
+  powerManagement.cpuFreqGovernor = "schedutil";
 
   system.stateVersion = "25.11";
 }
