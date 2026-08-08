@@ -16,7 +16,6 @@
     ../../modules/desktop/rofi.nix
     ../../modules/desktop/hyprsunset.nix
     ../../modules/yazi.nix
-    ../../modules/shell.nix
   ];
 
 }

@@ -1,14 +1,14 @@
 { config, pkgs, vars, ... }:
 
 {
-  programs.zsh.enable = true;
-
   users.users.${vars.username} = {
     isNormalUser = true;
     description = vars.fullName;
     shell = pkgs.zsh;
     uid = 1000;
   };
+
+  programs.zsh.enable = true;
 
   time.timeZone = vars.timeZone;
   i18n.defaultLocale = "en_US.UTF-8";

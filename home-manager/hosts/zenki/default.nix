@@ -3,6 +3,7 @@
 {
   imports = [
     ./packages.nix
+    ../../modules/shell.nix
     ../../modules/gaming.nix
     ../../modules/desktop/hyprland-base.nix
     ../../modules/desktop/waybar-base.nix
@@ -11,16 +12,7 @@
     ../../modules/desktop/hyprpaper.nix
     ../../modules/desktop/kitty.nix
     ../../modules/desktop/rofi.nix
-    ../../modules/shell.nix
   ];
 
-  programs.zsh = {
-    enable = true;
-    dotDir = "${config.xdg.configHome}/zsh";
-    shellAliases = {
-      set-eco = "echo 'power' | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference";
-      set-std = "echo 'balance_performance' | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference";
-      set-per = "echo 'performance' | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/energy_performance_preference";
-    };
-  };
+  modules.shell.enableCpuAliases = true;
 }

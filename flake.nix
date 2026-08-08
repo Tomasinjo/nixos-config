@@ -25,12 +25,11 @@
         specialArgs = { inherit inputs vars self; };
         modules = [
           ./hosts/zenki/configuration.nix
-          nixvim.nixosModules.nixvim
-          ./modules/nixvim.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ nixvim.homeManagerModules.nixvim ];
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "zenki"; };
           }
@@ -42,13 +41,12 @@
         specialArgs = { inherit inputs vars self; };
         modules = [
           ./hosts/lenko/configuration.nix
-          nixvim.nixosModules.nixvim
-          ./modules/nixvim.nix
           home-manager.nixosModules.home-manager
           nur.modules.nixos.default
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ nixvim.homeModules.nixvim ];
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "lenko"; };
           }
@@ -66,35 +64,17 @@
         ];
       };
 
-      horse = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs vars self; };
-        modules = [
-          ./hosts/horse/configuration.nix
-          nixvim.nixosModules.nixvim
-          ./modules/nixvim.nix
-          home-manager.nixosModules.home-manager
-          nur.modules.nixos.default
-         {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.tom = ./home-manager/users/tom.nix;
-            home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "horse"; };
-          }
-        ];
-      };
 
       sensei = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit inputs vars self; };
         modules = [
           ./hosts/sensei/configuration.nix
-          nixvim.nixosModules.nixvim
-          ./modules/nixvim.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ nixvim.homeManagerModules.nixvim ];
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "sensei"; };
           }
@@ -106,12 +86,11 @@
         specialArgs = { inherit inputs vars self; };
         modules = [
           ./hosts/boarder/configuration.nix
-          nixvim.nixosModules.nixvim
-          ./modules/nixvim.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ nixvim.homeManagerModules.nixvim ];
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "boarder"; };
           }

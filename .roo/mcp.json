@@ -1,3 +1,16 @@
 {
-	"mcpServers": {}
+	"mcpServers": {
+		"nixos": {
+			"command": "nix",
+			"args": [
+				"run",
+				"github:utensils/mcp-nixos",
+				"--"
+			],
+			"alwaysAllow": [
+				"nix"
+			],
+			"disabled": false
+		}
+	}
 }
