@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })    {
-      image = "ghcr.io/euro-office/documentserver:v9.3.2";
+      image = "ghcr.io/euro-office/documentserver:v9.3.3";
 
       environment = {
         "WOPI_ENABLED" = "true";
