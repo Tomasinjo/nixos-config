@@ -294,7 +294,8 @@
         settings_show_advanced = false;
 
         launcher = {
-          compact = true;
+          compact = false;
+          categories = false;
         };
 
         panel = {
@@ -304,8 +305,14 @@
 
       theme = {
         source = "community";
-        community_palette = "Breze";
+        community_palette = "Breeze";
         mode = "dark";
+      };
+
+      plugins = {
+        enabled = [
+          "noctalia/screen_recorder"
+        ];
       };
 
       wallpaper = {
