@@ -14,9 +14,28 @@
       url = "github:nix-community/lanzaboote/v1.1.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    niri-flake = {
+      url = "github:sodiboo/niri-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    noctalia = {
+      url = "github:noctalia-dev/noctalia";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, nixvim, nur, home-manager, yazi, lanzaboote, ... }@inputs: let
+  outputs = { 
+    self, 
+    nixpkgs, 
+    nixvim, 
+    nur, 
+    home-manager, 
+    yazi, 
+    lanzaboote, 
+    niri-flake, 
+    noctalia,
+    ... 
+  }@inputs: let
     vars = import ./vars.nix;
   in {
     nixosConfigurations = {
@@ -61,6 +80,7 @@
               pkiBundle = "/var/lib/sbctl";
             };
           })
+          niri-flake.nixosModules.niri
         ];
       };
 

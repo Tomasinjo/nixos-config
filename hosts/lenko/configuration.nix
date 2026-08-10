@@ -4,7 +4,7 @@
     ./hardware-configuration.nix
     ./networking.nix
     ../../modules/common.nix
-    ../../modules/desktop/hyprland.nix
+    ../../modules/desktop/niri.nix
     ../../modules/sudo.nix
     ../../modules/docker/init_base.nix
     ../../modules/utilities.nix
@@ -12,6 +12,7 @@
     ../../modules/virtual-machines/virt-manager.nix
     ../../modules/wireshark.nix
     ../../modules/hardware/intel/intel-qsv.nix
+    ../../modules/hardware/upower.nix
   ];
 
 

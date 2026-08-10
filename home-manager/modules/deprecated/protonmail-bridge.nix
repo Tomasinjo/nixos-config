@@ -1,6 +1,6 @@
 { pkgs, ... }: 
 {
-  home.packages = [ pkgs.protonmail-bridge ];
+  home.packages = [ pkgs.protonmail-bridge, pkgs.protonmail-desktop ];
 
   systemd.user.services.protonmail-bridge = {
     Unit = {
