@@ -368,7 +368,8 @@
 
       widget.session = {
         capsule_opacity = 0.0;
-        capsule_padding = 20;
+        capsule_padding = 10;
+        capsule = true;
       };
 
       widget.spacer_2 = {
