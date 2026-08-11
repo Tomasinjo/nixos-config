@@ -4,6 +4,10 @@ let
   inherit (lib) optionalString attrByPath;
 in
 {
+  imports = [
+    ./portals.nix
+  ];
+
   config = {
     home.packages = with pkgs; [
       cliphist
