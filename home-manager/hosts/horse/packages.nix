@@ -1,0 +1,20 @@
+{ config, pkgs, ... }:
+
+{
+  programs.discord.enable = true;
+  home.packages = with pkgs; [
+    pamixer
+    telegram-desktop
+    zoom-us
+    filezilla
+    gimp
+    pkgs.onlyoffice-desktopeditors
+    vlc
+    imv
+    imagemagick
+    rofi-bluetooth
+    networkmanager_dmenu
+    #realvnc-vnc-viewer
+    kdePackages.okular # pdf reader. To import sigen certs use nix-shell -p nssTools.tools, pk12util -d sql:$HOME/.pki/nssdb -i Downloads/sigen-ca.p12
+  ];
+}

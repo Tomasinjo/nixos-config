@@ -85,6 +85,24 @@
       };
 
 
+      horse = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs vars self; };
+        modules = [
+          ./hosts/horse/configuration.nix
+          home-manager.nixosModules.home-manager
+          nur.modules.nixos.default
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ nixvim.homeModules.nixvim ];
+            home-manager.users.tom = ./home-manager/users/tom.nix;
+            home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "horse"; };
+          }
+          niri-flake.nixosModules.niri
+        ];
+      };
+
       sensei = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit inputs vars self; };
