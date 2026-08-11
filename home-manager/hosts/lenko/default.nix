@@ -10,6 +10,7 @@
     ../../modules/desktop/niri/niri.nix
     ../../modules/desktop/niri/noctalia.nix
     ../../modules/desktop/kitty.nix
+    ../../modules/desktop/obs_studio.nix
     ../../modules/yazi.nix
   ];
 
