@@ -6,14 +6,6 @@ let
   logFile = "/var/log/offenders-ips.log";
 in
 {
-  # Add secondary IP address to bond0 for syslog
-  systemd.network.networks."20-bond0" = lib.mkIf config.systemd.network.networks ? "20-bond0" {
-    networkConfig.Address = lib.mkAfter [
-      "${syslogIp}/24"
-    ];
-  };
-
-  # Enable rsyslog
   services.rsyslogd = {
     enable = true;
     defaultConfig = ''
@@ -26,7 +18,7 @@ in
     '';
   };
 
-  # Create log file with proper permissions
+  # create log file
   systemd.tmpfiles.rules = [
     "f ${logFile} 0644 root root -"
     "f /var/log/offenders.log 0644 root root -"
