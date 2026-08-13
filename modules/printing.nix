@@ -8,13 +8,15 @@
     drivers = [ pkgs.epson-escpr ];
   };
 
-  # scanning
   hardware.sane = {
     enable = true;
     extraBackends = [ pkgs.epkowa ];
   };
 
-  # available at http://localhost:631/
+  # to add a printer
+  # go to http://localhost:631/
+  # add new, lpd://printer.xxx.xx:515/PASSTHRU
+  # select L3150 series
   services.avahi = {
     enable = true;
     nssmdns4 = true;
