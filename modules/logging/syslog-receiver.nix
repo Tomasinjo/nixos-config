@@ -12,7 +12,7 @@ in
       module(load="imudp")
       input(type="imudp" address="${syslogIp}" port="${toString syslogPort}")
       template(name="OnlyIP" type="string" string="%msg%\n")
-      if $fromhost-ip == '192.168.10.15' then {
+      if $fromhost-ip == '${vars.net.zenki.common-vlan.ipv4Address}' then {
         action(type="omfile" file="${logFile}" template="OnlyIP")
       }
     '';
