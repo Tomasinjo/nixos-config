@@ -13,14 +13,8 @@ in
       input(type="imudp" address="${syslogIp}" port="${toString syslogPort}")
       template(name="OnlyIP" type="string" string="%msg%\n")
       if $fromhost-ip == '192.168.10.15' then {
-        *.* ?OnlyIP;${logFile}
+        action(type="omfile" file="${logFile}" template="OnlyIP")
       }
     '';
   };
-
-  # create log file
-  systemd.tmpfiles.rules = [
-    "f ${logFile} 0644 root root -"
-    "f /var/log/offenders.log 0644 root root -"
-  ];
 }
