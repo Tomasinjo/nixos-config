@@ -44,6 +44,7 @@ in
           # opt1 (LACP)
           ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
           ip6 daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
+          ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} udp dport 514 ip saddr ${vars.net.zenki.common-vlan.ipv4Address} accept
 
           # opt2 (VLAN10)
           iifname "${vars.net.sensei.common-vlan.name}" udp dport 67 accept  # DHCPv4
