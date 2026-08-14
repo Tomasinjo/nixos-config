@@ -20,26 +20,15 @@
           inputs = [ "traefik_logs" ];
           condition = ''contains!(.message, "ClientHost") && contains!(.message, "{") && contains!(.message, "}")'';
         };
-
-        parse_offenders = {
-          type = "remap";
-          inputs = [ "filter_json" ];
-          source = ''
-            . = parse_json!(.message)
-            .ip = .ClientHost
-          '';
-        };
         
         # send only ip
         extract_ip = {
           type = "remap";
-          inputs = [ "parse_offenders" ];
+          inputs = [ "filter_json" ];
           source = ''
-            .message = .ip
-            del(.ClientHost)
+            . = parse_json!(string!(.message))
             del(.level)
             del(.msg)
-            del(.time)
           '';
         };
       };
@@ -52,7 +41,7 @@
           mode = "udp";
           address = "${vars.net.sensei.mgmt-vlan.ipv4.gateway}:514";
           encoding = {
-            codec = "text";
+            codec = "json";
           };
         };
       };
