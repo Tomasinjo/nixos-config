@@ -14,8 +14,8 @@
     ../../modules/ssh.nix
     ../../modules/utilities.nix
     ../../modules/wireshark.nix  # for dumpcap, remote capture via wireshark
-    ../../modules/logging/syslog-receiver.nix
-    ../../modules/logging/fail2ban.nix
+    ../../modules/cowabunga/syslog-receiver.nix
+    ../../modules/cowabunga/fail2ban.nix
   ];
 
   boot.loader.systemd-boot.enable = true;

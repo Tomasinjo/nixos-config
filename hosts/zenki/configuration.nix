@@ -5,7 +5,7 @@
     ./networking.nix
     ../../modules/common.nix
     ../../modules/docker/init.nix
-    ../../modules/logging/syslog-sender.nix
+    ../../modules/cowabunga/syslog-sender.nix
     ../../modules/ssh.nix
     ../../modules/zfs/init.nix
     ../../modules/desktop/hyprland.nix

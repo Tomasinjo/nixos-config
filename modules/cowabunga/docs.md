@@ -8,3 +8,6 @@ Log example:
 
 Fail2ban monitors this file and bans IP on too many occurances.  
 Gatekeeper is solid at blocking, but too many attempts bother me, that's why sensei blocks them on network level as well.  
+
+Check jailed ips with
+sudo nft list ruleset
