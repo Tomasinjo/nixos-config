@@ -33,6 +33,8 @@ in {
   };
 
   wg.protonvpn.privatekey = secrets.wg.protonvpn.privatekey;
+  crowdsec.enrollkey = secrets.crowdsec.enrollkey;
+  crowdsec.bouncer_key = secrets.crowdsec.bouncer_key; # internal use, bouncer talking with console
 
   apps = {
     umami = {
