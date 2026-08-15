@@ -11,6 +11,7 @@
     ../../modules/desktop/niri/noctalia.nix
     ../../modules/desktop/kitty.nix
     ../../modules/desktop/obs_studio.nix
+    ../../modules/desktop/wine.nix
     ../../modules/yazi.nix
   ];
 
