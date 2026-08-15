@@ -61,9 +61,13 @@
 	        name = "hageziPro";
 	        url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/pro.txt";
 	      }
+        {
+	        name = "hageziThreatIntel_part1";
+	        url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/tif-1.txt";
+	      }
 	      {
-	        name = "hageziThreatIntel";
-	        url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/tif.txt";
+	        name = "hageziThreatIntel_part2";
+	        url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/rpz/tif-2.txt";
 	      }
       ];
       
