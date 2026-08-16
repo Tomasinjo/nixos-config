@@ -8,6 +8,7 @@
     ./unbound.nix
     ./wireguard.nix
     ./protonvpn.nix
+    ./motd.nix
     
     ../../modules/common.nix
     ../../modules/sudo.nix
