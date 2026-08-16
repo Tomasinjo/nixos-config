@@ -22,10 +22,6 @@
       url = "github:noctalia-dev/noctalia";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    crowdsec = {
-      url = "git+https://codeberg.org/kampka/nix-flake-crowdsec.git";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
@@ -38,7 +34,6 @@
     lanzaboote,
     niri-flake,
     noctalia,
-    crowdsec,
     ...
   }@inputs: let
     vars = import ./vars.nix;
@@ -114,8 +109,6 @@
         modules = [
           ./hosts/sensei/configuration.nix
           home-manager.nixosModules.home-manager
-          crowdsec.nixosModules.crowdsec
-          crowdsec.nixosModules.crowdsec-firewall-bouncer
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
