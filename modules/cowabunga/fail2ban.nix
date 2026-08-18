@@ -1,5 +1,9 @@
 { config, pkgs, lib, vars, ... }:
 
+
+# list (set) is called "addr-set-offenders"
+# table is called "f2b-table"
+
 {
   services.fail2ban = {
     enable = true;
