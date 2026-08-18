@@ -26,7 +26,6 @@ let
 
       networks = [
         "ha-net"
-        "llm-net"
       ];
       
       labels = {};
