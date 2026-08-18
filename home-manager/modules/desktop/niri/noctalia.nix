@@ -39,8 +39,8 @@
       bar.default = {
         center = [ "group:g1" ];
         end = [
+          "bar" # this is KDE phone integration plugin, not sure why is named like that
           "media"
-          "tray"
           "notifications"
           "clipboard"
           "network"
@@ -49,6 +49,7 @@
           "volume"
           "brightness"
           "battery"
+          "tray"
           "spacer_2"
           "session"
         ];
@@ -311,8 +312,13 @@
 
       plugins = {
         enabled = [
-          "noctalia/screen_recorder"
+          "icefish/phone-connect"
         ];
+      };
+
+      plugin_settings."icefish/phone-connect" = {
+        battery_display = "hidden";
+        enable_clipboard_action = false;
       };
 
       wallpaper = {
@@ -366,6 +372,10 @@
         stat = "ram_pct";
       };
 
+      widget.media = {
+        hide_when_no_media = true;
+      };
+
       widget.session = {
         capsule_opacity = 0.0;
         capsule_padding = 10;
@@ -395,6 +405,11 @@
 
       widget.volume = {
         capsule = true;
+      };
+
+      widget.bar = {  # KDE plugin
+        enable_scroll = false;
+        type = "icefish/phone-connect:bar";
       };
     };
   };
