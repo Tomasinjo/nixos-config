@@ -148,8 +148,6 @@ in {
         if ! ${pkgs.crowdsec}/bin/cscli bouncers list -o raw | grep -q "^crowdsec-firewall-bouncer,"; then
           ${pkgs.crowdsec}/bin/cscli bouncers add "crowdsec-firewall-bouncer" --key "${vars.crowdsec.bouncer_key}" || true
         fi
-
-        ${pkgs.crowdsec}/bin/cscli collections install crowdsecurity/iptables 2>/dev/null || true
       '';
     };
   };
