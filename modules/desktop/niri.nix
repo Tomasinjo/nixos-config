@@ -4,16 +4,23 @@
   imports = [
     ./sound.nix
     ./fonts.nix
+    inputs.noctalia-greeter.nixosModules.default
   ];
 
   programs.niri.enable = true;
 
-  services.greetd = {
-    enable = true;
+  programs.noctalia-greeter = {
+    enable = true; 
+    greeter-args = "";
+    # Full declarative greeter.toml (overwritten on each activation).
     settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd ${pkgs.niri}/bin/niri-session";
-        user = "greeter";
+      cursor = {
+        theme = "Bibata-Modern-Ice";
+        size = 24;
+        path = "${pkgs.bibata-cursors}/share/icons";
+      };
+      keyboard = {
+        layout = "us";
       };
     };
   };
