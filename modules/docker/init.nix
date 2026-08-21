@@ -64,5 +64,6 @@
     ../../apps/glance/service.nix
     ../../apps/openshot/service.nix
     ../../apps/degoog/service.nix
+    ../../apps/nitter/service.nix
   ];
 }
