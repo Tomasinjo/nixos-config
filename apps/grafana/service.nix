@@ -11,7 +11,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
     {
-      image = "grafana/grafana:13.1.3";
+      image = "grafana/grafana:13.2.0";
 
       environment = {
         "GF_SERVER_ROOT_URL" = "https://${serviceHostname}.${vars.net.domain}/";
