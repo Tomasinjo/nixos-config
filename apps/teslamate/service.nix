@@ -70,7 +70,7 @@ let
         }
     )
     {
-      image = "teslamate/teslamate:4.0.1";
+      image = "teslamate/teslamate:4.1.1";
 
       environment = {
         "ENCRYPTION_KEY" = vars.apps.teslamate.app.key;
