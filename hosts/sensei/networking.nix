@@ -234,5 +234,16 @@
 	      };
       };
     };
+    links = {
+      "20-suricata-vlans" = {
+        matchConfig.OriginalName = "${vars.net.sensei.common-vlan.name} ${vars.net.sensei.iot-vlan.name} bond0 enp2s0 enp3s0 enp4s0 enp5s0";
+        linkConfig = {
+          GenericReceiveOffload = false;       # gro off
+          GenericSegmentationOffload = false;  # gso off
+          TCPSegmentationOffload = false;      # tso off
+          LargeReceiveOffload = false;         # lro off
+        };
+      };
+    };
   };
 }

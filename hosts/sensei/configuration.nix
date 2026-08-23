@@ -8,7 +8,8 @@
     ./unbound.nix
     ./wireguard.nix
     ./protonvpn.nix
-    
+    ./suricata.nix
+
     ../../modules/common.nix
     ../../modules/sudo.nix
     ../../modules/ssh.nix
