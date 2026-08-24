@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "frigate";
   serviceHostname = "nvr";
   servicePort = 8971;
+  serviceId = 16;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
     oci-framework.hardware.quicksync
     oci-framework.hardware.coral
     {
@@ -51,11 +52,8 @@ let
       ];
 
       networks = [
-        "ha-net"
+        "home-assistant-net"
       ];
-      
-      labels = {};
-      dependsOn = [];
       
       capabilities = {
         "PERFMON" = true;
@@ -73,4 +71,5 @@ let
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

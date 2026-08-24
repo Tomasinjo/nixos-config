@@ -1,11 +1,12 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "unifi";
   serviceHostname = "unifi";
   servicePort = 8443;
+  serviceId = 35;
 
   mongoUser = "unifi";
   mongoPass = vars.apps.unifi.mongo.password;
@@ -13,7 +14,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "lscr.io/linuxserver/unifi-network-application:10.5.67-ls141";
 
@@ -40,10 +41,6 @@ let
         # "${vars.net.zenki.common-vlan.ipv4Address}:6789:6789"       # Port used for UniFi mobile speed test.
         # "${vars.net.zenki.common-vlan.ipv4Address}:5514:5514/udp"   # Port used for remote syslog capture.
       ];
-
-      networks = [
-        "unifi-net"
-      ];
       
       labels = {
         "traefik.http.services.${serviceHostname}.loadbalancer.server.scheme" = "https";
@@ -54,6 +51,7 @@ let
 
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.db { inherit serviceName serviceId; })
     {
       image = "mongo:8.3";
 
@@ -65,14 +63,12 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/unifi/db-data:/data/db"
       ];
-
-      networks = [
-        "unifi-net"
-      ];
     }
   ];
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

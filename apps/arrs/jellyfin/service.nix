@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "jellyfin";
   serviceHostname = "jelly";
   servicePort = 8096;
+  serviceId = 33;
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     oci-framework.hardware.quicksync
     {
       image = "jellyfin/jellyfin:10.11.11";
@@ -23,9 +24,6 @@ let
         "${vars.dir.nixos_config}/apps/arrs/jellyfin/app-cache:/cache"
         "${vars.dir.hoarder_data}/media:/media"
       ];
-
-      ports = [];
-      networks = [];
       
       labels = {
         "traefik.http.routers.${serviceHostname}.middlewares" = "jellyfin-mw,dynamic-whitelist@file"; # overwrites oci-framework
@@ -45,4 +43,5 @@ let
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = containerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

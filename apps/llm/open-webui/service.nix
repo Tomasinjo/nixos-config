@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "open-webui";
   serviceHostname = "chat";
   servicePort = 8080;
+  serviceId = 27;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "ghcr.io/open-webui/open-webui:0.11-slim";
 
@@ -26,20 +27,13 @@ let
         "${vars.dir.nixos_config}/apps/llm/open-webui/app-data:/app/backend/data"
       ];
 
-      ports = [];
-
-      networks = [
-        "llm-net"
-      ];
-      
-      labels = {};
-      dependsOn = [ "ollama" ];
       user = "";  # does not support non-root
     }
   ];
 
   ollamaContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
     oci-framework.hardware.cuda
     {
       image = "ollama/ollama:0.32.15";
@@ -59,11 +53,6 @@ let
         "${vars.net.zenki.common-vlan.ipv4Address}:7869:11434"
       ];
 
-      networks = [
-        "llm-net"
-      ];
-      
-      labels = {};
       user = "";  # does not support non-root
     }
   ];
@@ -72,4 +61,6 @@ let
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
   virtualisation.oci-containers.containers."ollama" = ollamaContainerConfig;
+  
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "appdaemon";
   serviceHostname = "ad";
   servicePort = 5050;
+  serviceId = 20;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "acockburn/appdaemon:4.5.13";
 
@@ -22,13 +23,10 @@ let
         "${vars.dir.nixos_config}/apps/ha/appdaemon/app-data:/conf"
       ];
 
-      ports = [];
-
       networks = [
-        "ha-net"
+        "home-assistant-net"
       ];
       
-      labels = {};
       user = ""; # can't run without root, fails at installing with pip
 
       extraOptions = [
@@ -39,4 +37,5 @@ let
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

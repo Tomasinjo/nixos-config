@@ -1,11 +1,12 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "nocodb";
   serviceHostname = "noco";
   servicePort = 8080;
+  serviceId = 15;
 
   dbUser = "fikus";
   dbPass = vars.apps.nocodb.db.password;
@@ -13,7 +14,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "nocodb/nocodb:0.301.5";
 
@@ -26,20 +27,12 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/fafi/nocodb/app-data:/usr/app/data"
       ];
-
-      ports = [];
-
-      networks = [
-        "fafi-net"
-      ];
-      
-      labels = {};
     }
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.apps.postgres { inherit dbUser dbPass dbName; })
+    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       volumes = [
         "${vars.dir.nixos_config}/apps/fafi/nocodb/db-data:/data/postgres"
@@ -48,14 +41,12 @@ let
       ports = [
         "${vars.net.zenki.common-vlan.ipv4Address}:4432:5432"
       ];
-
-      networks = [
-        "fafi-net"
-      ];
     }
   ];
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
   virtualisation.oci-containers.containers."fafi-db" = dbContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

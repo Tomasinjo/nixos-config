@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "pgadmin";
   serviceHostname = "pg";
   servicePort = 80;
+  serviceId = 31;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "dpage/pgadmin4:9.17";
 
@@ -23,16 +24,10 @@ let
         "${vars.dir.nixos_config}/apps/pgadmin/app-data:/var/lib/pgadmin"
       ];
 
-      ports = [];
-
       networks = [
-        "ha-net"
-        "fafi-net"
-        "fat-net"
+        "home-assistant-net"
+        "nocodb-net"
       ];
-      
-      labels = {};
-      dependsOn = [];
 
       user = "";  # does not support changing uids, runs with uid 5050
     }
@@ -40,4 +35,5 @@ let
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

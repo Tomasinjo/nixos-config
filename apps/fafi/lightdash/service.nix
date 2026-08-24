@@ -1,50 +1,20 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "lightdash";
   serviceHostname = "lightdash";
   servicePort = 8080;
+  serviceId = 13;
 
   dbUser = "PGUSER";
   dbPass = vars.apps.lightdash.db.password;
   dbName = "lightdash";
 
-  minioContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    {
-      image = "coollabsio/minio:RELEASE.2025-10-15T17-29-55Z";
-
-      environment = {
-        "MINIO_ROOT_USER" = vars.apps.lightdash.minio.user;
-        "MINIO_ROOT_PASSWORD" = vars.apps.lightdash.minio.password;
-        "MINIO_DEFAULT_BUCKETS" = "default";
-      };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/fafi/lightdash/minio-data/init-minio.sh:/init-minio.sh"
-        "${vars.dir.nixos_config}/apps/fafi/lightdash/minio-data:/data"
-      ];
-
-      ports = [
-        #"${vars.net.zenki.common-vlan.ipv4Address}:9000:9000"
-        #"${vars.net.zenki.common-vlan.ipv4Address}:9001:9001" # for minio console
-      ];
-
-      networks = [
-        "lightdash-net"
-      ];
-      
-      labels = {};
-
-      entrypoint = "/init-minio.sh";
-    }
-  ];
-
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "lightdash/lightdash:0.2904.0";
 
@@ -80,35 +50,54 @@ let
         "${vars.dir.nixos_config}/apps/fafi/lightdash/app-data:/usr/app/dbt"
       ];
 
-      ports = [];
-
       networks = [
-        "lightdash-net"
-        "fafi-net"
+        "nocodb-net"
       ];
       
-      labels = {};
-
       user = "";  # the thing doesnt run without root
     }
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.apps.postgres { inherit dbUser dbPass dbName; })
+    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       volumes = [
         "${vars.dir.nixos_config}/apps/fafi/lightdash/db-data:/data/postgres"
       ];
+    }
+  ];
 
-      networks = [
-        "lightdash-net"
+  minioContainerConfig = oci-framework.mergeAll [
+    oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    {
+      image = "coollabsio/minio:RELEASE.2025-10-15T17-29-55Z";
+
+      environment = {
+        "MINIO_ROOT_USER" = vars.apps.lightdash.minio.user;
+        "MINIO_ROOT_PASSWORD" = vars.apps.lightdash.minio.password;
+        "MINIO_DEFAULT_BUCKETS" = "default";
+      };
+
+      volumes = [
+        "${vars.dir.nixos_config}/apps/fafi/lightdash/minio-data/init-minio.sh:/init-minio.sh"
+        "${vars.dir.nixos_config}/apps/fafi/lightdash/minio-data:/data"
       ];
+
+      ports = [
+        #"${vars.net.zenki.common-vlan.ipv4Address}:9000:9000"
+        #"${vars.net.zenki.common-vlan.ipv4Address}:9001:9001" # for minio console
+      ];
+
+      entrypoint = "/init-minio.sh";
     }
   ];
 
 in {
-  virtualisation.oci-containers.containers."${serviceName}-minio" = minioContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
+  virtualisation.oci-containers.containers."${serviceName}-minio" = minioContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

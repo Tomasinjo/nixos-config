@@ -1,10 +1,11 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "teslamate";
-  
+  serviceId = 32;
+
   grafanaServiceHostname = "tesla";
   grafanaServicePort = 3000;
 
@@ -18,11 +19,11 @@ let
   grafanaContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     (oci-framework.web.internal {  
-            serviceHostname = grafanaServiceHostname;
-            servicePort = grafanaServicePort;
-            serviceName = "Tesla";
-        }
-    )
+      serviceHostname = grafanaServiceHostname;
+      servicePort = grafanaServicePort;
+      inherit serviceName serviceId;
+      containerId = 4; # Override containerId to avoid collision with app
+    })
     {
       image = "teslamate/grafana:4.1.1";
 
@@ -30,33 +31,29 @@ let
         "DATABASE_USER" = dbUser;
         "DATABASE_PASS" = dbPass;
         "DATABASE_NAME" = dbName;
-        "DATABASE_HOST" = "teslamate-db"; 
+        "DATABASE_HOST" = "${serviceName}-db"; 
       };
 
       volumes = [
         "${vars.dir.nixos_config}/apps/teslamate/app-data:/var/lib/grafana"
       ];
 
-      ports = [];
-
-      networks = [
-        "tesla-net"
-      ];
-      
-      labels = {};
+      labels = {
+        # Custom display names for bookmarks
+        "glance.name" = "Tesla Dashboards";
+        "fikus.name" = "Tesla";
+      };
     }
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.apps.postgres { inherit dbUser dbPass dbName; })
+    (oci-framework.apps.postgres { 
+      inherit serviceName serviceId dbUser dbPass dbName; 
+    })
     {
       volumes = [
         "${vars.dir.nixos_config}/apps/teslamate/db-data:/data/postgres"
-      ];
-
-      networks = [
-        "tesla-net"
       ];
     }
   ];
@@ -64,11 +61,10 @@ let
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     (oci-framework.web.internal {  
-            serviceHostname = teslamateServiceHostname;
-            servicePort = teslamateServicePort;
-            serviceName = serviceName;
-        }
-    )
+      serviceHostname = teslamateServiceHostname;
+      servicePort = teslamateServicePort;
+      inherit serviceName serviceId;
+    })
     {
       image = "teslamate/teslamate:4.1.1";
 
@@ -83,24 +79,19 @@ let
         "MQTT_PASSWORD" = vars.apps.mqtt.password;
       };
 
-      volumes = [
-        "${vars.dir.nixos_config}/apps/teslamate/app-data:/var/lib/grafana"
-      ];
+      networks = [ "home-assistant-net" ];
 
-      ports = [];
-
-      networks = [
-        "tesla-net"
-        "ha-net"
-      ];
-      
-      labels = {};
+      labels = {
+        "glance.name" = "TeslaMate";
+      };
     }
   ];
 
-
 in {
+  # 1. Containers
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-grafana" = grafanaContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

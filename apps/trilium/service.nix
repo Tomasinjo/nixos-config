@@ -1,17 +1,18 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "trilium";
   serviceHostname = "notes";
   servicePort = 8080;
+  serviceId = 34;
 
   dataDir = "/home/node/trilium-data";
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "triliumnext/trilium:v0.105.0";
 
@@ -25,15 +26,11 @@ let
         "${vars.dir.nixos_config}/apps/trilium/app-data:${dataDir}"
       ];
 
-      ports = [];
-      networks = [];
-      labels = {};
-      dependsOn = [];
-
       user = ""; # the image support non-root container by passing env variables
     }
   ];
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }
