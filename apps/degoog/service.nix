@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "degoog";
   serviceHostname = "search";
   servicePort = 4444;
+  serviceId = 12;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "ghcr.io/degoog-org/degoog:0.23.0";
 
@@ -23,15 +24,11 @@ let
         "${vars.dir.nixos_config}/apps/degoog/app-data:/app/data"
       ];
 
-      ports = [];
-      networks = [];
-      
-      labels = {};
-      dependsOn = [];
       user = "";
     }
   ];
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

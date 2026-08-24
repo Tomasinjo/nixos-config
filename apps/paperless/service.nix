@@ -1,11 +1,12 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "paperless";
   serviceHostname = "papir";
   servicePort = 8000;
+  serviceId = 30;
 
   dbUser = "paperless";
   dbPass = vars.apps.paperless.db.password;
@@ -13,7 +14,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "ghcr.io/paperless-ngx/paperless-ngx:3.0.5";
 
@@ -38,55 +39,35 @@ let
         "${vars.dir.impo_data}/paperless/consume:/usr/src/paperless/consume"
       ];
 
-      ports = [];
-
-      networks = [
-        "paperless-net"
-      ];
-      
-      labels = {};
-
       user = "";  # the image support non-root container by default
     }
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.apps.postgres { inherit dbUser dbPass dbName; })
+    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       volumes = [
         "${vars.dir.nixos_config}/apps/paperless/db-data:/data/postgres"
-      ];
-
-      networks = [
-        "paperless-net"
       ];
     }
   ];
 
   redisContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
     {
       image = "docker.io/library/redis:7.4.10";
-
-      environment = {};
 
       volumes = [
         "${vars.dir.nixos_config}/apps/paperless/redis-data:/data"
       ];
-
-      ports = [];
-
-      networks = [
-        "paperless-net"
-      ];
-      
-      labels = {};
     }
   ];
 
   paperllamaContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 5; })
     {
       image = "ghcr.io/tomasinjo/paper-llama:main";
 
@@ -106,14 +87,9 @@ let
         "${vars.dir.nixos_config}/apps/paperless/paperllama-data/prompt.txt:/app/prompt.txt:ro"
       ];
 
-      ports = [];
-
       networks = [
-        "paperless-net"
-        "llm-net"
+        "open-webui-net"
       ];
-      
-      labels = {};
 
       cmd = ["python" "main.py" "--mode" "auto"];
     }
@@ -124,4 +100,6 @@ in {
   virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-redis" = redisContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-llama" = paperllamaContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

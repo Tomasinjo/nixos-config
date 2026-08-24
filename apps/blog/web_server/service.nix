@@ -1,28 +1,24 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
-  serviceName = "";
+  serviceName = "blog";  # just for network creation
   serviceHostname = "";
   servicePort = "";
+  serviceId = 8;
 
   hugoContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
     {
       image = "hugomods/hugo:exts-0.128.1";
-
-      environment = {};
 
       volumes = [
         "${vars.dir.nixos_config}/apps/blog/web_server/app-data/src:/src"
         "${vars.dir.nixos_config}/apps/blog/web_server/app-data/cache:/tmp/hugo_cache"
       ];
 
-      ports = [];
-      networks = [];
-      labels = {};
-      
       autoStart = false;
       cmd = [ "hugo" "-s" "/src/${vars.apps.blog.si.name}" ];
     }
@@ -30,6 +26,7 @@ let
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 2; })
     {
       image = "joseluisq/static-web-server:2.44.0";
 
@@ -42,12 +39,11 @@ let
         "${vars.dir.nixos_config}/apps/blog/web_server/app-data/config.toml:/etc/config.toml"
       ];
 
-      ports = [];
-
       networks = [ "traefik-net" ];
-      
+
       labels = {
         "traefik.enable" = "true";
+        "traefik.docker.network" = "traefik-net"; # important because oci-framework will make traefik-net secondary to blog-net (derived from serviceName).
         "traefik.http.routers.rp.rule" = "Host(`www.${vars.apps.blog.si.domain}`) || Host(`${vars.apps.blog.si.domain}`)";
         "traefik.http.routers.rp.entrypoints" = "https,http";
         "traefik.http.routers.rp.tls" = "true";
@@ -83,4 +79,6 @@ let
 in {
   virtualisation.oci-containers.containers."web-server-blog" = containerConfig;
   virtualisation.oci-containers.containers."hugo-papermodx" = hugoContainerConfig;
+  
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

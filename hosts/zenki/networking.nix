@@ -5,6 +5,11 @@
   networking.useNetworkd = true;
   networking.useDHCP = false;
 
+  # Enable kernel forwarding for Docker routed supernet
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = 1;
+  };
+
   # Rename Interface based on MAC
   systemd.network.links."10-persistent-${vars.net.zenki.interface_name}" = {
     matchConfig.MACAddress = vars.net.zenki.interface_mac;
@@ -75,7 +80,7 @@
       allowPing = true;
   
       # default deny all
-      allowedTCPPorts = [ ]; 
+      allowedTCPPorts = [ ];
       allowedUDPPorts = [ ];
   
       # allowed ports for system services
@@ -86,6 +91,16 @@
       trustedInterfaces = [ "docker0" ];
   
       checkReversePath = "loose";
+
+      # Allow traffic across all custom docker bridges and bypass MASQUERADE for routed supernet
+      extraCommands = ''
+        # Allow traffic across all custom docker bridges
+        iptables -I INPUT -i br-+ -j ACCEPT
+        iptables -I FORWARD -i br-+ -j ACCEPT
+
+        # Bypass MASQUERADE for outbound container traffic from the supernet
+        iptables -t nat -I POSTROUTING 1 -s 10.200.0.0/16 ! -d 10.200.0.0/16 -j ACCEPT
+      '';
   };
   users.users.${vars.username}.extraGroups = [ "networkmanager" ];
 }

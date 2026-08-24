@@ -1,11 +1,12 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "immich";
   serviceHostname = "im";
   servicePort = 2283;
+  serviceId = 23;
 
   alternateServiceHostname = "img";
 
@@ -15,7 +16,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort serviceName serviceId; })
     oci-framework.hardware.quicksync
     {
       image = "ghcr.io/immich-app/immich-server:v3.1.0";
@@ -34,13 +35,6 @@ let
         "${vars.dir.nixos_config}/apps/immich/app-data/thumbs:/data/thumbs"
       ];
 
-      ports = [];
-
-      networks = [
-        "immich-net"
-        "traefik-net"
-      ];
-      
       labels = {
         "traefik.enable" = "true";
 
@@ -70,6 +64,7 @@ let
 
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.db { inherit serviceName serviceId; })
     {
       image = "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23";
       
@@ -84,10 +79,6 @@ let
         "${vars.dir.nixos_config}/apps/immich/db-data:/var/lib/postgresql/data"
       ];
 
-      networks = [
-        "immich-net"
-      ];
-
       extraOptions = [
         "--shm-size=128m"
       ];
@@ -96,17 +87,12 @@ let
 
   redisContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
     {
       image = "docker.io/valkey/valkey:9@sha256:546304417feac0874c3dd576e0952c6bb8f06bb4093ea0c9ca303c73cf458f63";
       
-      environment = {};
-      
       volumes = [
         "${vars.dir.nixos_config}/apps/immich/redis-data:/data"
-      ];
-
-      networks = [
-        "immich-net"
       ];
     }
   ];
@@ -114,6 +100,7 @@ let
 
   mlContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 5; })
     oci-framework.hardware.quicksync
     {
       image = "ghcr.io/immich-app/immich-machine-learning:v3.1.0-openvino";
@@ -127,10 +114,6 @@ let
         "${vars.dir.nixos_config}/apps/immich/ml-data/dotcache:/.cache"
         "${vars.dir.nixos_config}/apps/immich/ml-data/config:/.config"
       ];
-
-      networks = [
-        "immich-net"
-      ];
     }
   ];
 
@@ -140,4 +123,6 @@ in {
   virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-redis" = redisContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-machine-learning" = mlContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

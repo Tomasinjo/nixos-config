@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "vaultwarden";
   serviceHostname = "bw";
   servicePort = 80;
+  serviceId = 36;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "vaultwarden/server:1.37.1";
 
@@ -22,15 +23,11 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/vaultwarden/app-data:/data"
       ];
-
-      ports = [];
-      networks = [];
-      labels = {};
-      dependsOn = [];
     }
   ];
 
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

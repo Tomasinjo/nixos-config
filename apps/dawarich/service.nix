@@ -1,11 +1,12 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "dawarich";
   serviceHostname = "dawarich";
   servicePort = 3000;
+  serviceId = 11;
 
   dbUser = "dawarich";
   dbPass = vars.apps.dawarich.db.password;
@@ -13,7 +14,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "freikin/dawarich:1.12.1";
 
@@ -44,14 +45,10 @@ let
         "${vars.dir.nixos_config}/apps/dawarich/db-data:/dawarich_db_data"
       ];
 
-      ports = [];
-
       networks = [
-        "dawarich-net"
-	"immich-net"
+	      "immich-net"
       ];
       
-      labels = {};
       entrypoint = "web-entrypoint.sh";
       cmd = [
         "bin/rails"
@@ -61,13 +58,12 @@ let
         "-b"
         "::"
       ];
-      #user = "";
     }
   ];
 
-  # unstandard: inherits from postgres, but overrides the image, variables are same
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.db { inherit serviceName serviceId; })
     {
       image = "postgis/postgis:17-3.5-alpine";
 
@@ -82,10 +78,6 @@ let
         "${vars.dir.nixos_config}/apps/dawarich/shared-data:/var/shared"
       ];
 
-      networks = [
-        "dawarich-net"
-      ];
-
       extraOptions = [
         "--shm-size=1G"
       ];
@@ -95,14 +87,11 @@ let
 
   redisContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
     {
       image = "redis:7.4-alpine";
       volumes = [
         "${vars.dir.nixos_config}/apps/dawarich/shared-data:/data"
-      ];
-
-      networks = [
-        "dawarich-net"
       ];
 
       cmd = [
@@ -118,6 +107,7 @@ let
   # redis is used for communication between sidekiq and app.
   sidekiqContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 5; })
     {
       image = "freikin/dawarich:1.12.1";
 
@@ -147,18 +137,14 @@ let
         "${vars.dir.nixos_config}/apps/dawarich/app-data/storage:/var/app/storage"
       ];
 
-      ports = [];
-
       networks = [
         "dawarich-net"
       ];
       
-      labels = {};
       entrypoint = "sidekiq-entrypoint.sh";
       cmd = [
         "sidekiq"
       ];
-      #user = "";
     }
   ];
 
@@ -169,4 +155,6 @@ in {
   virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-redis" = redisContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-sidekiq" = sidekiqContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

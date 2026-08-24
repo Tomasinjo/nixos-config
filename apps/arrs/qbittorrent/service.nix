@@ -1,17 +1,18 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "qbittorrent";
   serviceHostname = "torrent";
   servicePort = 8888;
+  serviceId = 4;
 
   torrentingPort = "51413";
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "lscr.io/linuxserver/qbittorrent:5.1.4-r3-ls453";
 
@@ -30,10 +31,6 @@ let
         "${vars.net.zenki.common-vlan.ipv4Address}:${torrentingPort}:${torrentingPort}/tcp"
         "${vars.net.zenki.common-vlan.ipv4Address}:${torrentingPort}:${torrentingPort}/udp"
       ];
-
-      networks = [
-        "arr-net"
-      ];
       
       labels = {};
     }
@@ -41,4 +38,5 @@ let
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = containerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }
