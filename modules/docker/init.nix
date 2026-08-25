@@ -2,11 +2,23 @@
 
 {
   virtualisation.oci-containers.backend = "docker";
+
+  daemon.settings = {
+    default-address-pools = [
+      {
+        base = vars.net.zenki.docker-services.subnet;
+        size = 24;
+      }
+    ];
+  };
+  
+
   users.users.docker-user = {
     isSystemUser = true;
     group = vars.dockerUser.name;
     uid = vars.dockerUser.uid;
   };
+
   users.groups.docker-user.gid = vars.dockerUser.gid;
   users.users.${vars.username}.extraGroups = [
     vars.dockerUser.name
@@ -34,8 +46,6 @@
 #    ../../apps/fafi/lightdash/service.nix
     ../../apps/fafi/metabase/service.nix
     ../../apps/fafi/nocodb/service.nix
-#    ../../apps/fatracker/service.nix
-    ../../apps/fatracker2/service.nix
     ../../apps/frigate/service.nix
     ../../apps/grocy/service.nix
     ../../apps/ha/appdaemon/service.nix
@@ -48,11 +58,9 @@
     ../../apps/llm/open-webui/service.nix
     ../../apps/llm/qdrant/service.nix
     ../../apps/cloud/opencloud/service.nix
-#    ../../apps/cloud/onlyoffice/service.nix  # deprecated for euro-office
     ../../apps/cloud/euro-office/service.nix
     ../../apps/paperless/service.nix
     ../../apps/pgadmin/service.nix
-#    ../../apps/searxng/service.nix   # deprecated for degoog
     ../../apps/teslamate/service.nix
     ../../apps/traefik/service.nix
     ../../apps/trilium/service.nix

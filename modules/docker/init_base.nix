@@ -7,12 +7,6 @@
     
     daemon.settings = {
       data-root = vars.dir.docker_root;
-      default-address-pools = [
-        {
-          base = "10.200.0.0/16";
-          size = 24;
-        }
-      ];
     };
   };
 
