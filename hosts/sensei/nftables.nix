@@ -102,9 +102,17 @@ in
           # use below for SCP file transfer via sensei 
 	        #iifname "${vars.net.sensei.lab-vlan.name}" ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.subnet}/${vars.net.sensei.mgmt-vlan.ipv4.mask} accept
 
-
           # wireguard
           iifname "wg0" accept
+
+          # Docker containers
+          ip saddr ${vars.net.zenki.docker-services.subnet} oifname "ppp0" accept
+
+          ip saddr ${vars.net.zenki.docker-services.subnet} ip daddr ${vars.net.sensei.ipv4DNS} udp dport 53 accept
+          ip saddr ${vars.net.zenki.docker-services.subnet} ip daddr ${vars.net.sensei.ipv4DNS} tcp dport 53 accept
+
+          # temporary until sensei is migrated to its own vlan. This prevent asymetrical routing.
+          ip daddr 10.200.0.0/16 drop
         }
 
         chain output {

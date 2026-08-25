@@ -36,7 +36,6 @@
     };
   };
 
-  # IP forwarding
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = 1;
     "net.ipv6.conf.all.forwarding" = 1;
@@ -147,6 +146,17 @@
         ipv6Prefixes = [
           {
             Prefix = "${vars.net.sensei.common-vlan.ipv6.subnet}/${vars.net.sensei.common-vlan.ipv6.mask}";
+          }
+        ];
+        routes = [
+          {
+            # static route for docker container networks since SNAT is disabled in docker
+            # this is for return traffic since containers now use their IP for outbound connections.
+            # zenki act as a router with this network behind it.
+            routeConfig = {
+              Destination = vars.net.zenki.docker-services.subnet;
+              Gateway = vars.net.zenki.common-vlan.ipv4Address;
+            };
           }
         ];
       };
