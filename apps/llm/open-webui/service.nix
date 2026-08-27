@@ -50,7 +50,7 @@ let
       ];
 
       ports = [
-        "${vars.net.zenki.common-vlan.ipv4Address}:7869:11434"
+        "${vars.net.zenki.server-vlan.ipv4Address}:7869:11434"
       ];
 
       user = "";  # does not support non-root

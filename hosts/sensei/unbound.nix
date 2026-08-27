@@ -21,13 +21,13 @@
 	      module-config = "'respip validator iterator'"; # respip-enables rpz blocklist. validator=enables dnssec. iterator=queries upstream, necessary.
 
         local-data = [
-          ''"ha-int.${vars.net.domain}. IN A 192.168.10.15"''
+          ''"ha-int.${vars.net.domain}. IN A ${vars.net.zenki.server-vlan.ipv4Address}"''
           ''"sensei.${vars.net.domain}. IN A ${vars.net.sensei.mgmt-vlan.ipv4.gateway}"''
           ''"sensei.${vars.net.domain}. IN AAAA ${vars.net.sensei.mgmt-vlan.ipv6.gateway}"''
           ''"pretikalo.${vars.net.domain}. IN A 192.168.99.2"''
           ''"ap.${vars.net.domain}. IN A 192.168.99.101"''
           ''"ap2.${vars.net.domain}. IN A 192.168.99.102"''
-          ''"zenki.${vars.net.domain}. IN A 192.168.10.15"''
+          ''"zenki.${vars.net.domain}. IN A ${vars.net.zenki.server-vlan.ipv4Address}"''
           ''"tv.${vars.net.domain}. IN A 192.168.10.251"''
           ''"os.${vars.net.domain}. IN A 192.168.30.12"''
           ''"printer.${vars.net.domain}. IN A 192.168.30.7"''
@@ -40,7 +40,6 @@
           ''"reo-sredina.${vars.net.domain}. IN A 192.168.30.58"''
           ''"reo-doorbell.${vars.net.domain}. IN A 192.168.30.158"''
           ''"boarder.${vars.net.domain}. IN A 192.168.10.164"''
-          ''"fatracker.${vars.net.domain}. IN A ${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}"''   # for esp32 kopalnica to send weight data from scale - iot vlan does not have hairpin rule
         ];
 
         # Prevents upstream from returning private addresses, protects from DNS rebinding

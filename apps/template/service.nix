@@ -72,7 +72,7 @@ let
       #];
 
       # FQDN: ${serviceHostname}.${vars.net.domain}
-      # IP ${vars.net.zenki.common-vlan.ipv4Address}
+      # IP ${vars.net.zenki.server-vlan.ipv4Address}
     }
   ];
 

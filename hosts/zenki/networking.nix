@@ -34,30 +34,30 @@
     networkConfig.LinkLocalAddressing = "no";
     # Attach VLANs
     vlan = [
-      vars.net.zenki.common-vlan.interface_name
+      vars.net.zenki.server-vlan.interface_name
       vars.net.zenki.lab-vlan.interface_name
     ];
   };
 
   # Configure VLAN 10 Interface
-  systemd.network.netdevs."10-${vars.net.sensei.common-vlan.name}" = {
+  systemd.network.netdevs."10-${vars.net.sensei.server-vlan.name}" = {
     netdevConfig = {
-      Name = vars.net.zenki.common-vlan.interface_name;
+      Name = vars.net.zenki.server-vlan.interface_name;
       Kind = "vlan";
     };
-    vlanConfig.Id = vars.net.sensei.common-vlan.id;
+    vlanConfig.Id = vars.net.sensei.server-vlan.id;
   };
 
   # IP Configuration for VLAN 10
-  systemd.network.networks."20-${vars.net.sensei.common-vlan.name}" = {
-    matchConfig.Name = vars.net.zenki.common-vlan.interface_name;
+  systemd.network.networks."20-${vars.net.sensei.server-vlan.name}" = {
+    matchConfig.Name = vars.net.zenki.server-vlan.interface_name;
     address = [
-      "${vars.net.zenki.common-vlan.ipv4Address}/${vars.net.sensei.common-vlan.ipv4.mask}"
-      "${vars.net.zenki.common-vlan.ipv6Address}/${vars.net.sensei.common-vlan.ipv6.mask}"
+      "${vars.net.zenki.server-vlan.ipv4Address}/${vars.net.sensei.server-vlan.ipv4.mask}"
+      "${vars.net.zenki.server-vlan.ipv6Address}/${vars.net.sensei.server-vlan.ipv6.mask}"
     ];
     routes = [
-      { Gateway = vars.net.sensei.common-vlan.ipv4.gateway; }
-      { Gateway = vars.net.sensei.common-vlan.ipv6.gateway; }
+      { Gateway = vars.net.sensei.server-vlan.ipv4.gateway; }
+      { Gateway = vars.net.sensei.server-vlan.ipv6.gateway; }
     ];
     networkConfig = {
       IPv6AcceptRA = true;
@@ -94,7 +94,7 @@
       allowedUDPPorts = [ ];
   
       # allowed ports for system services
-      interfaces."${vars.net.zenki.common-vlan.interface_name}" = {
+      interfaces."${vars.net.zenki.server-vlan.interface_name}" = {
         allowedTCPPorts = [ 22 ]; # SSH
       };
   
@@ -121,22 +121,22 @@
         for f in /proc/sys/net/ipv4/conf/*/rp_filter; do echo 0 > $f; done
 
         # C. Raw Table: Allow inbound & outbound supernet traffic
-        ${pkgs.iptables}/bin/iptables -t raw -I PREROUTING 1 -s 10.0.0.0/16 -j ACCEPT 2>/dev/null || true
-        ${pkgs.iptables}/bin/iptables -t raw -I PREROUTING 2 -d 10.0.0.0/16 -j ACCEPT 2>/dev/null || true
+        ${pkgs.iptables}/bin/iptables -t raw -I PREROUTING 1 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT 2>/dev/null || true
+        ${pkgs.iptables}/bin/iptables -t raw -I PREROUTING 2 -d ${vars.net.zenki.docker-services.subnet} -j ACCEPT 2>/dev/null || true
 
         # D. Mangle Table: Bypass NixOS rpfilter for the container supernet
-        ${pkgs.iptables}/bin/iptables -t mangle -I nixos-fw-rpfilter 1 -s 10.0.0.0/16 -j RETURN 2>/dev/null || true
+        ${pkgs.iptables}/bin/iptables -t mangle -I nixos-fw-rpfilter 1 -s ${vars.net.zenki.docker-services.subnet} -j RETURN 2>/dev/null || true
 
         # E. Forwarding: Allow all outbound, inter-container, and return traffic
-        ${pkgs.iptables}/bin/iptables -I FORWARD 1 -d 10.0.0.0/16 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I FORWARD 2 -s 10.0.0.0/16 -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I DOCKER-USER 1 -d 10.0.0.0/16 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I DOCKER-USER 2 -s 10.0.0.0/16 -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -I FORWARD 1 -d ${vars.net.zenki.docker-services.subnet} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -I FORWARD 2 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -I DOCKER-USER 1 -d ${vars.net.zenki.docker-services.subnet} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -I DOCKER-USER 2 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
 
         # F. NAT Rules: Placed at Rule #1 above Docker's 40+ rules
-        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 1 -s 10.0.0.0/16 -d 10.0.0.0/16 -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 2 -s 10.0.0.0/16 -d 192.168.10.0/24 -j MASQUERADE
-        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 3 -s 10.0.0.0/16 -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 1 -s ${vars.net.zenki.docker-services.subnet} -d ${vars.net.zenki.docker-services.subnet} -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 2 -s ${vars.net.zenki.docker-services.subnet} -d 192.168.10.0/24 -j MASQUERADE
+        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 3 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
       '';
     };
   };

@@ -82,8 +82,8 @@ let
       ];
 
       ports = [
-        #"${vars.net.zenki.common-vlan.ipv4Address}:9000:9000"
-        #"${vars.net.zenki.common-vlan.ipv4Address}:9001:9001" # for minio console
+        #"${vars.net.zenki.server-vlan.ipv4Address}:9000:9000"
+        #"${vars.net.zenki.server-vlan.ipv4Address}:9001:9001" # for minio console
       ];
 
       entrypoint = "/init-minio.sh";

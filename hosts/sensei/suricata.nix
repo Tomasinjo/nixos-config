@@ -228,7 +228,7 @@
         victorialogs = {
           type = "http";
           inputs = [ "parse_eve" ];
-          uri = "http://${vars.net.zenki.common-vlan.ipv4Address}:9428/insert/jsonline?_stream_fields=service,event_type,host&_time_field=timestamp";
+          uri = "http://${vars.net.zenki.server-vlan.ipv4Address}:9428/insert/jsonline?_stream_fields=service,event_type,host&_time_field=timestamp";
           encoding = {
             codec = "json";
           };

@@ -39,7 +39,7 @@ let
       ];
 
       ports = [
-        "${vars.net.zenki.common-vlan.ipv4Address}:4432:5432"
+        "${vars.net.zenki.server-vlan.ipv4Address}:4432:5432"
       ];
     }
   ];

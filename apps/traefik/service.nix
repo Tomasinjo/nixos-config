@@ -29,8 +29,8 @@ let
 
       extraOptions = [
         "--sysctl=net.ipv4.ip_unprivileged_port_start=0" # allows binding low ports
-        "--ip=${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv4Address}"
-        "--ip6=${vars.net.zenki.common-vlan.mac-vlan.traefik.ipv6Address}"
+        "--ip=${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv4Address}"
+        "--ip6=${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv6Address}"
       ];
     }
   ];

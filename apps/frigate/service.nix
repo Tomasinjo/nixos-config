@@ -47,8 +47,8 @@ let
       ];
 
       ports = [
-        # "${vars.net.zenki.common-vlan.ipv4Address}:1935:1935" # RTMP feeds
-        "${vars.net.zenki.common-vlan.ipv4Address}:8555:8555"
+        # "${vars.net.zenki.server-vlan.ipv4Address}:1935:1935" # RTMP feeds
+        "${vars.net.zenki.server-vlan.ipv4Address}:8555:8555"
       ];
       
       capabilities = {

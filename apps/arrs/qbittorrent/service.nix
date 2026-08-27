@@ -28,8 +28,8 @@ let
       ];
 
       ports = [
-        "${vars.net.zenki.common-vlan.ipv4Address}:${torrentingPort}:${torrentingPort}/tcp"
-        "${vars.net.zenki.common-vlan.ipv4Address}:${torrentingPort}:${torrentingPort}/udp"
+        "${vars.net.zenki.server-vlan.ipv4Address}:${torrentingPort}:${torrentingPort}/tcp"
+        "${vars.net.zenki.server-vlan.ipv4Address}:${torrentingPort}:${torrentingPort}/udp"
       ];
       
       labels = {};

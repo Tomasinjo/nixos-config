@@ -34,13 +34,13 @@ let
       ];
 
       labels = {
-        "traefik.http.services.mass-service.loadbalancer.server.url" = "http://${vars.net.zenki.common-vlan.mac-vlan.mass.ipv4Address}:${toString servicePort}";  # because host mode on macvlan
+        "traefik.http.services.mass-service.loadbalancer.server.url" = "http://${vars.net.zenki.server-vlan.mac-vlan.mass.ipv4Address}:${toString servicePort}";  # because host mode on macvlan
         "traefik.http.routers.${serviceHostname}.service" = "mass-service";
       };
 
       extraOptions = [
-        "--ip=${vars.net.zenki.common-vlan.mac-vlan.mass.ipv4Address}"
-        "--ip6=${vars.net.zenki.common-vlan.mac-vlan.mass.ipv6Address}"
+        "--ip=${vars.net.zenki.server-vlan.mac-vlan.mass.ipv4Address}"
+        "--ip6=${vars.net.zenki.server-vlan.mac-vlan.mass.ipv6Address}"
       ];
     }
   ]);
