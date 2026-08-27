@@ -2,12 +2,10 @@
 
 let
   oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "paperless";
   serviceHostname = "papir";
   servicePort = 8000;
-  serviceId = 30;
   serviceId = 30;
 
   dbUser = "paperless";
@@ -16,7 +14,6 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "ghcr.io/paperless-ngx/paperless-ngx:3.0.5";
@@ -49,7 +46,6 @@ let
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
     (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       volumes = [
         "${vars.dir.nixos_config}/apps/paperless/db-data:/data/postgres"
@@ -59,7 +55,6 @@ let
 
   redisContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
     (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
     {
       image = "docker.io/library/redis:7.4.11";
@@ -72,7 +67,6 @@ let
 
   paperllamaContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 5; })
     (oci-framework.container { inherit serviceName serviceId; containerId = 5; })
     {
       image = "ghcr.io/tomasinjo/paper-llama:main";
@@ -102,8 +96,6 @@ in {
   virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-redis" = redisContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-llama" = paperllamaContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 
   systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }
