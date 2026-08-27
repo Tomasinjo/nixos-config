@@ -44,10 +44,6 @@ let
         "${vars.dir.nixos_config}/apps/dawarich/app-data/storage:/var/app/storage"
         "${vars.dir.nixos_config}/apps/dawarich/db-data:/dawarich_db_data"
       ];
-
-      networks = [
-	      "immich-net"
-      ];
       
       entrypoint = "web-entrypoint.sh";
       cmd = [
@@ -136,12 +132,9 @@ let
         "${vars.dir.nixos_config}/apps/dawarich/app-data/watched:/var/app/tmp/imports/watched"
         "${vars.dir.nixos_config}/apps/dawarich/app-data/storage:/var/app/storage"
       ];
-
-      networks = [
-        "dawarich-net"
-      ];
       
       entrypoint = "sidekiq-entrypoint.sh";
+      
       cmd = [
         "sidekiq"
       ];

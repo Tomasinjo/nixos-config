@@ -50,10 +50,6 @@ let
         # "${vars.net.zenki.common-vlan.ipv4Address}:1935:1935" # RTMP feeds
         "${vars.net.zenki.common-vlan.ipv4Address}:8555:8555"
       ];
-
-      networks = [
-        "home-assistant-net"
-      ];
       
       capabilities = {
         "PERFMON" = true;

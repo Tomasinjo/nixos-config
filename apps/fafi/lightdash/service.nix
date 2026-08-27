@@ -49,10 +49,6 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/fafi/lightdash/app-data:/usr/app/dbt"
       ];
-
-      networks = [
-        "nocodb-net"
-      ];
       
       user = "";  # the thing doesnt run without root
     }

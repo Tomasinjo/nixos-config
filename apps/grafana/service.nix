@@ -22,10 +22,6 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/grafana/app-data:/var/lib/grafana"
       ];
-
-      networks = [
-        "victoriametrics-net"
-      ];
     }
   ];
 

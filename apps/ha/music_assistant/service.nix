@@ -47,5 +47,4 @@ let
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

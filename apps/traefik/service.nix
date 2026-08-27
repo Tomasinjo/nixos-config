@@ -104,10 +104,10 @@ in {
   virtualisation.oci-containers.containers."gatekeeper" = gatekeeperContainerConfig;
 
   systemd.services = lib.mkMerge [
-    # Creates traefik-net (10.200.1.0/24)
+    # Creates traefik-net (10.0.1.0/24)
     (oci-framework.mkNetwork {
       serviceName = "traefik";
-      inherit serviceId; # 10.200.1.0/24
+      inherit serviceId; # 10.0.1.0/24
     })
     
     # Creates dockerproxy-net (Internal bridge)

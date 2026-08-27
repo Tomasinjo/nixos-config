@@ -18,11 +18,6 @@ let
         "${vars.dir.nixos_config}/apps/arrs/sonarr/app-data:/config"
         "${vars.dir.hoarder_data}/media:/media"
       ];
-
-      networks = [
-        "qbittorrent-net"
-        "prowlarr-net"
-      ];
     }
   ];
 

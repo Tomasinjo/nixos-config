@@ -22,10 +22,6 @@ let
         ''}:/usr/local/bin/before-notebook.d/install-reqs.sh:ro"
       ];
 
-      networks = [
-        "nocodb-net"
-      ];
-
       extraOptions = [
         "--cpuset-cpus=12-19"  # eco cores
       ];

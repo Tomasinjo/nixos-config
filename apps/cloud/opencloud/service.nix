@@ -49,10 +49,6 @@ let
         "${vars.dir.impo_data}/opencloud:/var/lib/opencloud"
       ];
 
-      networks = [
-        "euro-office-net"
-      ];
-
       labels = {
         "traefik.http.middlewares.add-csp.headers.contentSecurityPolicy" = "frame-ancestors 'self' https://*.${vars.net.domain}"; # for onlyoffice to load as iframe. Docs suggest to use yaml to set CSP, but i was lazy https://docs.opencloud.eu/docs/dev/server/services/proxy/information#content-security-policy
         "traefik.http.routers.${serviceHostname}.middlewares" = "add-csp,dynamic-whitelist@file";  # added dynamic-whitelist@file here since it overwrites oci-framework settings
@@ -78,10 +74,6 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/cloud/opencloud/radicale-data/config:/etc/radicale/config"
         "${vars.dir.nixos_config}/apps/cloud/opencloud/radicale-data/data:/var/lib/radicale"
-      ];
-
-      networks = [
-        "cloud-net"
       ];
     }
   ];

@@ -14,21 +14,10 @@ let
     {
       image = "linuxserver/radarr:6.0.4.10291-ls293";
 
-      environment = {};
-
       volumes = [
         "${vars.dir.nixos_config}/apps/arrs/radarr/app-data:/config"
         "${vars.dir.hoarder_data}/media:/media"
       ];
-
-      ports = [];
-
-      networks = [
-        "qbittorrent-net"
-        "prowlarr-net"
-      ];
-      
-      labels = {};
     }
   ];
 
