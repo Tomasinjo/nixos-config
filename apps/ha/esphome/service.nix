@@ -24,10 +24,6 @@ let
         "${vars.dir.nixos_config}/apps/ha/esphome/app-data:/config"
       ];
 
-      networks = [
-        "home-assistant-net"
-      ];
-
       user = ""; # fails if run as user: PermissionError: [Errno 13] Permission denied: '/.platformio'
     }
   ];

@@ -87,10 +87,6 @@ let
         "${vars.dir.nixos_config}/apps/paperless/paperllama-data/prompt.txt:/app/prompt.txt:ro"
       ];
 
-      networks = [
-        "open-webui-net"
-      ];
-
       cmd = ["python" "main.py" "--mode" "auto"];
     }
   ];

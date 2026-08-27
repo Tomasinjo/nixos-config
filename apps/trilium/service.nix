@@ -14,7 +14,7 @@ let
     oci-framework.base.standard
     (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
-      image = "triliumnext/trilium:v0.104.1";
+      image = "triliumnext/trilium:v0.105.0";
 
       environment = {
         "TRILIUM_DATA_DIR" = dataDir;

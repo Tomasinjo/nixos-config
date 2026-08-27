@@ -24,11 +24,6 @@ let
         "${vars.dir.nixos_config}/apps/pgadmin/app-data:/var/lib/pgadmin"
       ];
 
-      networks = [
-        "home-assistant-net"
-        "nocodb-net"
-      ];
-
       user = "";  # does not support changing uids, runs with uid 5050
     }
   ];

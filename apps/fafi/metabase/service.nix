@@ -30,10 +30,6 @@ let
       volumes = [
         "/dev/urandom:/dev/random:ro"
       ];
-
-      networks = [
-        "nocodb-net"
-      ];
     }
   ];
 

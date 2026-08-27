@@ -24,10 +24,6 @@ let
         "${vars.dir.nixos_config}/apps/llm/comfyui/app-data:/root"
       ];
 
-      networks = [
-        "open-webui-net"
-      ];
-
       user = ""; # does not support non-root
       autoStart = false;
     }

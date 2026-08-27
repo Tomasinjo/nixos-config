@@ -3,13 +3,15 @@
 {
   virtualisation.oci-containers.backend = "docker";
 
-  daemon.settings = {
-    default-address-pools = [
-      {
-        base = vars.net.zenki.docker-services.subnet;
-        size = 24;
-      }
-    ];
+  virtualisation.docker = {
+    daemon.settings = {
+      default-address-pools = [
+        {
+          base = vars.net.zenki.docker-services.subnet;
+          size = 24;
+        }
+      ];
+    };
   };
   
 

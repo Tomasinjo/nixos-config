@@ -19,10 +19,6 @@ let
         "${vars.dir.nixos_config}/apps/llm/qdrant/app-data/snapshots:/qdrant/snapshots"
         "${vars.dir.nixos_config}/apps/llm/qdrant/app-data/production.yaml:/qdrant/config/production.yaml"
       ];
-
-      networks = [
-        "open-webui"
-      ];
     }
   ];
 

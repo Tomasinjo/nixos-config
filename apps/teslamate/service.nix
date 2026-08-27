@@ -74,12 +74,10 @@ let
         "DATABASE_PASS" = dbPass;
         "DATABASE_NAME" = dbName;
         "DATABASE_HOST" = "${serviceName}-db";
-        "MQTT_HOST"     = "mqtt";
+        "MQTT_HOST"     = "10.0.22.4";
         "MQTT_USERNAME" = vars.apps.mqtt.user;
         "MQTT_PASSWORD" = vars.apps.mqtt.password;
       };
-
-      networks = [ "home-assistant-net" ];
 
       labels = {
         "glance.name" = "TeslaMate";

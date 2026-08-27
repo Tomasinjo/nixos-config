@@ -36,5 +36,3 @@
     };
   }) config.virtualisation.oci-containers.containers;
 }
-
-}
