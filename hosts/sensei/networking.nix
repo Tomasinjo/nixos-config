@@ -153,17 +153,6 @@
             Prefix = "${vars.net.sensei.common-vlan.ipv6.subnet}/${vars.net.sensei.common-vlan.ipv6.mask}";
           }
         ];
-        routes = [
-          {
-            # static route for docker container networks since SNAT is disabled in docker
-            # this is for return traffic since containers now use their IP for outbound connections.
-            # zenki act as a router with this network behind it.
-            routeConfig = {
-              Destination = vars.net.zenki.docker-services.subnet;
-              Gateway = vars.net.zenki.server-vlan.ipv4Address;
-            };
-          }
-        ];
       };
 
       # VLAN 20 (Guest)
@@ -211,6 +200,17 @@
           ];
           IPv6SendRA = "yes";
         };
+        routes = [
+          {
+            # static route for docker container networks since SNAT is disabled in docker
+            # this is for return traffic since containers now use their IP for outbound connections.
+            # zenki act as a router with this network behind it.
+            routeConfig = {
+              Destination = vars.net.zenki.docker-services.subnet;
+              Gateway = vars.net.zenki.server-vlan.ipv4Address;
+            };
+          }
+        ];
       };
 
       # VLAN 69 (Lab)
