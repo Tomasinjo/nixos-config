@@ -39,7 +39,7 @@
 
     settings = {
       vars.address-groups = {
-        HOME_NET = "[192.168.0.0/16]";
+        HOME_NET = "[192.168.0.0/16, 10.0.0.0/16]";
         EXTERNAL_NET = "!$HOME_NET";
       };
 
@@ -48,7 +48,7 @@
       af-packet = [
         {
           interface = vars.net.sensei.common-vlan.name; # vlan 10
-          bpf-filter = "not dst net 192.168.0.0/16 and not dst ${vars.net.sensei.ipv4_public} and not dst net ${vars.net.sensei.ipv6_prefix} and not port 51413 and not dst net 224.0.0.0/4";
+          bpf-filter = "not dst net 192.168.0.0/16 and not dst net ${vars.net.zenki.docker-services.subnet} and not dst ${vars.net.sensei.ipv4_public} and not dst net ${vars.net.sensei.ipv6_prefix} and not dst net 224.0.0.0/4";
           threads = "auto";
           cluster-id = 10;
           cluster-type = "cluster_flow";
@@ -58,7 +58,17 @@
         }
         {
           interface = vars.net.sensei.iot-vlan.name; # vlan 30
-          bpf-filter = "not dst net 192.168.0.0/16 and not dst ${vars.net.sensei.ipv4_public} and not dst net ${vars.net.sensei.ipv6_prefix} and not port 51413 and not dst net 224.0.0.0/4";
+          bpf-filter = "not dst net 192.168.0.0/16 and not dst net ${vars.net.zenki.docker-services.subnet} and not dst ${vars.net.sensei.ipv4_public} and not dst net ${vars.net.sensei.ipv6_prefix} and not dst net 224.0.0.0/4";
+          threads = "auto";
+          cluster-id = 30;
+          cluster-type = "cluster_flow";
+          defrag = "yes";
+          use-mmap = "yes";
+          tpacket-v3 = "yes";
+        }
+        {
+          interface = vars.net.sensei.server-vlan.name; # vlan 40
+          bpf-filter = "not dst net 192.168.0.0/16 and not dst net ${vars.net.zenki.docker-services.subnet} and not dst ${vars.net.sensei.ipv4_public} and not dst net ${vars.net.sensei.ipv6_prefix} and not port 51413 and not dst net 224.0.0.0/4";
           threads = "auto";
           cluster-id = 30;
           cluster-type = "cluster_flow";
@@ -228,7 +238,7 @@
         victorialogs = {
           type = "http";
           inputs = [ "parse_eve" ];
-          uri = "http://${vars.net.zenki.server-vlan.ipv4Address}:9428/insert/jsonline?_stream_fields=service,event_type,host&_time_field=timestamp";
+          uri = "http://10.0.37.2:9428/insert/jsonline?_stream_fields=service,event_type,host&_time_field=timestamp";
           encoding = {
             codec = "json";
           };
