@@ -45,11 +45,6 @@ let
         "${vars.dir.nixos_config}/apps/frigate/overrides/nginx/logs:/usr/local/nginx/logs"
         "${vars.dir.nixos_config}/apps/frigate/overrides/nginx/temp_dirs:/usr/local/nginx/temp_dirs"
       ];
-
-      ports = [
-        # "${vars.net.zenki.server-vlan.ipv4Address}:1935:1935" # RTMP feeds
-        "${vars.net.zenki.server-vlan.ipv4Address}:8555:8555"
-      ];
       
       capabilities = {
         "PERFMON" = true;

@@ -60,7 +60,7 @@
         victorialogs = {
           type = "http";
           inputs = [ "filter_docker_from_journal" "docker_containers" "local_files" ];
-          uri = "http://localhost:9428/insert/jsonline?_stream_fields=host,container_name,source_type&_msg_field=message&_time_field=timestamp";
+          uri = "http://10.0.37.2:9428/insert/jsonline?_stream_fields=host,container_name,source_type&_msg_field=message&_time_field=timestamp";
           compression = "gzip";
           encoding.codec = "json";
           framing.method = "newline_delimited";

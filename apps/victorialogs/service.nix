@@ -18,10 +18,6 @@ let
         "${vars.dir.nixos_config}/apps/victorialogs/app-data:/victoria-logs-data"
       ];
 
-      ports = [
-	      "0.0.0.0:9428:9428"
-      ];
-
       cmd = [
         "-storageDataPath=victoria-logs-data"
       ];

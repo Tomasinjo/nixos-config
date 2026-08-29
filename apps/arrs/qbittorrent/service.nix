@@ -8,7 +8,7 @@ let
   servicePort = 8888;
   serviceId = 4;
 
-  torrentingPort = "51413";
+  # Note: Has DNAT rule from internet on sensei, port 51413
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.linuxserver
@@ -18,7 +18,7 @@ let
 
       environment = {
         "WEBUI_PORT" = toString servicePort;
-        "TORRENTING_PORT" = torrentingPort;
+        "TORRENTING_PORT" = "51413";
       };
 
       volumes = [
@@ -26,13 +26,6 @@ let
         "${vars.dir.hoarder_data}/media:/media"
         "${vars.dir.games}/downloads:/games"
       ];
-
-      ports = [
-        "${vars.net.zenki.server-vlan.ipv4Address}:${torrentingPort}:${torrentingPort}/tcp"
-        "${vars.net.zenki.server-vlan.ipv4Address}:${torrentingPort}:${torrentingPort}/udp"
-      ];
-      
-      labels = {};
     }
   ];
 

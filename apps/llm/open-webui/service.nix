@@ -49,10 +49,6 @@ let
         "${vars.dir.nixos_config}/apps/llm/open-webui/ollama-data:/root/.ollama"
       ];
 
-      ports = [
-        "${vars.net.zenki.server-vlan.ipv4Address}:7869:11434"
-      ];
-
       user = "";  # does not support non-root
     }
   ];

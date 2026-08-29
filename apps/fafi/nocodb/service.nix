@@ -37,10 +37,6 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/fafi/nocodb/db-data:/data/postgres"
       ];
-
-      ports = [
-        "${vars.net.zenki.server-vlan.ipv4Address}:4432:5432"
-      ];
     }
   ];
 

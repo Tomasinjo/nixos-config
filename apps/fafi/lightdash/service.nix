@@ -81,11 +81,6 @@ let
         "${vars.dir.nixos_config}/apps/fafi/lightdash/minio-data:/data"
       ];
 
-      ports = [
-        #"${vars.net.zenki.server-vlan.ipv4Address}:9000:9000"
-        #"${vars.net.zenki.server-vlan.ipv4Address}:9001:9001" # for minio console
-      ];
-
       entrypoint = "/init-minio.sh";
     }
   ];

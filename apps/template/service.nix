@@ -37,15 +37,10 @@ let
         "${vars.dir.nixos_config}/apps/xxx/app-data:"
       ];
 
-      ports = [];
-
-      # use this only when container has to talk with another container outside this service. Only add it to dependant container (consumer).
-      # traefik-net and ${serviceName}-net will be automatically added by oci-framework (and networks below will be appended after them).
-      networks = [
-        
-      ];
-      
       labels = {};
+      
+      # Do not use ports = [];     # available directly on exposed static IP
+      # Do not use networks = [];  # handled by OCI containers
 
       #dependsOn = [ "${serviceName}-db" ];  # DO NOT USE IT - backup will stop the db service and with it the dependency, which will not be restarted afterwards.
 

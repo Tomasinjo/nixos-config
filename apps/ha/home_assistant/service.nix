@@ -28,10 +28,6 @@ let
         "${vars.dir.nixos_config}/apps/ha/home_assistant/app-media:/media"
         "/dev/serial/by-id:/dev/serial/by-id"
       ];
-
-      ports = [
-        "${vars.net.zenki.server-vlan.ipv4Address}:5683:5683/udp"  # shelly em3 CoIoT"
-      ];
       
       labels = {
         "traefik.http.routers.${serviceHostname}.service" = "ha_service@file";
@@ -69,10 +65,6 @@ let
         "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/config:/mosquitto/config"
         "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/data:/mosquitto/data"
         "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/log:/mosquitto/log"
-      ];
-
-      ports = [
-        "${vars.net.zenki.server-vlan.ipv4Address}:1883:1883"
       ];
     }
   ];
