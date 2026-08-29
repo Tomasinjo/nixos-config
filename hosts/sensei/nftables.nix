@@ -100,7 +100,6 @@ in
           ### To torrent from internet
           iifname "ppp0" ip daddr ${vars.net.zenki.server-vlan.ipv4Address} tcp dport 51413 accept
           iifname "ppp0" ip daddr ${vars.net.zenki.server-vlan.ipv4Address} udp dport 51413 accept
-          
 
           # Lab (VLAN 69) - routed via VPS
           #iifname "${vars.net.sensei.lab-vlan.name}" accept
@@ -114,7 +113,7 @@ in
 
 
           # Docker containers
-          ip saddr ${vars.net.zenki.docker-services.subnet} oifname "ppp0" accept
+          ip saddr ${vars.net.zenki.docker-services.subnet} accept
           ip saddr ${vars.net.zenki.docker-services.subnet} ip daddr ${vars.net.sensei.ipv4DNS} udp dport 53 accept
           ip saddr ${vars.net.zenki.docker-services.subnet} ip daddr ${vars.net.sensei.ipv4DNS} tcp dport 53 accept
         }
