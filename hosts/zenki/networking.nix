@@ -127,16 +127,15 @@
         # D. Mangle Table: Bypass NixOS rpfilter for the container supernet
         ${pkgs.iptables}/bin/iptables -t mangle -I nixos-fw-rpfilter 1 -s ${vars.net.zenki.docker-services.subnet} -j RETURN 2>/dev/null || true
 
-        # E. Forwarding: Allow all outbound, inter-container, and return traffic
-        ${pkgs.iptables}/bin/iptables -I FORWARD 1 -d ${vars.net.zenki.docker-services.subnet} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I FORWARD 2 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
+        # E. Forwarding: Allow all inbound, outbound, inter-container, and return traffic
+        ${pkgs.iptables}/bin/iptables -I FORWARD 1 -s 192.168.0.0/16 -d ${vars.net.zenki.docker-services.subnet} -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -I FORWARD 2 -d ${vars.net.zenki.docker-services.subnet} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -I FORWARD 3 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
         ${pkgs.iptables}/bin/iptables -I DOCKER-USER 1 -d ${vars.net.zenki.docker-services.subnet} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
         ${pkgs.iptables}/bin/iptables -I DOCKER-USER 2 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
 
         # F. NAT Rules: Placed at Rule #1 above Docker's 40+ rules
-        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 1 -s ${vars.net.zenki.docker-services.subnet} -d ${vars.net.zenki.docker-services.subnet} -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 2 -s ${vars.net.zenki.docker-services.subnet} -d 192.168.10.0/24 -j MASQUERADE
-        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 3 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
+        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 1 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT  # disable NAT, default behavior of docker
       '';
     };
   };

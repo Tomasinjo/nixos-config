@@ -14,14 +14,11 @@ let
   serviceName = "music-assistant";
   serviceHostname = "mass";
   servicePort = 8095;
+  serviceId = 39;
 
   appContainerConfig = (oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper {
-      inherit serviceHostname servicePort serviceName;
-      serviceId = null; # macvlan bypasses routed supernet
-      customNetworks = [ "macvlan-10" "home-assistant-net" "traefik-net" ];
-    })
+    (oci-framework.web.exposed_gatekeeper {inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "ghcr.io/music-assistant/server:2.9.13";
 
@@ -32,19 +29,10 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/ha/music_assistant/app-data:/data"
       ];
-
-      labels = {
-        "traefik.http.services.mass-service.loadbalancer.server.url" = "http://${vars.net.zenki.server-vlan.mac-vlan.mass.ipv4Address}:${toString servicePort}";  # because host mode on macvlan
-        "traefik.http.routers.${serviceHostname}.service" = "mass-service";
-      };
-
-      extraOptions = [
-        "--ip=${vars.net.zenki.server-vlan.mac-vlan.mass.ipv4Address}"
-        "--ip6=${vars.net.zenki.server-vlan.mac-vlan.mass.ipv6Address}"
-      ];
     }
   ]);
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

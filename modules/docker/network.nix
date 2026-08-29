@@ -1,4 +1,4 @@
-{ config, lib, vars, ... }:
+{ config, lib, vars, pkgs, ... }:
 
 {
   networking.firewall = {
@@ -28,11 +28,32 @@
   };
 
   # creates docker networks defined in oci-framework
-  systemd.services = lib.mapAttrs' (containerName: _: {
+  systemd.services = (lib.mapAttrs' (containerName: _: {
     name = "docker-${containerName}";
     value = {
       after = [ "docker-networks.target" ];
       requires = [ "docker-networks.target" ];
     };
-  }) config.virtualisation.oci-containers.containers;
+  }) config.virtualisation.oci-containers.containers) // {
+
+    init-docker-networks = {
+      description = "Create global Docker networks";
+      after = [ "docker-networks.target" ];
+      requires = [ "docker-networks.target" ];
+      serviceConfig.Type = "oneshot";
+      script = ''
+        if ! ${pkgs.docker}/bin/docker network inspect macvlan-10 >/dev/null 2>&1; then
+          ${pkgs.docker}/bin/docker network create \
+	          -d macvlan \
+            -o parent=${vars.net.zenki.server-vlan.interface_name} \
+            --subnet=${vars.net.sensei.server-vlan.ipv4.subnet}/${vars.net.sensei.server-vlan.ipv4.mask} \
+            --gateway=${vars.net.sensei.server-vlan.ipv4.gateway} \
+            --ipv6 \
+            --subnet=${vars.net.sensei.server-vlan.ipv6.subnet}/${vars.net.sensei.server-vlan.ipv6.mask} \
+            --gateway=${vars.net.sensei.server-vlan.ipv6.gateway} \
+            macvlan-10
+        fi
+      '';
+    };
+  };
 }
