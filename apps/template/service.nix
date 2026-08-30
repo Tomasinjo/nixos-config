@@ -7,7 +7,7 @@
 # - blog/web_server: web app that does not use wrapper in oci-framework.nix
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "";
   serviceHostname = "";

@@ -1,7 +1,7 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "degoog";
   serviceHostname = "search";
@@ -16,8 +16,8 @@ let
 
       environment = {
         "DEGOOG_DISTRUST_PROXY" = "0";
-        "PUID" = toString vars.dockerUser.uid;
-        "PGID" = toString vars.dockerUser.gid;
+        "PUID" = toString vars.containerUser.uid;
+        "PGID" = toString vars.containerUser.gid;
       };
 
       volumes = [

@@ -168,7 +168,7 @@
         ipv4Address = "192.168.69.15";
         ipv6Address = "${secrets.net.ipv6}69::15";
       };
-      docker-services = {
+      containers = {
         prefix = "10.0";
         subnet = "10.0.0.0/16";
       };

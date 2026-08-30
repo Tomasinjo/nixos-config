@@ -15,7 +15,7 @@ let
     echo "NixOS auto-deploy completed successfully."
   '';
 
-  # Script that runs after docker-backup and checks if it's Sunday
+  # Script that runs after podman-backup and checks if it's Sunday
   sundayCheckScript = pkgs.writeShellScriptBin "nixos-deploy-sunday-check" ''
     if [ "$(date +%w)" -eq 0 ]; then
       echo "Today is Sunday - triggering NixOS auto-deploy..."
@@ -49,7 +49,7 @@ in
       StandardOutput = "journal+console";
       StandardError = "journal+console";
     };
-    wantedBy = [ "docker-backup.service" ];
-    after = [ "docker-backup.service" ];
+    wantedBy = [ "podman-backup.service" ];
+    after = [ "podman-backup.service" ];
   };
 }

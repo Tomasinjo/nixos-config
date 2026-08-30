@@ -5,10 +5,10 @@
     isSystemUser = true;
     group = "vector";
     extraGroups = [ 
-      "docker"  # To read /var/run/docker.sock
+      "podman"  # To read /var/run/docker.sock
       "adm"     # To read system logs/journal
       "users"   # to read files
-      "docker-user"
+      vars.containerUser.name
     ];
   };
   users.groups.vector = {}; # Create the group
@@ -24,8 +24,8 @@
         };
 
         # Docker container logs
-        docker_containers = {
-          type = "docker_logs";
+        podman_containers = {
+          type = "journald";
           multiline = {
             start_pattern = "^[^[:space:]]"; # New log starts with a non-space character (e.g., date/timestamp)
             condition_pattern = "^[[:space:]]"; # Continue merging if line starts with space/tab (e.g., stack trace lines)
@@ -48,18 +48,18 @@
 
 
       transforms = {
-	      # Remove logs from journald that are already captured by the docker source (start with "docker-", but don't exclude docker-update sincce it is a backup script)
-	      filter_docker_from_journal = {
+	      # Remove logs from journald that are already captured by the podman source (start with "podman-", but don't exclude podman-update sincce it is a backup script)
+	      filter_podman_from_journal = {
 	        type = "filter";
 	        inputs = [ "journald" ];
-	        condition = ''!starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-") || starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-update") || starts_with(string(._SYSTEMD_UNIT) ?? "", "docker-backup")'';
+	        condition = ''!starts_with(string(._SYSTEMD_UNIT) ?? "", "podman-") || starts_with(string(._SYSTEMD_UNIT) ?? "", "podman-update") || starts_with(string(._SYSTEMD_UNIT) ?? "", "podman-backup")'';
 	      };
       };
 
       sinks = {
         victorialogs = {
           type = "http";
-          inputs = [ "filter_docker_from_journal" "docker_containers" "local_files" ];
+          inputs = [ "filter_podman_from_journal" "podman_containers" "local_files" ];
           uri = "http://10.0.37.2:9428/insert/jsonline?_stream_fields=host,container_name,source_type&_msg_field=message&_time_field=timestamp";
           compression = "gzip";
           encoding.codec = "json";

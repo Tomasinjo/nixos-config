@@ -1,7 +1,7 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
   serviceId = 1;
 
   appContainerConfig = oci-framework.mergeAll [
@@ -49,7 +49,7 @@ let
         "dockerproxy-net"
       ];
       
-      user = "65534:131"; # 131 is docker gid
+      user = "65534${toString config.users.groups.podman.gid}";
 
       extraOptions = [
         "--read-only"

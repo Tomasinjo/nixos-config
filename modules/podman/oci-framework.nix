@@ -1,13 +1,13 @@
 { lib, config, pkgs, vars }:
 
 let
-  ipPrefix = vars.net.zenki.docker-services.prefix;
+  ipPrefix = vars.net.zenki.podman.services.prefix;
 
   mkIp = serviceId: containerId: "${ipPrefix}.${toString serviceId}.${toString containerId}";
   mkSubnet = serviceId: "${ipPrefix}.${toString serviceId}.0/24";
   mkGateway = serviceId: "${ipPrefix}.${toString serviceId}.1";
 
-  # docker network generator
+  # podman network generator
   mkNetwork = { serviceName, serviceId ? null, subnet ? null, gateway ? null, bridgeName ? null }:
     let
       netName = "${serviceName}-net";
@@ -19,22 +19,20 @@ let
                        then bridgeName 
                        else "br-${builtins.substring 0 12 serviceName}";
     in {
-      "network-docker-${netName}" = {
-        description = "Create Docker Network: ${netName}";
-        after = [ "docker.service" ];
-        requires = [ "docker.service" ];
-        
-        before = [ "docker-networks.target" ];
-        wantedBy = [ "docker-networks.target" ];
+      "network-podman-${netName}" = {
+        description = "Create Podman Network: ${netName}";
+        after = [ "podman.service" ];        
+        before = [ "podman-networks.target" ];
+        wantedBy = [ "podman-networks.target" ];
         
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
           ExecStart = pkgs.writeShellScript "create-network-${netName}" ''
-            ${pkgs.docker}/bin/docker network inspect ${netName} >/dev/null 2>&1 || \
-              ${pkgs.docker}/bin/docker network create \
+            ${pkgs.podman}/bin/podman network inspect ${netName} >/dev/null 2>&1 || \
+              ${pkgs.podman}/bin/podman network create \
                 ${lib.optionalString (calcSubnet != null) "--subnet=${calcSubnet} --gateway=${calcGateway}"} \
-                --opt "com.docker.network.bridge.name"="${safeBridgeName}" \
+                --interface-name="${safeBridgeName}" \
                 ${netName}
           '';
         };
@@ -83,13 +81,13 @@ let
   # Base execution modes
   base = {
     standard = merge core {
-      user = "${toString vars.dockerUser.uid}:${toString vars.dockerUser.gid}";
+      user = "${toString vars.containerUser.uid}:${toString vars.containerUser.gid}";
     };
     
     linuxserver = merge core {
       environment = {
-        "PUID" = toString vars.dockerUser.uid;
-        "PGID" = toString vars.dockerUser.gid;
+        "PUID" = toString vars.containerUser.uid;
+        "PGID" = toString vars.containerUser.gid;
       };
     };
   };

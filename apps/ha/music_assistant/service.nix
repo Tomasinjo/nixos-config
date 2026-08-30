@@ -9,7 +9,7 @@
 # 5353/udp # mdns
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "music-assistant";
   serviceHostname = "mass";

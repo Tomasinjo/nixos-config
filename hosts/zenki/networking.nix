@@ -14,7 +14,7 @@
     "net.ipv4.conf.all.rp_filter" = 0;
     "net.ipv4.conf.default.rp_filter" = 0;
 
-    # Prevents Docker's bridge netfilter from mangling routed packets
+    # Prevents Podman's bridge netfilter from mangling routed packets
     "net.bridge.bridge-nf-call-iptables" = 0;
     "net.bridge.bridge-nf-call-ip6tables" = 0;
     "net.bridge.bridge-nf-call-arptables" = 0;
@@ -84,60 +84,62 @@
     networkConfig.Bridge = "virbr69";
   };
 
-  # Firewall
   networking.firewall = {
-      enable = true;
-      allowPing = true;
-  
-      # default deny all
-      allowedTCPPorts = [ ];
-      allowedUDPPorts = [ ];
-  
-      # allowed ports for system services
-      interfaces."${vars.net.zenki.server-vlan.interface_name}" = {
-        allowedTCPPorts = [ 22 ]; # SSH
-      };
-  
-      trustedInterfaces = [ "docker0" ];
-      checkReversePath = "loose";
+      enable = false;
   };
 
-  systemd.services.docker-routed-firewall = {
-    description = "Apply Docker Routed Supernet Firewall & Routing Rules";
-    after = [ "docker.service" "firewall.service" ];
-    wants = [ "docker.service" "firewall.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "docker-routed-firewall" ''
-        # A. Disable bridge netfilter (Docker re-enables this on boot)
-        ${pkgs.procps}/bin/sysctl -w net.bridge.bridge-nf-call-iptables=0 || true
-        ${pkgs.procps}/bin/sysctl -w net.bridge.bridge-nf-call-ip6tables=0 || true
-        ${pkgs.procps}/bin/sysctl -w net.bridge.bridge-nf-call-arptables=0 || true
+  networking.nftables = {
+    enable = true;
+    ruleset = ''
+      table ip nat {
+        chain PREROUTING {
+          type nat hook prerouting priority dstnat; policy accept;
+        }
+        chain POSTROUTING {
+          type nat hook postrouting priority srcnat; policy accept;
+          
+          # Disable SNAT so podman containers use their static ip for outbound traffic
+          ip saddr ${vars.net.zenki.containers.subnet} accept
+        }
+      }
 
-        # B. Enable forwarding and disable rp_filter on dynamic veth/bridge interfaces
-        for f in /proc/sys/net/ipv4/conf/*/forwarding; do echo 1 > $f; done
-        for f in /proc/sys/net/ipv4/conf/*/rp_filter; do echo 0 > $f; done
+      table inet filter {
+        chain input {
+          type filter hook input priority filter; policy drop;
 
-        # C. Raw Table: Allow inbound & outbound supernet traffic
-        ${pkgs.iptables}/bin/iptables -t raw -I PREROUTING 1 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT 2>/dev/null || true
-        ${pkgs.iptables}/bin/iptables -t raw -I PREROUTING 2 -d ${vars.net.zenki.docker-services.subnet} -j ACCEPT 2>/dev/null || true
+          iifname "lo" accept
+          ct state { established, related } accept
+          
+          iifname "${vars.net.zenki.server-vlan.interface_name}" tcp dport 22 accept
+          
+          ip protocol icmp accept
+          ip6 nexthdr icmpv6 accept
+          
+          # Allow traffic from container bridges
+          iifname "podman0" accept
+          iifname "br-*" accept
+        }
 
-        # D. Mangle Table: Bypass NixOS rpfilter for the container supernet
-        ${pkgs.iptables}/bin/iptables -t mangle -I nixos-fw-rpfilter 1 -s ${vars.net.zenki.docker-services.subnet} -j RETURN 2>/dev/null || true
+        chain forward {
+          type filter hook forward priority filter; policy drop;
 
-        # E. Forwarding: Allow all inbound, outbound, inter-container, and return traffic
-        ${pkgs.iptables}/bin/iptables -I FORWARD 1 -s 192.168.0.0/16 -d ${vars.net.zenki.docker-services.subnet} -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I FORWARD 2 -d ${vars.net.zenki.docker-services.subnet} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I FORWARD 3 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I DOCKER-USER 1 -d ${vars.net.zenki.docker-services.subnet} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I DOCKER-USER 2 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
-
-        # F. NAT Rules: Placed at Rule #1 above Docker's 40+ rules
-        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 1 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT  # disable NAT, default behavior of docker
-      '';
-    };
+          # containers outbound and inbound and between each other
+          ip saddr 192.168.0.0/16 ip daddr ${vars.net.zenki.containers.subnet} accept
+          ip daddr ${vars.net.zenki.containers.subnet} ct state { established, related } accept
+          ip saddr ${vars.net.zenki.containers.subnet} accept
+        }
+      }
+      
+      table ip raw {
+        chain PREROUTING {
+          type filter hook prerouting priority raw; policy accept;
+          
+          # Allow inbound & outbound supernet traffic bypass
+          ip saddr ${vars.net.zenki.containers.subnet} accept
+          ip daddr ${vars.net.zenki.containers.subnet} accept
+        }
+      }
+    '';
   };
   
   users.users.${vars.username}.extraGroups = [ "networkmanager" ];

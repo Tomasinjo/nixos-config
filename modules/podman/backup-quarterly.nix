@@ -23,13 +23,13 @@ let
   '';
 
   backupScriptServicesQuarterly = pkgs.writeShellScriptBin "backup-services-quarterly" ''
-    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:${pkgs.systemd}/bin:${pkgs.gawk}/bin
+    PATH=$PATH:${pkgs.podman}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:${pkgs.systemd}/bin:${pkgs.gawk}/bin
     
     # Get a list of currently running containers that end with "-db"
-    DB_CONTAINERS=$(docker ps --format '{{.Names}}' | grep '\-db$' || true)
+    DB_CONTAINERS=$(podman ps --format '{{.Names}}' | grep '\-db$' || true)
 
     if [ -n "$DB_CONTAINERS" ]; then
-      DB_SERVICES=$(echo "$DB_CONTAINERS" | awk '{print "docker-"$1".service"}')
+      DB_SERVICES=$(echo "$DB_CONTAINERS" | awk '{print "podman-"$1".service"}')
       echo "Stopping services: $(echo $DB_SERVICES)"
       systemctl stop $DB_SERVICES
     else

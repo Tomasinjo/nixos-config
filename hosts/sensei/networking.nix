@@ -202,11 +202,11 @@
         };
         routes = [
           {
-            # static route for docker container networks since SNAT is disabled in docker
+            # static route for podman container networks since SNAT is disabled in podman
             # this is for return traffic since containers now use their IP for outbound connections.
             # zenki act as a router with this network behind it.
             routeConfig = {
-              Destination = vars.net.zenki.docker-services.subnet;
+              Destination = vars.net.zenki.containers.subnet;
               Gateway = vars.net.zenki.server-vlan.ipv4Address;
             };
           }

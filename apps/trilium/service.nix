@@ -1,7 +1,7 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "trilium";
   serviceHostname = "notes";
@@ -18,8 +18,8 @@ let
 
       environment = {
         "TRILIUM_DATA_DIR" = dataDir;
-        "USER_UID" = toString vars.dockerUser.uid;
-        "USER_GID" = toString vars.dockerUser.gid;
+        "USER_UID" = toString vars.containerUser.uid;
+        "USER_GID" = toString vars.containerUser.gid;
       };
 
       volumes = [

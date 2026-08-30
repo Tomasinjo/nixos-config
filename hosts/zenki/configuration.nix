@@ -4,7 +4,7 @@
     ./hardware-configuration.nix
     ./networking.nix
     ../../modules/common.nix
-    ../../modules/docker/init.nix
+    ../../modules/podman/init.nix
     ../../modules/cowabunga/syslog-sender.nix
     ../../modules/ssh.nix
     ../../modules/zfs/init.nix
