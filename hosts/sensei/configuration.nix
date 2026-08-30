@@ -16,7 +16,7 @@
     ../../modules/utilities.nix
     ../../modules/wireshark.nix  # for dumpcap, remote capture via wireshark
     ../../modules/cowabunga/syslog-receiver.nix
-    ../../modules/cowabunga/fail2ban.nix
+    #../../modules/cowabunga/fail2ban.nix
     ../../modules/cowabunga/shit_list.nix
   ];
 

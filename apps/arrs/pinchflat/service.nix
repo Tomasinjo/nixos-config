@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "pinchflat";
   serviceHostname = "tube";
   servicePort = 8945;
+  serviceId = 2;
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "keglin/pinchflat:v2025.6.6";
 
@@ -21,13 +22,10 @@ let
         "${vars.dir.nixos_config}/apps/arrs/pinchflat/app-data:/config"
         "${vars.dir.hoarder_data}/media/library/tube:/downloads"
       ];
-
-      ports = [];
-      networks = [];
-      labels = {};
     }
   ];
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = containerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

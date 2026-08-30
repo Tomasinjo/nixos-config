@@ -1,11 +1,18 @@
 { lib, config, pkgs, vars, ... }:
 
+# special configs:
+# - teslamate: two webapps
+# - dawarich: custom database
+# - music asssistant: macvlan
+# - blog/web_server: web app that does not use wrapper in oci-framework.nix
+
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "";
   serviceHostname = "";
   servicePort = ;
+  serviceId = 0;  # this is third octet of subnet, must be unique!
 
   dbUser = "";
   dbPass = vars.apps.;
@@ -13,11 +20,12 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 4; }) # use for any non-web, non-db containers. IDs 2 (web) and 3 (db) are reserved! This is used to pass over service and container IDs which generate static IP for container
     #oci-framework.base.linuxserver
-    #(oci-framework.web.base { inherit serviceHostname servicePort serviceName; })
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
-    #(oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
-    #(oci-framework.web.exposed_mtls { inherit serviceHostname servicePort serviceName; })
+    #(oci-framework.web.base { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    #(oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
+    #(oci-framework.web.exposed_mtls { inherit serviceHostname servicePort serviceName serviceId; })
     #oci-framework.hardware.cuda
     #oci-framework.hardware.quicksync
     {
@@ -29,18 +37,11 @@ let
         "${vars.dir.nixos_config}/apps/xxx/app-data:"
       ];
 
-      ports = [];
-
-      networks = [
-        "arr-net"
-        "ha-net"
-        "fafi-net"
-        "llm-net"
-        "macvlan-10"
-      ];
-      
       labels = {};
-      dependsOn = [];
+      
+      # Do not use ports = [];     # available directly on exposed static IP
+      # Do not use networks = [];  # handled by OCI containers
+
       #dependsOn = [ "${serviceName}-db" ];  # DO NOT USE IT - backup will stop the db service and with it the dependency, which will not be restarted afterwards.
 
       # optional and overrides
@@ -66,20 +67,18 @@ let
       #];
 
       # FQDN: ${serviceHostname}.${vars.net.domain}
-      # IP ${vars.net.zenki.common-vlan.ipv4Address}
+      # IP ${vars.net.zenki.server-vlan.ipv4Address}
     }
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.apps.postgres { inherit dbUser dbPass dbName; })
+    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
+    # or instead of above, if this is non-standard DB, then use the following which assigns it ID of 2 (last octet in static ip):
+    (oci-framework.db { inherit serviceName serviceId; })
     {
       volumes = [
         "${vars.dir.nixos_config}/apps/xxxx/db-data:/data/postgres"
-      ];
-
-      networks = [
-
       ];
     }
   ];
@@ -87,4 +86,6 @@ let
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

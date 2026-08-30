@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "opencloud";
   serviceHostname = "files";
   servicePort = 9200;
+  serviceId = 10;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "opencloudeu/opencloud-rolling:7.4.0";
 
@@ -39,7 +40,7 @@ let
         "COLLABORATION_CS3API_DATAGATEWAY_INSECURE" = "false";
         "COLLABORATION_WOPI_SRC" = "http://${serviceName}-app:9300";
         "COLLABORATION_HTTP_ADDR" = "0.0.0.0:9300";
-	"COLLABORATION_APP_PROOF_DISABLE" = "true";
+	      "COLLABORATION_APP_PROOF_DISABLE" = "true";
       };
 
       volumes = [
@@ -48,10 +49,6 @@ let
         "${vars.dir.impo_data}/opencloud:/var/lib/opencloud"
       ];
 
-      ports = [];
-      networks = [
-        "cloud-net"
-      ];
       labels = {
         "traefik.http.middlewares.add-csp.headers.contentSecurityPolicy" = "frame-ancestors 'self' https://*.${vars.net.domain}"; # for onlyoffice to load as iframe. Docs suggest to use yaml to set CSP, but i was lazy https://docs.opencloud.eu/docs/dev/server/services/proxy/information#content-security-policy
         "traefik.http.routers.${serviceHostname}.middlewares" = "add-csp,dynamic-whitelist@file";  # added dynamic-whitelist@file here since it overwrites oci-framework settings
@@ -60,7 +57,6 @@ let
         "traefik.http.routers.opencloud-share.tls" = "true";
         "traefik.http.routers.opencloud-share.middlewares" = "gatekeeper_opencloud_share@docker,add-csp";
       };
-      dependsOn = [];
 
       entrypoint = "/bin/sh";
       cmd = [ "-c" "opencloud init || true; opencloud server" ];
@@ -71,27 +67,20 @@ let
 
   radicaleContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
     {
       image = "opencloudeu/radicale:v3.7.8";
-
-      environment = {};
 
       volumes = [
         "${vars.dir.nixos_config}/apps/cloud/opencloud/radicale-data/config:/etc/radicale/config"
         "${vars.dir.nixos_config}/apps/cloud/opencloud/radicale-data/data:/var/lib/radicale"
       ];
-
-      ports = [];
-
-      networks = [
-        "cloud-net"
-      ];
-
-      labels = {};
     }
   ];
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
   virtualisation.oci-containers.containers."radicale" = radicaleContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

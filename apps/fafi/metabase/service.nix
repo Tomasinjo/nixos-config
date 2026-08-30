@@ -1,11 +1,12 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "metabase";
   serviceHostname = "fafi";
   servicePort = 3000;
+  serviceId = 14;
 
   dbUser = "metabase";
   dbPass = vars.apps.metabase.db.password;
@@ -13,7 +14,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "metabase/metabase:v0.58.x";
 
@@ -29,28 +30,15 @@ let
       volumes = [
         "/dev/urandom:/dev/random:ro"
       ];
-
-      ports = [];
-
-      networks = [
-        "metabase-net"
-        "fafi-net"
-      ];
-      
-      labels = {};
     }
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.apps.postgres { inherit dbUser dbPass dbName; })
+    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       volumes = [
         "${vars.dir.nixos_config}/apps/fafi/metabase/db-data:/data/postgres"
-      ];
-
-      networks = [
-        "metabase-net"
       ];
     }
   ];
@@ -58,4 +46,6 @@ let
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
   virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
+
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

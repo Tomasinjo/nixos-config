@@ -1,15 +1,16 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config vars; };
+  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "grafana";
   serviceHostname = "graf";
   servicePort = 3000;
+  serviceId = 18;
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "grafana/grafana:13.2.0";
 
@@ -21,19 +22,10 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/grafana/app-data:/var/lib/grafana"
       ];
-
-      ports = [];
-
-      networks = [
-        "logging-net"
-        "fat-net"
-      ];
-      
-      labels = {};
-      dependsOn = [];
     }
   ];
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
+  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
 }

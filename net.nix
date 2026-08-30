@@ -78,6 +78,20 @@
           charger_leaf =          { mac = "bc:35:1e:da:2d:0f"; ip = "192.168.30.212"; allow_out = false; hostname = "tuya-leaf-charger"; };
         };
       };
+      server-vlan = {
+        id = 40;
+        name = "vlan40";
+        ipv4 = {
+          subnet =  "192.168.40.0";
+          gateway = "192.168.40.1";
+          mask = "24";
+        };
+        ipv6 = {
+          subnet =  "${secrets.net.ipv6}40::";
+          gateway = "${secrets.net.ipv6}40::1";
+          mask = "64";
+        };
+      };
       mgmt-vlan = {
         id = 99;
         name = "vlan99";
@@ -134,18 +148,18 @@
       fqdn = "zenki.${secrets.net.domain}";
       interface_mac = "f4:52:14:87:bd:20";
       interface_name = "eth10g";
-      common-vlan = {
-        interface_name = "eth10g.10";
-  	    ipv4Address = "192.168.10.15";
-        ipv6Address = "${secrets.net.ipv6}10::15";
+      server-vlan = {
+        interface_name = "eth10g.40";
+  	    ipv4Address = "192.168.40.15";
+        ipv6Address = "${secrets.net.ipv6}40::15";
         mac-vlan = {
           mass = {
-  	        ipv4Address = "192.168.10.29";
-            ipv6Address = "${secrets.net.ipv6}10::29";
+  	        ipv4Address = "192.168.40.29";
+            ipv6Address = "${secrets.net.ipv6}40::29";
           };
           traefik = {
-  	        ipv4Address = "192.168.10.25";
-            ipv6Address = "${secrets.net.ipv6}10::25";
+  	        ipv4Address = "192.168.40.25";
+            ipv6Address = "${secrets.net.ipv6}40::25";
           };
         };
       };
@@ -153,6 +167,10 @@
         interface_name = "eth10g.69";
         ipv4Address = "192.168.69.15";
         ipv6Address = "${secrets.net.ipv6}69::15";
+      };
+      docker-services = {
+        prefix = "10.0";
+        subnet = "10.0.0.0/16";
       };
     };
 

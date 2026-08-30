@@ -36,7 +36,6 @@
     };
   };
 
-  # IP forwarding
   boot.kernel.sysctl = {
     "net.ipv4.ip_forward" = 1;
     "net.ipv6.conf.all.forwarding" = 1;
@@ -69,6 +68,10 @@
       "20-${vars.net.sensei.iot-vlan.name}" = {
         netdevConfig = { Name = vars.net.sensei.iot-vlan.name; Kind = "vlan"; };
         vlanConfig = { Id = vars.net.sensei.iot-vlan.id; };
+      };
+      "20-${vars.net.sensei.server-vlan.name}" = {
+        netdevConfig = { Name = vars.net.sensei.server-vlan.name; Kind = "vlan"; };
+        vlanConfig = { Id = vars.net.sensei.server-vlan.id; };
       };
       "20-${vars.net.sensei.lab-vlan.name}" = {
         netdevConfig = { Name = vars.net.sensei.lab-vlan.name; Kind = "vlan"; };
@@ -116,6 +119,7 @@
             vars.net.sensei.common-vlan.name
             vars.net.sensei.guest-vlan.name
             vars.net.sensei.iot-vlan.name
+            vars.net.sensei.server-vlan.name
             vars.net.sensei.lab-vlan.name
           ];
           Address = [ 
@@ -184,6 +188,29 @@
           ];
           IPv6SendRA = "no";
         };
+      };
+
+      # Server VLAN 40
+      "30-${vars.net.sensei.server-vlan.name}" = {
+        matchConfig.Name = vars.net.sensei.server-vlan.name;
+        networkConfig = {
+          Address = [ 
+            "${vars.net.sensei.server-vlan.ipv4.gateway}/${vars.net.sensei.server-vlan.ipv4.mask}"
+            "${vars.net.sensei.server-vlan.ipv6.gateway}/${vars.net.sensei.server-vlan.ipv6.mask}"
+          ];
+          IPv6SendRA = "yes";
+        };
+        routes = [
+          {
+            # static route for docker container networks since SNAT is disabled in docker
+            # this is for return traffic since containers now use their IP for outbound connections.
+            # zenki act as a router with this network behind it.
+            routeConfig = {
+              Destination = vars.net.zenki.docker-services.subnet;
+              Gateway = vars.net.zenki.server-vlan.ipv4Address;
+            };
+          }
+        ];
       };
 
       # VLAN 69 (Lab)
