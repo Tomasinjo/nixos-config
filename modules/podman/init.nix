@@ -3,14 +3,23 @@
 {
   virtualisation.oci-containers.backend = "podman";
 
-  virtualisation.podman = {
-    enable = true;
-    autoPrune.enable = true;
-    defaultNetwork.settings = {
-      default_subnet = vars.net.zenki.containers.subnet;
+  virtualisation = {
+    podman = {
+      enable = true;
+      autoPrune.enable = true;
+      defaultNetwork.settings = {
+        default_subnet = vars.net.zenki.containers.subnet;
+      };
+    };
+    containers.storage.settings = {
+      storage = {
+        driver = "overlay";
+        graphroot = "/home/tom/containers/storage";
+        runroot = "/run/containers/storage";
+      };
     };
   };
-  
+
   environment.systemPackages = [ pkgs.podman-compose pkgs.ctop ];
 
   users = {
@@ -34,7 +43,6 @@
     ./network.nix
     ./backup-daily-weekly.nix
     ./backup-quarterly.nix
-    ./image_prune.nix
     ./deploy.nix
     ./vector.nix
     ../../apps/arrs/jellyfin/service.nix
