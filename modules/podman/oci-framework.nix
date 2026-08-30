@@ -1,27 +1,49 @@
 { lib, config, pkgs, vars }:
 
 let
-  ipPrefix = vars.net.zenki.podman.services.prefix;
+  ipPrefix = vars.net.zenki.containers.prefix;
+  ip6Prefix = vars.net.zenki.containers.prefix6;
 
+  # use serviceid to determine the ipv6 network
+  formatService6 = serviceId: toString (1000 + serviceId);
+
+  # ipv4 helpers
   mkIp = serviceId: containerId: "${ipPrefix}.${toString serviceId}.${toString containerId}";
   mkSubnet = serviceId: "${ipPrefix}.${toString serviceId}.0/24";
   mkGateway = serviceId: "${ipPrefix}.${toString serviceId}.1";
 
-  # podman network generator
-  mkNetwork = { serviceName, serviceId ? null, subnet ? null, gateway ? null, bridgeName ? null }:
+  # ipv6 helpers - aaaa:aaaa:aaaa:ff00:1XXX::Y)
+  mkIp6 = serviceId: containerId: "${ip6Prefix}:${formatService6 serviceId}::${toString containerId}";
+  mkSubnet6 = serviceId: "${ip6Prefix}:${formatService6 serviceId}::/80";
+  mkGateway6 = serviceId: "${ip6Prefix}:${formatService6 serviceId}::1";
+
+  # generates systemd services that create dual stack podman network
+  mkNetwork = { 
+    serviceName, 
+    serviceId ? null, 
+    subnet ? null, 
+    gateway ? null, 
+    ipv6Subnet ? null, 
+    ipv6Gateway ? null, 
+    bridgeName ? null,
+    isInternal ? false 
+  }:
     let
       netName = "${serviceName}-net";
       calcSubnet = if subnet != null then subnet else (if serviceId != null then mkSubnet serviceId else null);
       calcGateway = if gateway != null then gateway else (if serviceId != null then mkGateway serviceId else null);
+
+      hasV6 = serviceId != null && (vars.net.zenki.containers ? prefix6);
+      calcSubnet6 = if ipv6Subnet != null then ipv6Subnet else (if hasV6 then mkSubnet6 serviceId else null);
+      calcGateway6 = if ipv6Gateway != null then ipv6Gateway else (if hasV6 then mkGateway6 serviceId else null);
       
-      # minimized to 12 chars + "br-" prefix to respect Linux 15-char IFNAMSIZ limit
       safeBridgeName = if bridgeName != null 
                        then bridgeName 
                        else "br-${builtins.substring 0 12 serviceName}";
     in {
       "network-podman-${netName}" = {
-        description = "Create Podman Network: ${netName}";
-        after = [ "podman.service" ];        
+        description = "Create Dual-Stack Podman Network: ${netName}";
+        after = [ "network.target" ];
         before = [ "podman-networks.target" ];
         wantedBy = [ "podman-networks.target" ];
         
@@ -31,7 +53,9 @@ let
           ExecStart = pkgs.writeShellScript "create-network-${netName}" ''
             ${pkgs.podman}/bin/podman network inspect ${netName} >/dev/null 2>&1 || \
               ${pkgs.podman}/bin/podman network create \
+                ${lib.optionalString isInternal "--internal"} \
                 ${lib.optionalString (calcSubnet != null) "--subnet=${calcSubnet} --gateway=${calcGateway}"} \
+                ${lib.optionalString (calcSubnet6 != null) "--ipv6 --subnet=${calcSubnet6} --gateway=${calcGateway6}"} \
                 --interface-name="${safeBridgeName}" \
                 ${netName}
           '';
@@ -94,14 +118,12 @@ let
 
   # Helper for backend containers (containerId is a REQUIRED integer)
   container = { serviceName, serviceId, containerId }: {
-    networks = [ "${serviceName}-net" ];
-    extraOptions = [ "--ip=${mkIp serviceId containerId}" ];
+    networks = [ "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" ];
   };
 
   # Helper for databases (containerId defaults to 3)
   db = { serviceName, serviceId, containerId ? 3 }: {
-    networks = [ "${serviceName}-net" ];
-    extraOptions = [ "--ip=${mkIp serviceId containerId}" ];
+    networks = [ "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" ];
   };
 
   # Web applications (containerId defaults to 2, serviceId optional for macvlan)
@@ -116,13 +138,14 @@ let
     }: 
     let
       hasRoutedNet = serviceId != null;
+      primaryNet = if hasRoutedNet 
+                   then "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" 
+                   else "${serviceName}-net";
     in {
       networks = if customNetworks != null 
                  then customNetworks 
-                 else (if hasRoutedNet then [ "${serviceName}-net" "traefik-net" ] else [ "traefik-net" ]);
-      
-      extraOptions = lib.optional hasRoutedNet "--ip=${mkIp serviceId containerId}";
-      
+                 else (if hasRoutedNet then [ primaryNet "traefik-net" ] else [ "traefik-net" ]);
+            
       labels = {
         "traefik.enable" = "true";
         "traefik.http.routers.${serviceHostname}.rule" = "Host(`${serviceHostname}.${vars.net.domain}`)";

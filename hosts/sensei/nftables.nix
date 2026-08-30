@@ -95,8 +95,8 @@ in
           # Server
           iifname "${vars.net.sensei.server-vlan.name}" ip saddr ${vars.net.zenki.server-vlan.ipv4Address} accept
           ### To traefik from internet
-          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip daddr ${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv4Address} tcp dport { 80, 443 } accept
-          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip6 daddr ${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv6Address} tcp dport { 80, 443 } accept
+          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip daddr 10.0.1.2 tcp dport { 80, 443 } accept
+          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport { 80, 443 } accept
 
           # Lab (VLAN 69) - routed via VPS
           #iifname "${vars.net.sensei.lab-vlan.name}" accept
@@ -135,8 +135,8 @@ in
           ip daddr 192.168.50.80 dnat to 193.77.156.2
 
           # Port forwarding
-          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", wg0 } ip daddr ${vars.net.sensei.ipv4_public} tcp dport 443 dnat to ${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv4Address}:443
-          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", "wg0"} ip daddr ${vars.net.sensei.ipv4_public} tcp dport 80 dnat to ${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv4Address}:80
+          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", wg0 } ip daddr ${vars.net.sensei.ipv4_public} tcp dport 443 dnat to 10.0.1.2:443
+          iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", "wg0"} ip daddr ${vars.net.sensei.ipv4_public} tcp dport 80 dnat to 10.0.1.2:80
           iifname "ppp0" tcp dport 51413 dnat to 10.0.4.2:51413
           iifname "ppp0" udp dport 51413 dnat to 10.0.4.2:51413
         }
@@ -145,8 +145,8 @@ in
           type nat hook postrouting priority srcnat; policy accept;
           
           # Hairpin NAT for Traefik
-          ip saddr ${vars.net.sensei.common-vlan.ipv4.subnet}/${vars.net.sensei.common-vlan.ipv4.mask} ip daddr ${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv4Address} tcp dport { 80, 443 } snat to ${vars.net.sensei.common-vlan.ipv4.gateway}
-          ip saddr ${vars.net.sensei.wireguard.ipv4.subnet}/${vars.net.sensei.wireguard.ipv4.mask} ip daddr ${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv4Address} tcp dport { 80, 443 } snat to ${vars.net.sensei.wireguard.ipv4.gateway}
+          ip saddr ${vars.net.sensei.common-vlan.ipv4.subnet}/${vars.net.sensei.common-vlan.ipv4.mask} ip daddr 10.0.1.2 tcp dport { 80, 443 } snat to ${vars.net.sensei.common-vlan.ipv4.gateway}
+          ip saddr ${vars.net.sensei.wireguard.ipv4.subnet}/${vars.net.sensei.wireguard.ipv4.mask} ip daddr 10.0.1.2 tcp dport { 80, 443 } snat to ${vars.net.sensei.wireguard.ipv4.gateway}
           
           # Outbound NAT (Masquerade on WAN)
           oifname "ppp0" masquerade

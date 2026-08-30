@@ -25,7 +25,7 @@
 
         # Docker container logs
         podman_containers = {
-          type = "journald";
+          type = "docker_logs";  # uses docker.sock, symlinked podman.sock
           multiline = {
             start_pattern = "^[^[:space:]]"; # New log starts with a non-space character (e.g., date/timestamp)
             condition_pattern = "^[[:space:]]"; # Continue merging if line starts with space/tab (e.g., stack trace lines)

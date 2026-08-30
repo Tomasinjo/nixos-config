@@ -171,6 +171,8 @@
       containers = {
         prefix = "10.0";
         subnet = "10.0.0.0/16";
+        prefix6 = "${secrets.net.ipv6}00";
+        subnet6 = "${secrets.net.ipv6}00/64"; # ff00
       };
     };
 

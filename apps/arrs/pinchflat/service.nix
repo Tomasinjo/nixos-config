@@ -6,7 +6,7 @@ let
   serviceName = "pinchflat";
   serviceHostname = "tube";
   servicePort = 8945;
-  serviceId = 2;
+  serviceId = 40;
 
   containerConfig = oci-framework.mergeAll [
     oci-framework.base.standard

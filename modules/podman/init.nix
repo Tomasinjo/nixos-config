@@ -7,8 +7,10 @@
     podman = {
       enable = true;
       autoPrune.enable = true;
+      dockerSocket.enable = true; # creates /var/run/docker.sock, symlinked from podman.sock.
       defaultNetwork.settings = {
         default_subnet = vars.net.zenki.containers.subnet;
+        dns_enabled = true;
       };
     };
     containers.storage.settings = {
