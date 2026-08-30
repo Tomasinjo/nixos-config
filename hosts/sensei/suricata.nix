@@ -70,7 +70,7 @@
           interface = vars.net.sensei.server-vlan.name; # vlan 40
           bpf-filter = "not dst net 192.168.0.0/16 and not dst net ${vars.net.zenki.docker-services.subnet} and not dst ${vars.net.sensei.ipv4_public} and not dst net ${vars.net.sensei.ipv6_prefix} and not port 51413 and not dst net 224.0.0.0/4";
           threads = "auto";
-          cluster-id = 30;
+          cluster-id = 40;
           cluster-type = "cluster_flow";
           defrag = "yes";
           use-mmap = "yes";

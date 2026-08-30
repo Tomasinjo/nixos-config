@@ -120,7 +120,7 @@ in
           # esphome to IoT
           iifname ${vars.net.sensei.server-vlan.name} ip saddr 10.0.21.2 oifname "${vars.net.sensei.iot-vlan.name}" accept
           # allow outbound
-          ip saddr ${vars.net.zenki.docker-services.subnet} oifname "ppp0"
+          ip saddr ${vars.net.zenki.docker-services.subnet} oifname "ppp0" accept
         }
 
         chain output {
