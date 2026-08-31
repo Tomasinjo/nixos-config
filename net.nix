@@ -152,16 +152,6 @@
         interface_name = "eth10g.40";
   	    ipv4Address = "192.168.40.15";
         ipv6Address = "${secrets.net.ipv6}40::15";
-        mac-vlan = {
-          mass = {
-  	        ipv4Address = "192.168.40.29";
-            ipv6Address = "${secrets.net.ipv6}40::29";
-          };
-          traefik = {
-  	        ipv4Address = "192.168.40.25";
-            ipv6Address = "${secrets.net.ipv6}40::25";
-          };
-        };
       };
       lab-vlan = {
         interface_name = "eth10g.69";
@@ -172,7 +162,7 @@
         prefix = "10.0";
         subnet = "10.0.0.0/16";
         prefix6 = "${secrets.net.ipv6}00";
-        subnet6 = "${secrets.net.ipv6}00/64"; # ff00
+        subnet6 = "${secrets.net.ipv6}00::/64"; # ff00
       };
     };
 
