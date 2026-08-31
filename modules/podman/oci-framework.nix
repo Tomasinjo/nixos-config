@@ -68,7 +68,7 @@ let
     volumes = [
       "/etc/localtime:/etc/localtime:ro"
     ];
-    log-driver = "json-file";
+    log-driver = "journald";
     capabilities = {
       "NET_RAW" = false;
     };

@@ -13,8 +13,14 @@
         dns_enabled = true;
       };
     };
-    containers.storage.settings = {
-      storage = {
+    containers = {
+      enable = true;
+      containersConf.settings = {
+        containers = {
+          log_driver = "journald";
+        };
+      };
+      storage.settings.storage = {
         driver = "overlay";
         graphroot = "/home/tom/containers/storage";
         runroot = "/run/containers/storage";

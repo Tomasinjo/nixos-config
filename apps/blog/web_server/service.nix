@@ -44,15 +44,18 @@ let
       labels = {
         "traefik.enable" = "true";
         "traefik.docker.network" = "traefik-net"; # important because oci-framework will make traefik-net secondary to blog-net (derived from serviceName).
+        "traefik.http.services.blog-service.loadbalancer.server.port" = "8080";
         "traefik.http.routers.rp.rule" = "Host(`www.${vars.apps.blog.si.domain}`) || Host(`${vars.apps.blog.si.domain}`)";
         "traefik.http.routers.rp.entrypoints" = "https,http";
         "traefik.http.routers.rp.tls" = "true";
+        "traefik.http.routers.rp.service" = "blog-service";
         "traefik.http.routers.rp.middlewares" = "umami_mw@file,redirect-to-non-www-rp,security-headers";
         "traefik.http.routers.rp.tls.certresolver" = "tls_challenge_resolver";
 
         "traefik.http.routers.ts.rule" = "Host(`www.${vars.apps.blog.en.domain}`) || Host(`${vars.apps.blog.en.domain}`)";
         "traefik.http.routers.ts.entrypoints" = "https,http";
         "traefik.http.routers.ts.tls" = "true";
+        "traefik.http.routers.ts.service" = "blog-service";
         "traefik.http.routers.ts.middlewares" = "umami_mw@file,redirect-to-non-www-ts,security-headers";
         "traefik.http.routers.ts.tls.certresolver" = "tls_challenge_resolver";
 

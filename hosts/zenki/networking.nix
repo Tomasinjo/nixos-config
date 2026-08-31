@@ -10,6 +10,12 @@
     "net.ipv4.conf.all.forwarding" = 1;
     "net.ipv4.conf.default.forwarding" = 1;
 
+    "net.ipv6.conf.all.forwarding" = 1;
+    "net.ipv6.conf.default.forwarding" = 1;
+    
+    "net.ipv6.conf.all.accept_ra" = 2;  # turn on router advertisment which get disabled when ipv6 forwarding is enabled
+    "net.ipv6.conf.default.accept_ra" = 2;
+
     # Prevents kernel from dropping inter-bridge container traffic
     "net.ipv4.conf.all.rp_filter" = 0;
     "net.ipv4.conf.default.rp_filter" = 0;
@@ -113,7 +119,7 @@
           iifname "${vars.net.zenki.server-vlan.interface_name}" tcp dport 22 accept
           
           ip protocol icmp accept
-          ip6 nexthdr icmpv6 accept
+          meta l4proto ipv6-icmp accept
           
           # Allow traffic from container bridges
           iifname "podman0" accept
@@ -122,11 +128,17 @@
 
         chain forward {
           type filter hook forward priority filter; policy drop;
+          ct state { established, related } accept
+          meta l4proto ipv6-icmp accept
 
           # containers outbound and inbound and between each other
           ip saddr 192.168.0.0/16 ip daddr ${vars.net.zenki.containers.subnet} accept
           ip daddr ${vars.net.zenki.containers.subnet} ct state { established, related } accept
           ip saddr ${vars.net.zenki.containers.subnet} accept
+
+          ip6 saddr "${vars.net.zenki.containers.subnet6}" accept
+          ip6 daddr "${vars.net.zenki.containers.subnet6}" ct state { established, related } accept
+          ip6 daddr "${vars.net.zenki.containers.subnet6}" accept
         }
       }
       
