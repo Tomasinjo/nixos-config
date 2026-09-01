@@ -79,6 +79,7 @@ let
       "--security-opt=no-new-privileges:true"
       "--log-opt=max-size=10m"
       "--log-opt=max-file=3"
+      "--replace" # replace old container, also reclaims assigned IP
     ];
   };
 
@@ -142,9 +143,7 @@ let
                    then "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" 
                    else "${serviceName}-net";
     in {
-      networks = if customNetworks != null 
-                 then customNetworks 
-                 else (if hasRoutedNet then [ primaryNet "traefik-net" ] else [ "traefik-net" ]);
+      networks = if customNetworks != null then customNetworks else [ primaryNet ];
             
       labels = {
         "traefik.enable" = "true";
@@ -158,8 +157,6 @@ let
         "glance.name" = lib.concatStringsSep " " (map (s: (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (-1) s)) (lib.splitString " " (builtins.replaceStrings ["-"] [" "] serviceName)));
         "glance.url" = "https://${serviceHostname}.${vars.net.domain}";
         "glance.icon" = "di:${serviceName}";
-      } // lib.optionalAttrs hasRoutedNet {
-        "traefik.docker.network" = "traefik-net";
       };
     };
 

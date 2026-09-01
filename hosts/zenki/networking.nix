@@ -97,12 +97,22 @@
   networking.nftables = {
     enable = true;
     ruleset = ''
+      table inet netavark {
+        chain POSTROUTING {
+          type nat hook postrouting priority srcnat; policy accept;
+          
+          # override default podman rule to SNAT traffic between containers
+          ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} accept
+          ip6 saddr ${vars.net.zenki.containers.subnet6} ip6 daddr ${vars.net.zenki.containers.subnet6} accept
+        }
+      }
+
       table ip nat {
         chain PREROUTING {
           type nat hook prerouting priority dstnat; policy accept;
         }
         chain POSTROUTING {
-          type nat hook postrouting priority srcnat; policy accept;
+          type nat hook postrouting priority srcnat - 1; policy accept;
           
           # Disable SNAT so podman containers use their static ip for outbound traffic
           ip saddr ${vars.net.zenki.containers.subnet} accept
@@ -131,14 +141,18 @@
           ct state { established, related } accept
           meta l4proto ipv6-icmp accept
 
+          # allow from everywhere to traefik
+          ip daddr 10.0.1.2 tcp dport { 80, 443 } accept
+          ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport { 80, 443 } accept
+
           # containers outbound and inbound and between each other
           ip saddr 192.168.0.0/16 ip daddr ${vars.net.zenki.containers.subnet} accept
           ip daddr ${vars.net.zenki.containers.subnet} ct state { established, related } accept
           ip saddr ${vars.net.zenki.containers.subnet} accept
 
-          ip6 saddr "${vars.net.zenki.containers.subnet6}" accept
-          ip6 daddr "${vars.net.zenki.containers.subnet6}" ct state { established, related } accept
-          ip6 daddr "${vars.net.zenki.containers.subnet6}" accept
+          ip6 saddr ${vars.net.zenki.containers.subnet6} accept
+          ip6 daddr ${vars.net.zenki.containers.subnet6} ct state { established, related } accept
+          ip6 daddr ${vars.net.zenki.containers.subnet6} accept
         }
       }
       

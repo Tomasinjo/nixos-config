@@ -39,11 +39,8 @@ let
         "${vars.dir.nixos_config}/apps/blog/web_server/app-data/config.toml:/etc/config.toml"
       ];
 
-      networks = [ "traefik-net" ];
-
       labels = {
         "traefik.enable" = "true";
-        "traefik.docker.network" = "traefik-net"; # important because oci-framework will make traefik-net secondary to blog-net (derived from serviceName).
         "traefik.http.services.blog-service.loadbalancer.server.port" = "8080";
         "traefik.http.routers.rp.rule" = "Host(`www.${vars.apps.blog.si.domain}`) || Host(`${vars.apps.blog.si.domain}`)";
         "traefik.http.routers.rp.entrypoints" = "https,http";
