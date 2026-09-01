@@ -110,6 +110,7 @@ in {
     # Creates dockerproxy-net (Internal bridge)
     (oci-framework.mkNetwork {
       serviceName = "dockerproxy";
+      serviceId = 200;
       isInternal = true; # created with --internal (no internet/routing gateway)
     })
   ];

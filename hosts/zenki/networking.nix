@@ -26,26 +26,21 @@
     "net.bridge.bridge-nf-call-arptables" = 0;
   };
 
-  # Rename Interface based on MAC
   systemd.network.links."10-persistent-${vars.net.zenki.interface_name}" = {
     matchConfig.MACAddress = vars.net.zenki.interface_mac;
     linkConfig.Name = vars.net.zenki.interface_name;
   };
 
-  # Configure Physical Interface (Trunk for VLANs)
   systemd.network.networks."10-${vars.net.zenki.interface_name}" = {
     matchConfig.Name = vars.net.zenki.interface_name;
-    # Ensure link is up
     linkConfig.RequiredForOnline = "no";
     networkConfig.LinkLocalAddressing = "no";
-    # Attach VLANs
     vlan = [
       vars.net.zenki.server-vlan.interface_name
       vars.net.zenki.lab-vlan.interface_name
     ];
   };
 
-  # Configure VLAN 10 Interface
   systemd.network.netdevs."10-${vars.net.sensei.server-vlan.name}" = {
     netdevConfig = {
       Name = vars.net.zenki.server-vlan.interface_name;
@@ -54,7 +49,6 @@
     vlanConfig.Id = vars.net.sensei.server-vlan.id;
   };
 
-  # IP Configuration for VLAN 10
   systemd.network.networks."20-${vars.net.sensei.server-vlan.name}" = {
     matchConfig.Name = vars.net.zenki.server-vlan.interface_name;
     address = [
@@ -75,7 +69,6 @@
     ];
   };
 
-  # Configure VLAN 69 Interface (Lab) - Bridge port for virbr69
   systemd.network.netdevs."10-${vars.net.sensei.lab-vlan.name}" = {
     netdevConfig = {
       Name = vars.net.zenki.lab-vlan.interface_name;
@@ -84,7 +77,6 @@
     vlanConfig.Id = vars.net.sensei.lab-vlan.id;
   };
 
-  # Bridge port configuration for VLAN 69 (no IP - handled by external DHCP on virbr69)
   systemd.network.networks."20-${vars.net.sensei.lab-vlan.name}" = {
     matchConfig.Name = vars.net.zenki.lab-vlan.interface_name;
     networkConfig.Bridge = "virbr69";
