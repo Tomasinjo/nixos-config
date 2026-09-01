@@ -3,7 +3,6 @@
 # special configs:
 # - teslamate: two webapps
 # - dawarich: custom database
-# - music asssistant: macvlan
 # - blog/web_server: web app that does not use wrapper in oci-framework.nix
 
 let
@@ -12,7 +11,9 @@ let
   serviceName = "";
   serviceHostname = "";
   servicePort = ;
-  serviceId = 0;  # this is third octet of subnet, must be unique!
+  serviceId = 0;
+  # ^^^ this is third octet of subnet, must be unique!
+  # find current highest: echo 'Current highest serviceId:' && ip a | sed -nE 's/.*inet 10\.0\.([0-9.]+)\..*/\1/p' | sort -n | tail -n 1
 
   dbUser = "";
   dbPass = vars.apps.;
@@ -20,7 +21,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; }) # use for any non-web, non-db containers. IDs 2 (web) and 3 (db) are reserved! This is used to pass over service and container IDs which generate static IP for container
+    #(oci-framework.container { inherit serviceName serviceId; containerId = 4; }) # use for any non-web, non-db containers. IDs 2 (web) and 3 (db) are reserved! This is used to pass over service and container IDs which generate static IP for container
     #oci-framework.base.linuxserver
     #(oci-framework.web.base { inherit serviceHostname servicePort serviceName serviceId; })
     (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
