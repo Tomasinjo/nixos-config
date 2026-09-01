@@ -94,6 +94,7 @@ in
 
           # Server
           iifname "${vars.net.sensei.server-vlan.name}" ip saddr ${vars.net.zenki.server-vlan.ipv4Address} accept
+          iifname "${vars.net.sensei.server-vlan.name}" ip6 saddr ${vars.net.zenki.server-vlan.ipv6Address} accept
           ### To traefik from internet
           iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip daddr 10.0.1.2 tcp dport { 80, 443 } accept
           iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport { 80, 443 } accept
@@ -112,15 +113,19 @@ in
           # Docker containers
           # port forwarded, torrents
           iifname "ppp0" ip daddr 10.0.4.2 tcp dport 51413 accept
+          iifname "ppp0" ip6 daddr ${vars.net.zenki.containers.prefix6}:1004::2 tcp dport 51413 accept
           iifname "ppp0" ip daddr 10.0.4.2 udp dport 51413 accept
+          iifname "ppp0" ip6 daddr ${vars.net.zenki.containers.prefix6}:1004::2 udp dport 51413 accept
           # music assistant to speakers
           iifname "${vars.net.sensei.server-vlan.name}" ip saddr 10.0.39.2 ip daddr { 192.168.10.152, 192.168.10.154 } accept
           # home assistant everywhere
           iifname ${vars.net.sensei.server-vlan.name} ip saddr 10.0.22.2 accept
+          iifname ${vars.net.sensei.server-vlan.name} ip6 saddr ${vars.net.zenki.containers.prefix6}:1022::2 accept
           # esphome to IoT
           iifname ${vars.net.sensei.server-vlan.name} ip saddr 10.0.21.2 oifname "${vars.net.sensei.iot-vlan.name}" accept
           # allow outbound
           ip saddr ${vars.net.zenki.containers.subnet} oifname "ppp0" accept
+          ip6 saddr ${vars.net.zenki.containers.subnet6} oifname "ppp0" accept
         }
 
         chain output {
