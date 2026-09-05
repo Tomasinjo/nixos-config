@@ -20,6 +20,8 @@
     ../../modules/gaming/gamemode.nix
     ../../modules/gaming/steam.nix
     # ../../modules/gaming/sunshine.nix
+    ../../modules/wireshark.nix  # for dumpcap, remote capture via wireshark
+
   ];
 
   boot.loader.systemd-boot.enable = true;
