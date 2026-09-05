@@ -195,28 +195,6 @@
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1015::3 tcp dport 5432 accept     # pgadmin to fafi-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::3 tcp dport 5432 accept     # pgadmin to hass-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1010::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport 443 accept      # opencloud to traefik, for oidc, see OC service.nix
-          ip saddr ${vars.net.zenki.containers.prefix6}:1001.2 ip daddr ${vars.net.zenki.containers.subnet6} accept                           # traefik to all containers
-          ip saddr ${vars.net.zenki.containers.prefix6}:1003.2 ip daddr ${vars.net.zenki.containers.prefix6}:1005.2 tcp dport 7878 accept     # prowlar to radarr
-          ip saddr ${vars.net.zenki.containers.prefix6}:1005.2 ip daddr ${vars.net.zenki.containers.prefix6}:1003.2 tcp dport 9696 accept     # radarr to prowlarr
-          ip saddr ${vars.net.zenki.containers.prefix6}:1003.2 ip daddr ${vars.net.zenki.containers.prefix6}:1006.2 tcp dport 8989 accept     # prowlar to sonarr
-          ip saddr ${vars.net.zenki.containers.prefix6}:1006.2 ip daddr ${vars.net.zenki.containers.prefix6}:1003.2 tcp dport 9696 accept     # sonarr to prowlarr
-          ip saddr ${vars.net.zenki.containers.prefix6}:1005.2 ip daddr ${vars.net.zenki.containers.prefix6}:1004.2 tcp dport 8888 accept     # radarr to qbittorrent
-          ip saddr ${vars.net.zenki.containers.prefix6}:1006.2 ip daddr ${vars.net.zenki.containers.prefix6}:1004.2 tcp dport 8888 accept     # sonarr to qbittorrent
-          ip saddr ${vars.net.zenki.containers.prefix6}:1011.2 ip daddr ${vars.net.zenki.containers.prefix6}:1023.2 tcp dport 2283 accept     # dawarich to immich
-          ip saddr ${vars.net.zenki.containers.prefix6}:1016.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.4 tcp dport 1883 accept     # frigate to mqtt
-          ip saddr ${vars.net.zenki.containers.prefix6}:1022.2 ip daddr ${vars.net.zenki.containers.prefix6}:1016.2 tcp dport 5000 accept     # hass to frigate
-          ip saddr ${vars.net.zenki.containers.prefix6}:1018.2 ip daddr ${vars.net.zenki.containers.prefix6}:1037.2 tcp dport 9428 accept     # grafana to victoria
-          ip saddr ${vars.net.zenki.containers.prefix6}:1020.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.2 tcp dport 8123 accept     # appdaemon to hass
-          ip saddr ${vars.net.zenki.containers.prefix6}:1020.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.4 tcp dport 1883 accept     # appdaemon to mqtt
-          ip saddr ${vars.net.zenki.containers.prefix6}:1028.2 ip daddr ${vars.net.zenki.containers.prefix6}:1027.4 tcp dport 11434 accept    # qdrant to ollama
-          ip saddr ${vars.net.zenki.containers.prefix6}:1030.5 ip daddr ${vars.net.zenki.containers.prefix6}:1027.4 tcp dport 11434 accept    # paperllama to ollama
-          ip saddr ${vars.net.zenki.containers.prefix6}:1032.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.4 tcp dport 1883 accept     # teslamate to mqtt
-          ip saddr ${vars.net.zenki.containers.prefix6}:1022.2 ip daddr ${vars.net.zenki.containers.prefix6}:1039.2 tcp dport 8095 accept     # hass to mass
-          ip saddr ${vars.net.zenki.containers.prefix6}:1039.2 ip daddr ${vars.net.zenki.containers.prefix6}:1033.2 tcp dport 8096 accept     # mass to jellyfin
-          ip saddr ${vars.net.zenki.containers.prefix6}:1014.2 ip daddr ${vars.net.zenki.containers.prefix6}:1015.3 tcp dport 5432 accept     # metabase to fafi-db
-          ip saddr ${vars.net.zenki.containers.prefix6}:1024.2 ip daddr ${vars.net.zenki.containers.prefix6}:1015.3 tcp dport 5432 accept     # jupyter to fafi-db
-          ip saddr ${vars.net.zenki.containers.prefix6}:1031.2 ip daddr ${vars.net.zenki.containers.prefix6}:1015.3 tcp dport 5432 accept     # pgadmin to fafi-db
-          ip saddr ${vars.net.zenki.containers.prefix6}:1031.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.3 tcp dport 5432 accept     # pgadmin to hass-db
 
           # containers cant talk with each other unless overriden above
           ip6 saddr ${vars.net.zenki.containers.subnet6} ip6 daddr ${vars.net.zenki.containers.subnet6} drop
