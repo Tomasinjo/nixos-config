@@ -53,6 +53,7 @@
     ./backup-quarterly.nix
     ./deploy.nix
     ./vector.nix
+    ./get_networks.nix
     ../../apps/arrs/jellyfin/service.nix
     ../../apps/arrs/pinchflat/service.nix
     ../../apps/arrs/prowlarr/service.nix
