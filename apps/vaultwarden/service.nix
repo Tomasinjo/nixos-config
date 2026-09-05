@@ -1,11 +1,11 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "vaultwarden";
   serviceHostname = "bw";
-  servicePort = 80;
+  servicePort = 8080;
   serviceId = 36;
 
   appContainerConfig = oci-framework.mergeAll [
@@ -18,6 +18,7 @@ let
         "WEBSOCKET_ENABLED" = "true";
         "SIGNUPS_ALLOWED" = "false";
         "INVITATIONS_ALLOWED" = "false";
+        "ROCKET_PORT" = "8080";
       };
 
       volumes = [

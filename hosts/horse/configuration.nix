@@ -6,7 +6,7 @@
     ../../modules/common.nix
     ../../modules/desktop/niri.nix
     ../../modules/sudo.nix
-    ../../modules/docker/init_base.nix
+    ../../modules/docker/init.nix
     ../../modules/utilities.nix
     ../../modules/wireshark.nix
     ../../modules/hardware/upower.nix

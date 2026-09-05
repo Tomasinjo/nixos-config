@@ -1,7 +1,7 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "paperless";
   serviceHostname = "papir";
@@ -22,8 +22,8 @@ let
         "PAPERLESS_REDIS" = "redis://${serviceName}-redis:6379";
         "PAPERLESS_DBENGINE" = "postgresql";
         "PAPERLESS_DBHOST" = "${serviceName}-db";
-        "USERMAP_UID" = toString vars.dockerUser.uid;
-        "USERMAP_GID" = toString vars.dockerUser.gid;
+        "USERMAP_UID" = toString vars.containerUser.uid;
+        "USERMAP_GID" = toString vars.containerUser.gid;
         "PAPERLESS_OCR_LANGUAGES" = "slv";
         "PAPERLESS_URL" = "https://${serviceHostname}.${vars.net.domain}";
         "PAPERLESS_ADMIN_USER" = "fikus";

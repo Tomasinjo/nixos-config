@@ -36,7 +36,7 @@ let
   '';
 
   backupScriptImportant = pkgs.writeShellScriptBin "backup-important-quarterly" ''
-    PATH=$PATH:${pkgs.docker}/bin:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin
+    PATH=$PATH:${pkgs.rsnapshot}/bin:${pkgs.rsync}/bin:${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin
     
     echo "Running data rsnapshot quarterly..."
     rsnapshot -c ${rsnapshotImportantConf} quarterly

@@ -12,7 +12,7 @@ let
 
   bookmarksList = lib.mapAttrsToList (name: container: 
     let
-      # take a hostname and service name from custom docker labels
+      # take a hostname and service name from custom labels
       hostName = container.labels."fikus.hostname" or (builtins.head (lib.splitString "-" name));
       serviceName = container.labels."fikus.name" or (builtins.head (lib.splitString "-" name));
       

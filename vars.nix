@@ -17,7 +17,6 @@ in {
     usb_mountpoint = "${homeDir}/mnt";
     scripts = "${homeDir}/scripts";
     certs = "${homeDir}/certs";
-    docker_root = "${homeDir}/docker";
   };
 
   email = {
@@ -26,8 +25,8 @@ in {
 
   timeZone = "Europe/Ljubljana";
 
-  dockerUser = {
-    name = "docker-user";
+  containerUser = {
+    name = "container-user";
     uid = 1111;
     gid = 1111;
   };

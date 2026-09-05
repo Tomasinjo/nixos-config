@@ -1,7 +1,7 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "frigate";
   serviceHostname = "nvr";
@@ -53,8 +53,8 @@ let
 
       extraOptions = [
         "--security-opt=no-new-privileges:false" # override the base compose - wont start without it, says it cant access /run.
-        "--tmpfs=/dev/shm:mode=770,uid=1111,gid=1111,size=268435456"
-        "--tmpfs=/tmp/cache:mode=770,uid=1111,gid=1111,size=1G"
+        "--shm-size=256m"
+        "--tmpfs=/tmp/cache:rw,size=1G,mode=1777"
         "--cpuset-cpus=12-19"  # eco cores
       ];
     }

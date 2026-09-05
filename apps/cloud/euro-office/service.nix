@@ -2,7 +2,7 @@
 
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "euro-office";
   serviceHostname = "office";

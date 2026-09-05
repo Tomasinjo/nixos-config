@@ -1,12 +1,10 @@
 { config, pkgs, vars, ... }:
 
 let
-  # Script to run when game starts (stops docker-ollama to free resources)
   gameStart = pkgs.writeShellScriptBin "game-start" ''
     /run/current-system/sw/bin/systemctl stop docker-ollama.service
   '';
 
-  # Script to run when game ends (restarts docker-ollama)
   gameEnd = pkgs.writeShellScriptBin "game-end" ''
     /run/current-system/sw/bin/systemctl start docker-ollama.service
   '';

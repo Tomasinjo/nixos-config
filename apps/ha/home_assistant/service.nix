@@ -1,7 +1,7 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "home-assistant";
   serviceHostname = "ha";
@@ -19,8 +19,8 @@ let
       image = "homeassistant/home-assistant:2026.8.3";
 
       environment = {
-        "PUID" = toString vars.dockerUser.uid;
-        "GUID" = toString vars.dockerUser.gid;
+        "PUID" = toString vars.containerUser.uid;
+        "GUID" = toString vars.containerUser.gid;
       };
 
       volumes = [

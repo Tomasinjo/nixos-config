@@ -1,7 +1,7 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "nitter";
   serviceHostname = "x";
@@ -10,7 +10,7 @@ let
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
     {
       image = "zedeus/nitter:latest";
 

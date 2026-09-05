@@ -1,40 +1,48 @@
 { lib, config, pkgs, vars }:
 
 let
-  ipPrefix = vars.net.zenki.docker-services.prefix;
+  ipPrefix = vars.net.zenki.containers.prefix;
+  ip6Prefix = vars.net.zenki.containers.prefix6;
 
+  # use serviceid to determine the ipv6 network
+  formatService6 = serviceId: toString (1000 + serviceId);
+  # create static ipv4 address 
   mkIp = serviceId: containerId: "${ipPrefix}.${toString serviceId}.${toString containerId}";
-  mkSubnet = serviceId: "${ipPrefix}.${toString serviceId}.0/24";
-  mkGateway = serviceId: "${ipPrefix}.${toString serviceId}.1";
+  # create static ipv6 address  - aaaa:aaaa:aaaa:ff00:1XXX::Y)
+  mkIp6 = serviceId: containerId: "${ip6Prefix}:${formatService6 serviceId}::${toString containerId}";
 
-  # docker network generator
-  mkNetwork = { serviceName, serviceId ? null, subnet ? null, gateway ? null, bridgeName ? null }:
+  # generates systemd services that create dual stack podman network with static ips
+  mkNetwork = { 
+    serviceName, 
+    serviceId, 
+    isInternal ? false 
+  }:
     let
       netName = "${serviceName}-net";
-      calcSubnet = if subnet != null then subnet else (if serviceId != null then mkSubnet serviceId else null);
-      calcGateway = if gateway != null then gateway else (if serviceId != null then mkGateway serviceId else null);
+      subnet4 =  "${ipPrefix}.${toString serviceId}.0/24";
+      gateway4 = "${ipPrefix}.${toString serviceId}.1";
+
+      subnet6 =  "${ip6Prefix}:${formatService6 serviceId}::/80";
+      gateway6 = "${ip6Prefix}:${formatService6 serviceId}::1";
       
-      # minimized to 12 chars + "br-" prefix to respect Linux 15-char IFNAMSIZ limit
-      safeBridgeName = if bridgeName != null 
-                       then bridgeName 
-                       else "br-${builtins.substring 0 12 serviceName}";
+      safeBridgeName = "br-${builtins.substring 0 12 serviceName}";
     in {
-      "network-docker-${netName}" = {
-        description = "Create Docker Network: ${netName}";
-        after = [ "docker.service" ];
-        requires = [ "docker.service" ];
-        
-        before = [ "docker-networks.target" ];
-        wantedBy = [ "docker-networks.target" ];
+      "network-podman-${netName}" = {
+        description = "Create Dual-Stack Podman Network: ${netName}";
+        after = [ "network.target" ];
+        before = [ "podman-networks.target" ];
+        wantedBy = [ "podman-networks.target" ];
         
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
           ExecStart = pkgs.writeShellScript "create-network-${netName}" ''
-            ${pkgs.docker}/bin/docker network inspect ${netName} >/dev/null 2>&1 || \
-              ${pkgs.docker}/bin/docker network create \
-                ${lib.optionalString (calcSubnet != null) "--subnet=${calcSubnet} --gateway=${calcGateway}"} \
-                --opt "com.docker.network.bridge.name"="${safeBridgeName}" \
+            ${pkgs.podman}/bin/podman network inspect ${netName} >/dev/null 2>&1 || \
+              ${pkgs.podman}/bin/podman network create \
+                ${lib.optionalString isInternal "--internal"} \
+                "--subnet=${subnet4} --gateway=${gateway4}" \
+                "--ipv6 --subnet=${subnet6} --gateway=${gateway6}"} \
+                --interface-name="${safeBridgeName}" \
                 ${netName}
           '';
         };
@@ -46,7 +54,7 @@ let
     volumes = [
       "/etc/localtime:/etc/localtime:ro"
     ];
-    log-driver = "json-file";
+    log-driver = "journald";
     capabilities = {
       "NET_RAW" = false;
     };
@@ -57,6 +65,7 @@ let
       "--security-opt=no-new-privileges:true"
       "--log-opt=max-size=10m"
       "--log-opt=max-file=3"
+      "--replace" # replace old container, also reclaims assigned IP
     ];
   };
 
@@ -80,51 +89,43 @@ let
   # Helper to merge multiple configs sequentially
   mergeAll = configs: builtins.foldl' merge {} configs;
 
-  # Base execution modes
+  # base configs inherited by every container
   base = {
     standard = merge core {
-      user = "${toString vars.dockerUser.uid}:${toString vars.dockerUser.gid}";
+      user = "${toString vars.containerUser.uid}:${toString vars.containerUser.gid}";
     };
     
     linuxserver = merge core {
       environment = {
-        "PUID" = toString vars.dockerUser.uid;
-        "PGID" = toString vars.dockerUser.gid;
+        "PUID" = toString vars.containerUser.uid;
+        "PGID" = toString vars.containerUser.gid;
       };
     };
   };
 
-  # Helper for backend containers (containerId is a REQUIRED integer)
+  # Helper for backend containers (non-web and non-db)
   container = { serviceName, serviceId, containerId }: {
-    networks = [ "${serviceName}-net" ];
-    extraOptions = [ "--ip=${mkIp serviceId containerId}" ];
+    networks = [ "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" ];
   };
 
   # Helper for databases (containerId defaults to 3)
   db = { serviceName, serviceId, containerId ? 3 }: {
-    networks = [ "${serviceName}-net" ];
-    extraOptions = [ "--ip=${mkIp serviceId containerId}" ];
+    networks = [ "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" ];
   };
 
-  # Web applications (containerId defaults to 2, serviceId optional for macvlan)
+  # Web applications (containerId defaults to 2)
   web = {
     base = { 
       serviceHostname, 
       servicePort, 
       serviceName, 
-      serviceId ? null, 
-      containerId ? 2, 
-      customNetworks ? null 
-    }: 
-    let
-      hasRoutedNet = serviceId != null;
-    in {
-      networks = if customNetworks != null 
-                 then customNetworks 
-                 else (if hasRoutedNet then [ "${serviceName}-net" "traefik-net" ] else [ "traefik-net" ]);
-      
-      extraOptions = lib.optional hasRoutedNet "--ip=${mkIp serviceId containerId}";
-      
+      serviceId,
+      containerId ? 2
+    }: {
+      networks = [
+        "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}"
+      ];
+            
       labels = {
         "traefik.enable" = "true";
         "traefik.http.routers.${serviceHostname}.rule" = "Host(`${serviceHostname}.${vars.net.domain}`)";
@@ -137,8 +138,6 @@ let
         "glance.name" = lib.concatStringsSep " " (map (s: (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (-1) s)) (lib.splitString " " (builtins.replaceStrings ["-"] [" "] serviceName)));
         "glance.url" = "https://${serviceHostname}.${vars.net.domain}";
         "glance.icon" = "di:${serviceName}";
-      } // lib.optionalAttrs hasRoutedNet {
-        "traefik.docker.network" = "traefik-net";
       };
     };
 
@@ -206,9 +205,6 @@ in {
     container 
     hardware 
     mkNetwork 
-    mkIp 
-    mkSubnet 
-    mkGateway 
     merge 
     mergeAll;
 }

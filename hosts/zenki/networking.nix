@@ -10,36 +10,37 @@
     "net.ipv4.conf.all.forwarding" = 1;
     "net.ipv4.conf.default.forwarding" = 1;
 
+    "net.ipv6.conf.all.forwarding" = 1;
+    "net.ipv6.conf.default.forwarding" = 1;
+    
+    "net.ipv6.conf.all.accept_ra" = 2;  # turn on router advertisment which get disabled when ipv6 forwarding is enabled
+    "net.ipv6.conf.default.accept_ra" = 2;
+
     # Prevents kernel from dropping inter-bridge container traffic
     "net.ipv4.conf.all.rp_filter" = 0;
     "net.ipv4.conf.default.rp_filter" = 0;
 
-    # Prevents Docker's bridge netfilter from mangling routed packets
+    # Prevents Podman's bridge netfilter from mangling routed packets
     "net.bridge.bridge-nf-call-iptables" = 0;
     "net.bridge.bridge-nf-call-ip6tables" = 0;
     "net.bridge.bridge-nf-call-arptables" = 0;
   };
 
-  # Rename Interface based on MAC
   systemd.network.links."10-persistent-${vars.net.zenki.interface_name}" = {
     matchConfig.MACAddress = vars.net.zenki.interface_mac;
     linkConfig.Name = vars.net.zenki.interface_name;
   };
 
-  # Configure Physical Interface (Trunk for VLANs)
   systemd.network.networks."10-${vars.net.zenki.interface_name}" = {
     matchConfig.Name = vars.net.zenki.interface_name;
-    # Ensure link is up
     linkConfig.RequiredForOnline = "no";
     networkConfig.LinkLocalAddressing = "no";
-    # Attach VLANs
     vlan = [
       vars.net.zenki.server-vlan.interface_name
       vars.net.zenki.lab-vlan.interface_name
     ];
   };
 
-  # Configure VLAN 10 Interface
   systemd.network.netdevs."10-${vars.net.sensei.server-vlan.name}" = {
     netdevConfig = {
       Name = vars.net.zenki.server-vlan.interface_name;
@@ -48,7 +49,6 @@
     vlanConfig.Id = vars.net.sensei.server-vlan.id;
   };
 
-  # IP Configuration for VLAN 10
   systemd.network.networks."20-${vars.net.sensei.server-vlan.name}" = {
     matchConfig.Name = vars.net.zenki.server-vlan.interface_name;
     address = [
@@ -69,7 +69,6 @@
     ];
   };
 
-  # Configure VLAN 69 Interface (Lab) - Bridge port for virbr69
   systemd.network.netdevs."10-${vars.net.sensei.lab-vlan.name}" = {
     netdevConfig = {
       Name = vars.net.zenki.lab-vlan.interface_name;
@@ -78,66 +77,127 @@
     vlanConfig.Id = vars.net.sensei.lab-vlan.id;
   };
 
-  # Bridge port configuration for VLAN 69 (no IP - handled by external DHCP on virbr69)
   systemd.network.networks."20-${vars.net.sensei.lab-vlan.name}" = {
     matchConfig.Name = vars.net.zenki.lab-vlan.interface_name;
     networkConfig.Bridge = "virbr69";
   };
 
-  # Firewall
   networking.firewall = {
-      enable = true;
-      allowPing = true;
-  
-      # default deny all
-      allowedTCPPorts = [ ];
-      allowedUDPPorts = [ ];
-  
-      # allowed ports for system services
-      interfaces."${vars.net.zenki.server-vlan.interface_name}" = {
-        allowedTCPPorts = [ 22 ]; # SSH
-      };
-  
-      trustedInterfaces = [ "docker0" ];
-      checkReversePath = "loose";
+      enable = false;
   };
 
-  systemd.services.docker-routed-firewall = {
-    description = "Apply Docker Routed Supernet Firewall & Routing Rules";
-    after = [ "docker.service" "firewall.service" ];
-    wants = [ "docker.service" "firewall.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "docker-routed-firewall" ''
-        # A. Disable bridge netfilter (Docker re-enables this on boot)
-        ${pkgs.procps}/bin/sysctl -w net.bridge.bridge-nf-call-iptables=0 || true
-        ${pkgs.procps}/bin/sysctl -w net.bridge.bridge-nf-call-ip6tables=0 || true
-        ${pkgs.procps}/bin/sysctl -w net.bridge.bridge-nf-call-arptables=0 || true
+  networking.nftables = {
+    enable = true;
+    ruleset = ''
+      table inet netavark {
+        chain POSTROUTING {
+          type nat hook postrouting priority srcnat; policy accept;
+          
+          # override default podman rule to SNAT traffic between containers
+          ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} accept
+          ip6 saddr ${vars.net.zenki.containers.subnet6} ip6 daddr ${vars.net.zenki.containers.subnet6} accept
+        }
+      }
 
-        # B. Enable forwarding and disable rp_filter on dynamic veth/bridge interfaces
-        for f in /proc/sys/net/ipv4/conf/*/forwarding; do echo 1 > $f; done
-        for f in /proc/sys/net/ipv4/conf/*/rp_filter; do echo 0 > $f; done
+      table ip nat {
+        chain PREROUTING {
+          type nat hook prerouting priority dstnat; policy accept;
+        }
+        chain POSTROUTING {
+          type nat hook postrouting priority srcnat - 1; policy accept;
+          
+          # Disable SNAT so podman containers use their static ip for outbound traffic
+          ip saddr ${vars.net.zenki.containers.subnet} accept
+        }
+      }
 
-        # C. Raw Table: Allow inbound & outbound supernet traffic
-        ${pkgs.iptables}/bin/iptables -t raw -I PREROUTING 1 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT 2>/dev/null || true
-        ${pkgs.iptables}/bin/iptables -t raw -I PREROUTING 2 -d ${vars.net.zenki.docker-services.subnet} -j ACCEPT 2>/dev/null || true
+      table inet filter {
+        chain input {
+          type filter hook input priority filter; policy drop;
 
-        # D. Mangle Table: Bypass NixOS rpfilter for the container supernet
-        ${pkgs.iptables}/bin/iptables -t mangle -I nixos-fw-rpfilter 1 -s ${vars.net.zenki.docker-services.subnet} -j RETURN 2>/dev/null || true
+          iifname "lo" accept
+          ct state { established, related } accept
+          
+          iifname "${vars.net.zenki.server-vlan.interface_name}" tcp dport 22 accept
+          
+          ip protocol icmp accept
+          meta l4proto ipv6-icmp accept
+          
+          # Prevent container access to host IP
+          iifname "podman0" drop
+          iifname "br-*" drop
+        }
 
-        # E. Forwarding: Allow all inbound, outbound, inter-container, and return traffic
-        ${pkgs.iptables}/bin/iptables -I FORWARD 1 -s 192.168.0.0/16 -d ${vars.net.zenki.docker-services.subnet} -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I FORWARD 2 -d ${vars.net.zenki.docker-services.subnet} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I FORWARD 3 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I DOCKER-USER 1 -d ${vars.net.zenki.docker-services.subnet} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-        ${pkgs.iptables}/bin/iptables -I DOCKER-USER 2 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT
+        chain forward {
+          type filter hook forward priority filter; policy drop;
 
-        # F. NAT Rules: Placed at Rule #1 above Docker's 40+ rules
-        ${pkgs.iptables}/bin/iptables -t nat -I POSTROUTING 1 -s ${vars.net.zenki.docker-services.subnet} -j ACCEPT  # disable NAT, default behavior of docker
-      '';
-    };
+          ct state { established, related } accept
+          meta l4proto ipv6-icmp accept
+
+          # ==== inter-stack policy ====
+          ip saddr 10.0.1.2 ip daddr 10.0.0.0/16 accept                 # traefik to all containers
+          ip saddr 10.0.3.2 ip daddr 10.0.5.2 tcp dport 7878 accept     # prowlar to radarr
+          ip saddr 10.0.5.2 ip daddr 10.0.3.2 tcp dport 9696 accept     # radarr to prowlarr
+          ip saddr 10.0.3.2 ip daddr 10.0.6.2 tcp dport 8989 accept     # prowlar to sonarr
+          ip saddr 10.0.6.2 ip daddr 10.0.3.2 tcp dport 9696 accept     # sonarr to prowlarr
+          ip saddr 10.0.5.2 ip daddr 10.0.4.2 tcp dport 8888 accept     # radarr to qbittorrent
+          ip saddr 10.0.6.2 ip daddr 10.0.4.2 tcp dport 8888 accept     # sonarr to qbittorrent
+          ip saddr 10.0.11.2 ip daddr 10.0.23.2 tcp dport 2283 accept   # dawarich to immich
+          ip saddr 10.0.16.2 ip daddr 10.0.22.4 tcp dport 1883 accept   # frigate to mqtt
+          ip saddr 10.0.22.2 ip daddr 10.0.16.2 tcp dport 5000 accept   # hass to frigate
+          ip saddr 10.0.18.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # grafana to victoria
+          ip saddr 10.0.20.2 ip daddr 10.0.22.2 tcp dport 8123 accept   # appdaemon to hass
+          ip saddr 10.0.20.2 ip daddr 10.0.22.4 tcp dport 1883 accept   # appdaemon to mqtt
+          ip saddr 10.0.28.2 ip daddr 10.0.27.4 tcp dport 11434 accept  # qdrant to ollama
+          ip saddr 10.0.30.5 ip daddr 10.0.27.4 tcp dport 11434 accept  # paperllama to ollama
+          ip saddr 10.0.32.2 ip daddr 10.0.22.4 tcp dport 1883 accept   # teslamate to mqtt
+          ip saddr 10.0.22.2 ip daddr 10.0.39.2 tcp dport 8095 accept   # hass to mass
+          ip saddr 10.0.39.2 ip daddr 10.0.33.2 tcp dport 8096 accept   # mass to jellyfin
+          ip saddr 10.0.14.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # metabase to fafi-db
+          ip saddr 10.0.24.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # jupyter to fafi-db
+          ip saddr 10.0.31.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # pgadmin to fafi-db
+          ip saddr 10.0.31.2 ip daddr 10.0.22.3 tcp dport 5432 accept   # pgadmin to hass-db
+
+          # containers cant talk with each other unless overriden above
+          ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} drop
+
+          # allow inbound and outbound from everywhere (policy is on sensei)
+          ip daddr ${vars.net.zenki.containers.subnet} accept
+          ip saddr ${vars.net.zenki.containers.subnet} accept
+
+
+          ip saddr ${vars.net.zenki.containers.prefix6}:1001.2 ip daddr ${vars.net.zenki.containers.subnet6} accept                           # traefik to all containers
+          ip saddr ${vars.net.zenki.containers.prefix6}:1003.2 ip daddr ${vars.net.zenki.containers.prefix6}:1005.2 tcp dport 7878 accept     # prowlar to radarr
+          ip saddr ${vars.net.zenki.containers.prefix6}:1005.2 ip daddr ${vars.net.zenki.containers.prefix6}:1003.2 tcp dport 9696 accept     # radarr to prowlarr
+          ip saddr ${vars.net.zenki.containers.prefix6}:1003.2 ip daddr ${vars.net.zenki.containers.prefix6}:1006.2 tcp dport 8989 accept     # prowlar to sonarr
+          ip saddr ${vars.net.zenki.containers.prefix6}:1006.2 ip daddr ${vars.net.zenki.containers.prefix6}:1003.2 tcp dport 9696 accept     # sonarr to prowlarr
+          ip saddr ${vars.net.zenki.containers.prefix6}:1005.2 ip daddr ${vars.net.zenki.containers.prefix6}:1004.2 tcp dport 8888 accept     # radarr to qbittorrent
+          ip saddr ${vars.net.zenki.containers.prefix6}:1006.2 ip daddr ${vars.net.zenki.containers.prefix6}:1004.2 tcp dport 8888 accept     # sonarr to qbittorrent
+          ip saddr ${vars.net.zenki.containers.prefix6}:1011.2 ip daddr ${vars.net.zenki.containers.prefix6}:1023.2 tcp dport 2283 accept     # dawarich to immich
+          ip saddr ${vars.net.zenki.containers.prefix6}:1016.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.4 tcp dport 1883 accept     # frigate to mqtt
+          ip saddr ${vars.net.zenki.containers.prefix6}:1022.2 ip daddr ${vars.net.zenki.containers.prefix6}:1016.2 tcp dport 5000 accept     # hass to frigate
+          ip saddr ${vars.net.zenki.containers.prefix6}:1018.2 ip daddr ${vars.net.zenki.containers.prefix6}:1037.2 tcp dport 9428 accept     # grafana to victoria
+          ip saddr ${vars.net.zenki.containers.prefix6}:1020.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.2 tcp dport 8123 accept     # appdaemon to hass
+          ip saddr ${vars.net.zenki.containers.prefix6}:1020.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.4 tcp dport 1883 accept     # appdaemon to mqtt
+          ip saddr ${vars.net.zenki.containers.prefix6}:1028.2 ip daddr ${vars.net.zenki.containers.prefix6}:1027.4 tcp dport 11434 accept    # qdrant to ollama
+          ip saddr ${vars.net.zenki.containers.prefix6}:1030.5 ip daddr ${vars.net.zenki.containers.prefix6}:1027.4 tcp dport 11434 accept    # paperllama to ollama
+          ip saddr ${vars.net.zenki.containers.prefix6}:1032.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.4 tcp dport 1883 accept     # teslamate to mqtt
+          ip saddr ${vars.net.zenki.containers.prefix6}:1022.2 ip daddr ${vars.net.zenki.containers.prefix6}:1039.2 tcp dport 8095 accept     # hass to mass
+          ip saddr ${vars.net.zenki.containers.prefix6}:1039.2 ip daddr ${vars.net.zenki.containers.prefix6}:1033.2 tcp dport 8096 accept     # mass to jellyfin
+          ip saddr ${vars.net.zenki.containers.prefix6}:1014.2 ip daddr ${vars.net.zenki.containers.prefix6}:1015.3 tcp dport 5432 accept     # metabase to fafi-db
+          ip saddr ${vars.net.zenki.containers.prefix6}:1024.2 ip daddr ${vars.net.zenki.containers.prefix6}:1015.3 tcp dport 5432 accept     # jupyter to fafi-db
+          ip saddr ${vars.net.zenki.containers.prefix6}:1031.2 ip daddr ${vars.net.zenki.containers.prefix6}:1015.3 tcp dport 5432 accept     # pgadmin to fafi-db
+          ip saddr ${vars.net.zenki.containers.prefix6}:1031.2 ip daddr ${vars.net.zenki.containers.prefix6}:1022.3 tcp dport 5432 accept     # pgadmin to hass-db
+
+          # containers cant talk with each other unless overriden above
+          ip6 saddr ${vars.net.zenki.containers.subnet6} ip6 daddr ${vars.net.zenki.containers.subnet6} drop
+
+          # allow inbound and outbound from everywhere (policy is on sensei)
+          ip6 daddr ${vars.net.zenki.containers.subnet6} accept   # allow inbound from everywhere (policy is on sensei)
+          ip6 saddr ${vars.net.zenki.containers.subnet6} accept   # allow outbound to everywhere (policy is on sensei)
+        }
+      }
+    '';
   };
   
   users.users.${vars.username}.extraGroups = [ "networkmanager" ];

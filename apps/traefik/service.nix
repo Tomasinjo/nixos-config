@@ -1,11 +1,13 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
   serviceId = 1;
+  serviceName = "traefik";
 
   appContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
+    (oci-framework.container { inherit serviceName serviceId; containerId = 2; }) 
     {
       image = "traefik:v3.7.11";
 
@@ -20,17 +22,12 @@ let
 
       dependsOn = [ "dockerproxy" ];
 
-      # macvlan-10 MUST be index 0 so --ip / --ip6 and default gateway bind to it
       networks = [
-        "macvlan-10"
         "dockerproxy-net"
-        "traefik-net"
       ];
 
       extraOptions = [
         "--sysctl=net.ipv4.ip_unprivileged_port_start=0" # allows binding low ports
-        "--ip=${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv4Address}"
-        "--ip6=${vars.net.zenki.server-vlan.mac-vlan.traefik.ipv6Address}"
       ];
     }
   ];
@@ -45,11 +42,11 @@ let
       ];
 
       networks = [
-        "traefik-net"
         "dockerproxy-net"
       ];
       
-      user = "65534:131"; # 131 is docker gid
+      # run as root so it can read /var/run/docker.sock
+      user = "0:0";
 
       extraOptions = [
         "--read-only"
@@ -73,7 +70,7 @@ let
 
   gatekeeperContainerConfig = oci-framework.mergeAll [
     oci-framework.base.standard
-    (oci-framework.container { serviceName = "traefik"; inherit serviceId; containerId = 5; })
+    (oci-framework.container { serviceName = "traefik"; inherit serviceId; containerId = 6; })
     {
       image = "ghcr.io/tomasinjo/gatekeeper:main";
 
@@ -88,10 +85,10 @@ let
 
       labels = {
         "traefik.enable" = "true";
-        "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.address" = "http://gatekeeper:5000/verify_share_request?protocol=http&container_name_port=immich-app:2283";
+        "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.address" = "http://10.0.1.6:5000/verify_share_request?protocol=http&container_name_port=immich-app:2283";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.trustForwardHeader" = "true";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.maxResponseBodySize" = "10485760";
-        "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.address" = "http://gatekeeper:5000/verify_share_request?protocol=http&container_name_port=opencloud-app:9200";
+        "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.address" = "http://10.0.1.6:5000/verify_share_request?protocol=http&container_name_port=opencloud-app:9200";
         "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.trustForwardHeader" = "true";
         "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.maxResponseBodySize" = "10485760";
       };
@@ -104,7 +101,7 @@ in {
   virtualisation.oci-containers.containers."gatekeeper" = gatekeeperContainerConfig;
 
   systemd.services = lib.mkMerge [
-    # Creates traefik-net (10.0.1.0/24)
+    # Creates traefik-net (10.0.1.0/24), 1001::/64
     (oci-framework.mkNetwork {
       serviceName = "traefik";
       inherit serviceId; # 10.0.1.0/24
@@ -113,7 +110,8 @@ in {
     # Creates dockerproxy-net (Internal bridge)
     (oci-framework.mkNetwork {
       serviceName = "dockerproxy";
-      # No serviceId -> plain unrouted bridge
+      serviceId = 200;
+      isInternal = true; # created with --internal (no internet/routing gateway)
     })
   ];
 }

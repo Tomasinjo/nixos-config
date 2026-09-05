@@ -1,7 +1,7 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/docker/oci-framework.nix { inherit lib config pkgs vars; };
+  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
   serviceName = "opencloud";
   serviceHostname = "files";
@@ -60,6 +60,15 @@ let
 
       entrypoint = "/bin/sh";
       cmd = [ "-c" "opencloud init || true; opencloud server" ];
+
+      extraOptions = [
+        # for oidc auth, OC_URL is used by both, client and container to issue requests
+        # because URL of these requests cant be decoubled, the following override makes container
+        # to resolve traefik's container directly, else it will resolve it to public IP meaning i would have to
+        # set hairpin NAT for this network as well and i dont like hairpin nat.
+        "--add-host=${serviceHostname}.${vars.net.domain}:10.0.1.2"  # 
+        "--add-host=${serviceHostname}.${vars.net.domain}:${vars.net.zenki.containers.prefix6}:1001::2"  # 
+      ];
     }
   ];
 
