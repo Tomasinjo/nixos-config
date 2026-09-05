@@ -11,7 +11,7 @@ let
   # create static ipv6 address  - aaaa:aaaa:aaaa:ff00:1XXX::Y)
   mkIp6 = serviceId: containerId: "${ip6Prefix}:${formatService6 serviceId}::${toString containerId}";
 
-  # generates systemd services that create dual stack podman network
+  # generates systemd services that create dual stack podman network with static ips
   mkNetwork = { 
     serviceName, 
     serviceId, 
