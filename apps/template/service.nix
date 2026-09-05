@@ -5,6 +5,9 @@
 # - dawarich: custom database
 # - blog/web_server: web app that does not use wrapper in oci-framework.nix
 
+# if container needs to talk with other containers, add allow entry to networking.nix nftables on zenki
+# if it requires access to any internal network or internet, add entry to nftables in sensei
+
 let
   oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
 
