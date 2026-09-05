@@ -41,31 +41,31 @@ in
           iifname "ppp0" udp dport 8080 accept
 	        iifname "lo-wg" udp dport 8080 accept
 
+          # Block everything else from WAN
+          iifname "ppp0" drop
+
+          iifname {
+            ${vars.net.sensei.common-vlan.name},
+            ${vars.net.sensei.guest-vlan.name}, 
+            ${vars.net.sensei.iot-vlan.name},
+            ${vars.net.sensei.lab-vlan.name}
+          } udp dport 67 accept  # DHCPv4
+
+
+          # Guest
+          iifname ${vars.net.sensei.guest-vlan.name} drop
+
+          ip daddr ${vars.net.sensei.ipv4DNS} udp dport { 53, 123 } accept
+          ip6 daddr ${vars.net.sensei.ipv6DNS} udp dport { 53, 123 } accept
+
+          # IoT
+          iifname ${vars.net.sensei.iot-vlan.name} drop
+
           # LACP
           ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
           ip6 daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
           ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} udp dport 514 ip saddr ${vars.net.zenki.server-vlan.ipv4Address} accept
 
-          # VLAN10
-          iifname "${vars.net.sensei.common-vlan.name}" udp dport 67 accept  # DHCPv4
-
-          # Guest
-          iifname "${vars.net.sensei.guest-vlan.name}" udp dport 67 accept  # DHCPv4
-
-          # IoT
-          iifname "${vars.net.sensei.iot-vlan.name}" udp dport 67 accept  # DHCPv4
-
-          # Lab
-          iifname "${vars.net.sensei.lab-vlan.name}" udp dport 67 accept  # DHCPv4
-
-          # lo-dns
-          ip daddr ${vars.net.sensei.ipv4DNS} udp dport { 53, 123 } accept
-          ip daddr ${vars.net.sensei.ipv4DNS} tcp dport 53 accept
-          ip6 daddr ${vars.net.sensei.ipv6DNS} udp dport { 53, 123 } accept
-          ip6 daddr ${vars.net.sensei.ipv6DNS} tcp dport 53 accept
-
-          # Block everything else from WAN
-          iifname "ppp0" drop
         }
 
         chain forward {
@@ -86,10 +86,9 @@ in
 
 
           # IoT
-          # iifname "${vars.net.sensei.iot-vlan.name}" ip saddr 192.168.30.77 ip daddr != { ${aliases.internal_ipv4} } accept  # this is shelly 3em to internet for updates
-          iifname "${vars.net.sensei.iot-vlan.name}" ip saddr 192.168.30.77 ip daddr 10.0.22.2 tcp dport 5683 accept
+          iifname "${vars.net.sensei.iot-vlan.name}" ip saddr 192.168.30.77 ip daddr 10.0.22.2 tcp dport 5683 accept  # shelly 3EM
           ${if vlan30_allow_out_ips != "" then "iifname \"${vars.net.sensei.iot-vlan.name}\" ip saddr { ${vlan30_allow_out_ips} } ip daddr != { ${aliases.internal_ipv4} } accept" else ""}
-          iifname "${vars.net.sensei.iot-vlan.name}" ip daddr 10.0.22.4 tcp dport 1883 accept
+          iifname "${vars.net.sensei.iot-vlan.name}" ip daddr 10.0.22.4 tcp dport 1883 accept  # mqtt clients
 
 
           # Server
@@ -124,8 +123,44 @@ in
           # esphome to IoT
           iifname ${vars.net.sensei.server-vlan.name} ip saddr 10.0.21.2 oifname "${vars.net.sensei.iot-vlan.name}" accept
           # allow outbound
-          ip saddr ${vars.net.zenki.containers.subnet} oifname "ppp0" accept
-          ip6 saddr ${vars.net.zenki.containers.subnet6} oifname "ppp0" accept
+          ip saddr  10.0.1.2 oifname "ppp0" accept  # traefik out - cert renewal
+          ip saddr  10.0.3.2 oifname "ppp0" accept  # prowlarr out - indexing
+          ip saddr  10.0.4.2 oifname "ppp0" accept  # qbittrorent out
+          ip saddr  10.0.5.2 oifname "ppp0" accept  # radarr out - imdb
+          ip saddr  10.0.6.2 oifname "ppp0" accept  # sonarr out - imdb
+          ip saddr 10.0.10.2 accept  # opecloud out - TODO make more specific. Calls identity provider on its own fqdn
+          ip saddr 10.0.12.2 oifname "ppp0" accept  # degoog - search engines
+          ip saddr 10.0.17.2 oifname "ppp0" accept  # glance - fetch news
+          ip saddr 10.0.20.2 oifname "ppp0" accept  # appdaemon out - pip
+          ip saddr 10.0.21.2 oifname "ppp0" accept  # esphome out - library downloads
+          ip saddr 10.0.22.2 oifname "ppp0" accept  # hass out - hacs updates, cloud devices
+          ip saddr 10.0.27.2 oifname "ppp0" accept  # ollama out - pulling models
+          ip saddr 10.0.32.2 oifname "ppp0" accept  # teslamate out - tesla api
+          ip saddr 10.0.33.2 oifname "ppp0" accept  # jellyfin out - imdb
+          ip saddr 10.0.38.2 oifname "ppp0" accept  # nitter out - twitter
+          ip saddr 10.0.39.2 oifname "ppp0" accept  # mass out - online radio
+          ip saddr 10.0.40.2 oifname "ppp0" accept  # pinchflat - yt downloads
+
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1001::2 oifname "ppp0" accept  # traefik out - cert renewal
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1003::2 oifname "ppp0" accept  # prowlarr out - indexing
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1004::2 oifname "ppp0" accept  # qbittrorent out
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1005::2 oifname "ppp0" accept  # radarr out - imdb
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1006::2 oifname "ppp0" accept  # sonarr out - imdb
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1010::2 accept  # opencloud out - cant login otherwise
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1012::2 oifname "ppp0" accept  # degoog - search engines
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1017::2 oifname "ppp0" accept  # glance - fetch news
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1020::2 oifname "ppp0" accept  # appdaemon out - pip
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1021::2 oifname "ppp0" accept  # esphome out - library downloads
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1022::2 oifname "ppp0" accept  # hass out - hacs updates, cloud devices
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1027::2 oifname "ppp0" accept  # ollama out - pulling models
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1032::2 oifname "ppp0" accept  # teslamate out - tesla api
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1033::2 oifname "ppp0" accept  # jellyfin out - imdb
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1038::2 oifname "ppp0" accept  # nitter out - twitter
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1039::2 oifname "ppp0" accept  # mass out - online radio
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1040::2 oifname "ppp0" accept  # pinchflat - yt downloads
+
+          # ip saddr ${vars.net.zenki.containers.subnet} oifname "ppp0" accept
+          # ip6 saddr ${vars.net.zenki.containers.subnet6} oifname "ppp0" accept
         }
 
         chain output {
