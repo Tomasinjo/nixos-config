@@ -51,10 +51,8 @@ in
             ${vars.net.sensei.lab-vlan.name}
           } udp dport 67 accept  # DHCPv4
 
-
           # Guest
           iifname ${vars.net.sensei.guest-vlan.name} drop
-
           ip daddr ${vars.net.sensei.ipv4DNS} udp dport { 53, 123 } accept
           ip6 daddr ${vars.net.sensei.ipv6DNS} udp dport { 53, 123 } accept
 
@@ -62,9 +60,15 @@ in
           iifname ${vars.net.sensei.iot-vlan.name} drop
 
           # LACP
-          ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
-          ip6 daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
-          ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} udp dport 514 ip saddr ${vars.net.zenki.server-vlan.ipv4Address} accept
+          ether saddr ${vars.net.sensei.common-vlan.members.t14g6_wifi.mac } ip  daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
+          ether saddr ${vars.net.sensei.common-vlan.members.t14g6.mac }      ip  daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
+          ether saddr ${vars.net.sensei.common-vlan.members.t14g6_wifi.mac } ip6 daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
+          ether saddr ${vars.net.sensei.common-vlan.members.t14g6.mac }      ip6 daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
+          
+          iifname "wg0" ip  daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
+          iifname "wg0" ip6 daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
+
+          ip saddr ${vars.net.zenki.server-vlan.ipv4Address} ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} udp dport 514 accept
 
         }
 
@@ -112,8 +116,8 @@ in
           # Docker containers
           # port forwarded, torrents
           iifname "ppp0" ip daddr 10.0.4.2 tcp dport 51413 accept
-          iifname "ppp0" ip6 daddr ${vars.net.zenki.containers.prefix6}:1004::2 tcp dport 51413 accept
           iifname "ppp0" ip daddr 10.0.4.2 udp dport 51413 accept
+          iifname "ppp0" ip6 daddr ${vars.net.zenki.containers.prefix6}:1004::2 tcp dport 51413 accept
           iifname "ppp0" ip6 daddr ${vars.net.zenki.containers.prefix6}:1004::2 udp dport 51413 accept
           # music assistant to speakers
           iifname "${vars.net.sensei.server-vlan.name}" ip saddr 10.0.39.2 ip daddr { 192.168.10.152, 192.168.10.154 } accept

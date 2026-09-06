@@ -30,8 +30,10 @@
           mask = "64";
         };
         members = {
-          beyondtv2 = { mac = "34:51:80:c0:48:9a"; ip = "192.168.10.251"; hostname = "beyondtv2"; };
-          boarder = { mac = "d4:f3:2d:81:20:d6"; ip = "192.168.10.164"; hostname = "boarder"; };
+          beyondtv2  = { mac = "34:51:80:c0:48:9a"; ip = "192.168.10.251"; hostname = "beyondtv2"; };
+          boarder    = { mac = "d4:f3:2d:81:20:d6"; ip = "192.168.10.164"; hostname = "boarder"; };
+          t14g6_wifi = { mac = "10:f6:0a:db:d6:fc"; ip = "192.168.10.188"; hostname = "t14g6_wifi"; };
+          t14g6      = { mac = "e8:80:88:d3:7e:0d"; ip = "192.168.10.186"; hostname = "t14g6"; };
         };
       };
       guest-vlan = {
