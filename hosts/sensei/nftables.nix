@@ -111,10 +111,10 @@ in
 
 
                 # Server
-                iifname "${vars.net.sensei.server-vlan.name}" ip saddr ${vars.net.zenki.server-vlan.ipv4Address} accept
+                iifname "${vars.net.sensei.server-vlan.name}" ip  saddr ${vars.net.zenki.server-vlan.ipv4Address} accept
                 iifname "${vars.net.sensei.server-vlan.name}" ip6 saddr ${vars.net.zenki.server-vlan.ipv6Address} accept
                 ### To traefik from internet
-                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip daddr 10.0.1.2 tcp dport { 80, 443 } accept
+                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip  daddr 10.0.1.2 tcp dport { 80, 443 } accept
                 iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport { 80, 443 } accept
 
                 # Lab (VLAN 69) - routed via VPS
@@ -149,13 +149,11 @@ in
                 ip saddr  10.0.4.2 oifname "ppp0" accept  # qbittrorent out
                 ip saddr  10.0.5.2 oifname "ppp0" accept  # radarr out - imdb
                 ip saddr  10.0.6.2 oifname "ppp0" accept  # sonarr out - imdb
-                ip saddr 10.0.10.2 accept  # opecloud out - TODO make more specific. Calls identity provider on its own fqdn
                 ip saddr 10.0.12.2 oifname "ppp0" accept  # degoog - search engines
                 ip saddr 10.0.17.2 oifname "ppp0" accept  # glance - fetch news
                 ip saddr 10.0.20.2 oifname "ppp0" accept  # appdaemon out - pip
                 ip saddr 10.0.21.2 oifname "ppp0" accept  # esphome out - library downloads
                 ip saddr 10.0.22.2 oifname "ppp0" accept  # hass out - hacs updates, cloud devices
-                ip saddr 10.0.27.2 oifname "ppp0" accept  # ollama out - pulling models
                 ip saddr 10.0.32.2 oifname "ppp0" accept  # teslamate out - tesla api
                 ip saddr 10.0.33.2 oifname "ppp0" accept  # jellyfin out - imdb
                 ip saddr 10.0.38.2 oifname "ppp0" accept  # nitter out - twitter
@@ -167,13 +165,11 @@ in
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1004::2 oifname "ppp0" accept  # qbittrorent out
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1005::2 oifname "ppp0" accept  # radarr out - imdb
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1006::2 oifname "ppp0" accept  # sonarr out - imdb
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1010::2 accept  # opencloud out - cant login otherwise
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1012::2 oifname "ppp0" accept  # degoog - search engines
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1017::2 oifname "ppp0" accept  # glance - fetch news
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1020::2 oifname "ppp0" accept  # appdaemon out - pip
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1021::2 oifname "ppp0" accept  # esphome out - library downloads
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1022::2 oifname "ppp0" accept  # hass out - hacs updates, cloud devices
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1027::2 oifname "ppp0" accept  # ollama out - pulling models
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1032::2 oifname "ppp0" accept  # teslamate out - tesla api
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1033::2 oifname "ppp0" accept  # jellyfin out - imdb
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1038::2 oifname "ppp0" accept  # nitter out - twitter

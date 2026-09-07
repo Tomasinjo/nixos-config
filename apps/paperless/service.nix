@@ -74,7 +74,7 @@ let
       environment = {
         "PAPERLESS_URL" = "https://${serviceHostname}.${vars.net.domain}";
         "PAPERLESS_TOKEN" = vars.apps.paperless.app.api_key;
-        "OLLAMA_URL" = "http://ollama:11434";
+        "OLLAMA_URL" = "http://10.0.27.4:11434";
         "OLLAMA_MODEL" = "gemma3:27b-32k";
         "SCAN_INTERVAL" = "3600";
         "OVERRIDE_EXISTING_TAGS" = "True";
