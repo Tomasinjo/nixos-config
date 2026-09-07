@@ -35,6 +35,18 @@
       "re:Peer_Exchange"
       "re:classtype:protocol-command-decode"
       "re:stream_event"
+      "3321263" # Possible Masscan Network Service Discovery
+      "2033078" # Session Traversal Utilities for NAT
+      "3300317" # Potential Massive Port Scan from local Network
+      "2016149" # Session Traversal Utilities for NAT
+      "3301000" # DNS request to .dev
+      "2057745" # DNS Query to Cloudflare Page Developer Domain (pages .dev)
+      "2071627" # Observed Telegram Domain in DNS Lookup
+      "2063117" # Abused Hosting Domain in DNS Lookup (azurewebsites .net)
+      "3300414" # dropbox.com
+      "re:classtype:policy-violation" # Potential Corporate Privacy policy-violation
+      "3300315" # Potential LDAP Brute Force Attack or Scan on default port from local Network
+      "2060502" # Discord Chat Service Domain in DNS Lookup
     ];
 
     settings = {

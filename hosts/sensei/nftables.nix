@@ -92,6 +92,12 @@ in
 
 
                 # Users
+                ether saddr ${vars.net.sensei.common-vlan.members.t14g6_wifi.mac} accept
+                ether saddr ${vars.net.sensei.common-vlan.members.t14g6.mac}      accept
+
+                iifname "${vars.net.sensei.common-vlan.name}" ip  daddr ${vars.net.zenki.containers.subnet}  drop
+                iifname "${vars.net.sensei.common-vlan.name}" ip6 daddr ${vars.net.zenki.containers.subnet6} drop
+
                 iifname "${vars.net.sensei.common-vlan.name}" accept
 
 
