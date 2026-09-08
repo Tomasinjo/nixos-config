@@ -94,6 +94,10 @@ in
                 ether saddr ${vars.net.sensei.common-vlan.members.t14g6_wifi.mac} accept
                 ether saddr ${vars.net.sensei.common-vlan.members.t14g6.mac}      accept
 
+                # To traefik
+                iifname "${vars.net.sensei.common-vlan.name}" ip  daddr 10.0.1.2  accept
+                iifname "${vars.net.sensei.common-vlan.name}" ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 accept
+
                 iifname "${vars.net.sensei.common-vlan.name}" ip  daddr ${vars.net.zenki.containers.subnet}  drop
                 iifname "${vars.net.sensei.common-vlan.name}" ip6 daddr ${vars.net.zenki.containers.subnet6} drop
 
