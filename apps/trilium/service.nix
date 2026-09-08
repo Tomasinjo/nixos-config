@@ -11,8 +11,7 @@ let
   dataDir = "/home/node/trilium-data";
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "triliumnext/trilium:v0.105.0";
 

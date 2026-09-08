@@ -13,8 +13,7 @@ let
   dbName = "lightdash";
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "lightdash/lightdash:0.2904.0";
 
@@ -55,7 +54,6 @@ let
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
     (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       volumes = [
@@ -65,8 +63,7 @@ let
   ];
 
   minioContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
       image = "coollabsio/minio:RELEASE.2025-10-15T17-29-55Z";
 

@@ -16,9 +16,11 @@ let
   servicePort = 8095;
   serviceId = 39;
 
-  appContainerConfig = (oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper {inherit serviceHostname servicePort serviceName serviceId; })
+  appContainerConfig = oci-framework.mergeAll [
+    (oci-framework.web.exposed_gatekeeper {
+      inherit serviceName serviceId serviceHostname servicePort; 
+      requiresInternet = true;  # internet radio
+    })
     {
       image = "ghcr.io/music-assistant/server:2.9.13";
 
@@ -30,7 +32,7 @@ let
         "${vars.dir.nixos_config}/apps/ha/music_assistant/app-data:/data"
       ];
     }
-  ]);
+  ];
 
 in {
   virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;

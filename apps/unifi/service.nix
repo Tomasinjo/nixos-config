@@ -16,8 +16,7 @@ let
   mongoName = "unifi";
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "lscr.io/linuxserver/unifi-network-application:10.5.67-ls141";
 
@@ -38,12 +37,13 @@ let
         "traefik.http.services.${serviceHostname}.loadbalancer.server.scheme" = "https";
         "traefik.http.routers.${serviceHostname}.middlewares" = "unifiHeaders@file,internal-whitelist@file";
       };
+
+      user = "";  # linuxserver image, sets user after startup using env
     }
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.db { inherit serviceName serviceId; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 3; })
     {
       image = "mongo:8.3";
 

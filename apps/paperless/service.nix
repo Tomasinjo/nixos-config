@@ -13,8 +13,7 @@ let
   dbName = "paperless";
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "ghcr.io/paperless-ngx/paperless-ngx:3.0.5";
 
@@ -44,7 +43,6 @@ let
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
     (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       volumes = [
@@ -54,8 +52,7 @@ let
   ];
 
   redisContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
       image = "docker.io/library/redis:7.4.11";
 
@@ -66,8 +63,7 @@ let
   ];
 
   paperllamaContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 5; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 5; })
     {
       image = "ghcr.io/tomasinjo/paper-llama:main";
 

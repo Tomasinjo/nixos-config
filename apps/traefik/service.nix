@@ -6,8 +6,11 @@ let
   serviceName = "traefik";
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 2; }) 
+    (oci-framework.core { 
+      inherit serviceName serviceId; 
+      containerId = 2;
+      requiresInternet = true;  # acme cert renewals
+    }) 
     {
       image = "traefik:v3.7.11";
 
@@ -69,8 +72,7 @@ let
   ];
 
   gatekeeperContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { serviceName = "traefik"; inherit serviceId; containerId = 6; })
+    (oci-framework.core { serviceName = "traefik"; inherit serviceId; containerId = 6; })
     {
       image = "ghcr.io/tomasinjo/gatekeeper:main";
 

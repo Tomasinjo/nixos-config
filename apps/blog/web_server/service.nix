@@ -9,8 +9,7 @@ let
   serviceId = 8;
 
   hugoContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
       image = "hugomods/hugo:exts-0.128.1";
 
@@ -25,8 +24,7 @@ let
   ];
 
   containerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 2; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 2; })
     {
       image = "joseluisq/static-web-server:2.44.0";
 

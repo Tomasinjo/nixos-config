@@ -9,8 +9,7 @@ let
   serviceId = 27;
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "ghcr.io/open-webui/open-webui:0.11-slim";
 
@@ -32,8 +31,10 @@ let
   ];
 
   ollamaContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    (oci-framework.core { 
+      inherit serviceName serviceId; containerId = 4; 
+      requiresInternet = true; # model pull
+    })
     oci-framework.hardware.cuda
     {
       image = "ollama/ollama:0.32.15";

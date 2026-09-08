@@ -17,11 +17,10 @@ let
   dbName = "teslamate";
 
   grafanaContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
     (oci-framework.web.internal {  
+      inherit serviceName serviceId;
       serviceHostname = grafanaServiceHostname;
       servicePort = grafanaServicePort;
-      inherit serviceName serviceId;
       containerId = 4; # Override containerId to avoid collision with app
     })
     {
@@ -47,7 +46,6 @@ let
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
     (oci-framework.apps.postgres { 
       inherit serviceName serviceId dbUser dbPass dbName; 
     })
@@ -59,11 +57,11 @@ let
   ];
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
     (oci-framework.web.internal {  
+      inherit serviceName serviceId;
       serviceHostname = teslamateServiceHostname;
       servicePort = teslamateServicePort;
-      inherit serviceName serviceId;
+      requiresInternet = true;  # tesla api
     })
     {
       image = "teslamate/teslamate:4.1.1";

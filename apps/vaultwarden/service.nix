@@ -9,8 +9,7 @@ let
   serviceId = 36;
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "vaultwarden/server:1.37.1";
 
@@ -18,7 +17,7 @@ let
         "WEBSOCKET_ENABLED" = "true";
         "SIGNUPS_ALLOWED" = "false";
         "INVITATIONS_ALLOWED" = "false";
-        "ROCKET_PORT" = "8080";
+        "ROCKET_PORT" = toString servicePort;
       };
 
       volumes = [

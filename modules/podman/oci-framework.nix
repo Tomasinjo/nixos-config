@@ -41,7 +41,7 @@ let
               ${pkgs.podman}/bin/podman network create \
                 ${lib.optionalString isInternal "--internal"} \
                 "--subnet=${subnet4} --gateway=${gateway4}" \
-                "--ipv6 --subnet=${subnet6} --gateway=${gateway6}"} \
+                "--ipv6 --subnet=${subnet6} --gateway=${gateway6}" \
                 --interface-name="${safeBridgeName}" \
                 ${netName}
           '';
@@ -49,25 +49,6 @@ let
       };
     };
 
-
-  core = {
-    volumes = [
-      "/etc/localtime:/etc/localtime:ro"
-    ];
-    log-driver = "journald";
-    capabilities = {
-      "NET_RAW" = false;
-    };
-    environment = {
-      "TZ" = vars.timeZone;
-    };
-    extraOptions = [
-      "--security-opt=no-new-privileges:true"
-      "--log-opt=max-size=10m"
-      "--log-opt=max-file=3"
-      "--replace" # replace old container, also reclaims assigned IP
-    ];
-  };
 
   merge = base: overrides: 
     let
@@ -89,43 +70,48 @@ let
   # Helper to merge multiple configs sequentially
   mergeAll = configs: builtins.foldl' merge {} configs;
 
-  # base configs inherited by every container, merged with core config
-  base = {
-    standard = merge core {
-      user = "${toString vars.containerUser.uid}:${toString vars.containerUser.gid}";
+
+
+  core = { serviceName, serviceId, containerId, requiresInternet ? false }: {
+    volumes = [
+      "/etc/localtime:/etc/localtime:ro"
+    ];
+    log-driver = "journald";
+    capabilities = {
+      "NET_RAW" = false;
     };
-    
-    linuxserver = merge core {
-      environment = {
-        "PUID" = toString vars.containerUser.uid;
-        "PGID" = toString vars.containerUser.gid;
-      };
+    environment = {
+      "TZ" = vars.timeZone;
+      "PUID" = toString vars.containerUser.uid; # for linuxserver images
+      "PGID" = toString vars.containerUser.gid; # for linuxserver images
+    };
+    user = "${toString vars.containerUser.uid}:${toString vars.containerUser.gid}"; # must be overrided to empty string for linuxserver images
+    extraOptions = [
+      "--security-opt=no-new-privileges:true"
+      "--log-opt=max-size=10m"
+      "--log-opt=max-file=3"
+      "--replace" # replace old container, also reclaims assigned IP
+    ];
+    networks = [ "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" ];
+    labels = {
+      "glance.name" = lib.concatStringsSep " " (map (s: (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (-1) s)) (lib.splitString " " (builtins.replaceStrings ["-"] [" "] serviceName)));
+      "glance.icon" = "di:${serviceName}";
+      "glance.hide" = "true";
+      "requiresInternet" = requiresInternet;
     };
   };
 
-  # Helper for backend containers (non-web and non-db)
-  container = { serviceName, serviceId, containerId }: {
-    networks = [ "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" ];
-  };
-
-  # Helper for databases (containerId defaults to 3)
-  db = { serviceName, serviceId, containerId ? 3 }: {
-    networks = [ "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" ];
-  };
 
   # Web applications (containerId defaults to 2)
   web = {
     base = { 
-      serviceHostname, 
-      servicePort, 
-      serviceName, 
+      serviceName,
       serviceId,
-      containerId ? 2
-    }: {
-      networks = [
-        "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}"
-      ];
-            
+      serviceHostname,
+      servicePort,
+      containerId ? 2,
+      requiresInternet ? false
+    }: merge (core { inherit serviceName serviceId containerId requiresInternet; }) {
       labels = {
         "traefik.enable" = "true";
         "traefik.http.routers.${serviceHostname}.rule" = "Host(`${serviceHostname}.${vars.net.domain}`)";
@@ -133,9 +119,7 @@ let
         "traefik.http.routers.${serviceHostname}.tls" = "true";
         "traefik.http.services.${serviceHostname}.loadbalancer.server.port" = toString servicePort;
         "glance.hide" = "false";
-        "glance.name" = lib.concatStringsSep " " (map (s: (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (-1) s)) (lib.splitString " " (builtins.replaceStrings ["-"] [" "] serviceName)));
         "glance.url" = "https://${serviceHostname}.${vars.net.domain}";
-        "glance.icon" = "di:${serviceName}";
       };
     };
 
@@ -152,25 +136,32 @@ let
 
   # App-specific base configurations
   apps = {
-    postgres = { serviceName, serviceId, dbUser, dbPass, dbName, containerId ? 3 }: 
-      merge (db { inherit serviceName serviceId containerId; }) {
-        image = "postgres:16.14";
-        environment = {
-          POSTGRES_USER = dbUser;
-          POSTGRES_PASSWORD = dbPass;
-          POSTGRES_DB = dbName;
-          PGDATA = "/data/postgres";
-        };
-        extraOptions = [
-          "--shm-size=256m"
-          "--stop-timeout=60"
-          "--health-cmd=pg_isready -U ${dbUser} -d ${dbName}"
-          "--health-interval=1m"
-          "--health-timeout=5s"
-          "--health-retries=5"
-          "--health-start-period=10s"
-        ];
+    postgres = {
+      serviceName, 
+      serviceId, 
+      dbUser, 
+      dbPass, 
+      dbName, 
+      containerId ? 3,
+      requiresInternet ? false
+    }: merge (core { inherit serviceName serviceId containerId requiresInternet; }) {
+      image = "postgres:16.14";
+      environment = {
+        POSTGRES_USER = dbUser;
+        POSTGRES_PASSWORD = dbPass;
+        POSTGRES_DB = dbName;
+        PGDATA = "/data/postgres";
       };
+      extraOptions = [
+        "--shm-size=256m"
+        "--stop-timeout=60"
+        "--health-cmd=pg_isready -U ${dbUser} -d ${dbName}"
+        "--health-interval=1m"
+        "--health-timeout=5s"
+        "--health-retries=5"
+        "--health-start-period=10s"
+      ];
+    };
   };
 
   hardware = {
@@ -196,11 +187,8 @@ let
 in {
   inherit 
     core 
-    base 
     web 
-    db 
     apps 
-    container 
     hardware 
     mkNetwork 
     merge 

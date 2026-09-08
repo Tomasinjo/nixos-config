@@ -9,14 +9,18 @@ let
   serviceId = 3;
 
   containerConfig = oci-framework.mergeAll [
-    oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { 
+      inherit serviceName serviceId serviceHostname servicePort;
+      requiresInternet = true;  # indexing
+    })
     {
       image = "lscr.io/linuxserver/prowlarr:2.5.2.5491-ls156";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/arrs/prowlarr/app-data:/config"
       ];
+
+      user = "";  # linuxserver image, sets user after startup using env
     }
   ];
 

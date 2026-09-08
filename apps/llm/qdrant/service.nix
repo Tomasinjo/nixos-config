@@ -9,8 +9,7 @@ let
   serviceId = 28;
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "ghcr.io/qdrant/qdrant/qdrant:v1.19.0-unprivileged";
 

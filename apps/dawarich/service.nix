@@ -13,8 +13,7 @@ let
   dbName = "dawarich";
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "freikin/dawarich:1.13.0";
 
@@ -58,21 +57,18 @@ let
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.db { inherit serviceName serviceId; })
+    (oci-framework.apps.postgres { 
+      inherit serviceName serviceId dbUser dbPass dbName; 
+    })
     {
-      image = "postgis/postgis:17-3.5-alpine";
-
-      environment = {
-        POSTGRES_USER = dbUser;
-        POSTGRES_PASSWORD = dbPass;
-        POSTGRES_DB = dbName;
-      };
+      image = "postgis/postgis:17-3.5-alpine";  # overrides predefined image
 
       volumes = [
         "${vars.dir.nixos_config}/apps/dawarich/db-data:/var/lib/postgresql/data"
         "${vars.dir.nixos_config}/apps/dawarich/shared-data:/var/shared"
       ];
+
+      removeExtraOptions = [ "--shm-size=256m" ]; # remove template default, set higher below
 
       extraOptions = [
         "--shm-size=1G"
@@ -82,8 +78,7 @@ let
 
 
   redisContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
       image = "redis:7.4-alpine";
       volumes = [
@@ -102,8 +97,7 @@ let
   # mostly same as app container. sidekiq is specific to ruby, something related to running tasks that take long time to completed.
   # redis is used for communication between sidekiq and app.
   sidekiqContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 5; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 5; })
     {
       image = "freikin/dawarich:1.13.0";
 
