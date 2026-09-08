@@ -97,6 +97,9 @@ in
                 # To traefik
                 iifname "${vars.net.sensei.common-vlan.name}" ip  daddr 10.0.1.2  accept
                 iifname "${vars.net.sensei.common-vlan.name}" ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 accept
+                
+                # Speakers to MA
+                iifname "${vars.net.sensei.common-vlan.name}" ip saddr { 192.168.10.152, 192.168.10.154 } ip daddr 10.0.39.2 tcp dport 8097 accept 
 
                 iifname "${vars.net.sensei.common-vlan.name}" ip  daddr ${vars.net.zenki.containers.subnet}  drop
                 iifname "${vars.net.sensei.common-vlan.name}" ip6 daddr ${vars.net.zenki.containers.subnet6} drop
