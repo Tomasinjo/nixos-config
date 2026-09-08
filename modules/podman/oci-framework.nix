@@ -89,7 +89,7 @@ let
   # Helper to merge multiple configs sequentially
   mergeAll = configs: builtins.foldl' merge {} configs;
 
-  # base configs inherited by every container
+  # base configs inherited by every container, merged with core config
   base = {
     standard = merge core {
       user = "${toString vars.containerUser.uid}:${toString vars.containerUser.gid}";
@@ -132,8 +132,6 @@ let
         "traefik.http.routers.${serviceHostname}.entrypoints" = "https,http";
         "traefik.http.routers.${serviceHostname}.tls" = "true";
         "traefik.http.services.${serviceHostname}.loadbalancer.server.port" = toString servicePort;
-        "fikus.hostname" = serviceHostname;
-        "fikus.name" = serviceName;
         "glance.hide" = "false";
         "glance.name" = lib.concatStringsSep " " (map (s: (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (-1) s)) (lib.splitString " " (builtins.replaceStrings ["-"] [" "] serviceName)));
         "glance.url" = "https://${serviceHostname}.${vars.net.domain}";
