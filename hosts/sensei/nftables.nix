@@ -11,7 +11,7 @@ let
     internal_ipv4 = "10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16";
   };
 
-  # Generate comma-separated list of IPs that are allowed to go to internet
+  # Generate list of IPs that are allowed to go to internet
   vlan30_allow_out_ips = lib.concatStringsSep ", " (
     map (m: m.ip) (
       builtins.filter (m: (m.allow_out or false) == true) (
@@ -32,20 +32,17 @@ in
               chain input {
                 type filter hook input priority 0; policy drop;
 
-                # Allow related/established traffic
-                ct state { established, related } accept
                 ct state invalid drop
 
                 ip protocol icmp accept
                 ip6 nexthdr icmpv6 accept
 
-                # Loopback
                 iifname "lo" accept
                 
-                # Wireguard
                 iifname "wg0" accept
 
-                iifname "ppp0" udp dport 546 accept # DHCPv6 client
+                # DHCPv6 client
+                iifname "ppp0" udp dport 546 accept 
 
                 # Wireguard port on WAN
                 iifname "ppp0" udp dport 8080 accept
@@ -54,22 +51,23 @@ in
                 # Block everything else from WAN
                 iifname "ppp0" drop
 
+                # DHCPv4
                 iifname {
                   ${vars.net.sensei.common-vlan.name},
                   ${vars.net.sensei.guest-vlan.name}, 
                   ${vars.net.sensei.iot-vlan.name},
                   ${vars.net.sensei.lab-vlan.name}
-                } udp dport 67 accept  # DHCPv4
+                } udp dport 67 accept
 
-                # Guest
+                ############ Guest ############
                 iifname ${vars.net.sensei.guest-vlan.name} drop
                 ip daddr ${vars.net.sensei.ipv4DNS} udp dport { 53, 123 } accept
                 ip6 daddr ${vars.net.sensei.ipv6DNS} udp dport { 53, 123 } accept
 
-                # IoT
+                ############ IoT ############
                 iifname ${vars.net.sensei.iot-vlan.name} drop
 
-                # LACP
+                ############ mgmt on LACP interface ############
                 ether saddr ${vars.net.sensei.common-vlan.members.t14g6_wifi.mac} ip  daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
                 ether saddr ${vars.net.sensei.common-vlan.members.t14g6.mac}      ip  daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
                 ether saddr ${vars.net.sensei.common-vlan.members.t14g6_wifi.mac} ip6 daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
@@ -78,6 +76,8 @@ in
                 iifname "wg0" ip  daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} tcp dport 22 accept
                 iifname "wg0" ip6 daddr ${vars.net.sensei.mgmt-vlan.ipv6.gateway} tcp dport 22 accept
 
+
+                ############ From server ############
                 ip saddr ${vars.net.zenki.server-vlan.ipv4Address} ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.gateway} udp dport 514 accept
 
               }
@@ -87,11 +87,10 @@ in
 
                 ct state { established, related } accept
                 
-                # opt1 to anywhere
+                ############ MGMT ############
                 iifname "bond0" accept
 
-
-                # Users
+                ############ Users ############
                 ether saddr ${vars.net.sensei.common-vlan.members.t14g6_wifi.mac} accept
                 ether saddr ${vars.net.sensei.common-vlan.members.t14g6.mac}      accept
 
@@ -101,54 +100,69 @@ in
                 iifname "${vars.net.sensei.common-vlan.name}" accept
 
 
-                # Guest
+                ############ Guest ############
                 iifname "${vars.net.sensei.guest-vlan.name}" ip daddr != { ${aliases.internal_ipv4} } accept
 
 
-                # IoT
-                iifname "${vars.net.sensei.iot-vlan.name}" ip saddr 192.168.30.77 ip daddr 10.0.22.2 tcp dport 5683 accept  # shelly 3EM
+                ############ IoT ############
+
+                # shelly 3EM to HA
+                iifname "${vars.net.sensei.iot-vlan.name}" ip saddr 192.168.30.77 ip daddr 10.0.22.2 tcp dport 5683 accept
+
+                # exceptions that are allowed to access the internet
                 ${
                   if vlan30_allow_out_ips != "" then
                     "iifname \"${vars.net.sensei.iot-vlan.name}\" ip saddr { ${vlan30_allow_out_ips} } ip daddr != { ${aliases.internal_ipv4} } accept"
                   else
                     ""
                 }
-                iifname "${vars.net.sensei.iot-vlan.name}" ip daddr 10.0.22.4 tcp dport 1883 accept  # mqtt clients
+
+                # mqtt clients to HA
+                iifname "${vars.net.sensei.iot-vlan.name}" ip daddr 10.0.22.4 tcp dport 1883 accept
 
 
-                # Server
+                ############ Server ############
+
+                # allow any destination
                 iifname "${vars.net.sensei.server-vlan.name}" ip  saddr ${vars.net.zenki.server-vlan.ipv4Address} accept
                 iifname "${vars.net.sensei.server-vlan.name}" ip6 saddr ${vars.net.zenki.server-vlan.ipv6Address} accept
-                ### To traefik from internet
+
+                # To traefik from internet
                 iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip  daddr 10.0.1.2 tcp dport { 80, 443 } accept
                 iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport { 80, 443 } accept
 
-                # Lab (VLAN 69) - routed via VPS
+
+                ############ Lab (VLAN 69) - routed via VPS ############
                 #iifname "${vars.net.sensei.lab-vlan.name}" accept
                 iifname "${vars.net.sensei.lab-vlan.name}" ip daddr ${vars.net.vps.ipv4Address} accept
                 # use below for SCP file transfer via sensei 
       	        #iifname "${vars.net.sensei.lab-vlan.name}" ip daddr ${vars.net.sensei.mgmt-vlan.ipv4.subnet}/${vars.net.sensei.mgmt-vlan.ipv4.mask} accept
 
 
-                # wireguard
+                ############ wireguard ############
                 iifname "wg0" accept
 
+                ############ Podman containers ############
 
-                # Docker containers
                 # port forwarded, torrents
                 iifname "ppp0" ip daddr 10.0.4.2 tcp dport 51413 accept
                 iifname "ppp0" ip daddr 10.0.4.2 udp dport 51413 accept
                 iifname "ppp0" ip6 daddr ${vars.net.zenki.containers.prefix6}:1004::2 tcp dport 51413 accept
                 iifname "ppp0" ip6 daddr ${vars.net.zenki.containers.prefix6}:1004::2 udp dport 51413 accept
+
                 # music assistant to speakers
                 iifname "${vars.net.sensei.server-vlan.name}" ip saddr 10.0.39.2 ip daddr { 192.168.10.152, 192.168.10.154 } accept
+
                 # home assistant everywhere
                 iifname ${vars.net.sensei.server-vlan.name} ip saddr 10.0.22.2 accept
                 iifname ${vars.net.sensei.server-vlan.name} ip6 saddr ${vars.net.zenki.containers.prefix6}:1022::2 accept
+
                 # esphome to IoT
                 iifname ${vars.net.sensei.server-vlan.name} ip saddr 10.0.21.2 oifname "${vars.net.sensei.iot-vlan.name}" accept
+
                 # frigate to cameras
                 iifname ${vars.net.sensei.server-vlan.name} ip saddr 10.0.16.2 ip daddr { 192.168.30.78, 192.168.30.80, 192.168.30.85, 192.168.30.56, 192.168.30.57, 192.168.30.58, 192.168.30.158 } accept
+                
                 # allow outbound
                 ip saddr  10.0.1.2 oifname "ppp0" accept  # traefik out - cert renewal
                 ip saddr  10.0.3.2 oifname "ppp0" accept  # prowlarr out - indexing
@@ -181,9 +195,6 @@ in
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1038::2 oifname "ppp0" accept  # nitter out - twitter
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1039::2 oifname "ppp0" accept  # mass out - online radio
                 ip6 saddr ${vars.net.zenki.containers.prefix6}:1040::2 oifname "ppp0" accept  # pinchflat - yt downloads
-
-                # ip saddr ${vars.net.zenki.containers.subnet} oifname "ppp0" accept
-                # ip6 saddr ${vars.net.zenki.containers.subnet6} oifname "ppp0" accept
               }
 
               chain output {
