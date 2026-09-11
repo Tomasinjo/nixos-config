@@ -13,8 +13,7 @@ let
   dbName = "umami";
 
   containerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "ghcr.io/umami-software/umami:3.3.1";
 
@@ -26,7 +25,6 @@ let
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
     (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       volumes = [

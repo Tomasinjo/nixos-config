@@ -10,8 +10,7 @@ let
 
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     oci-framework.hardware.quicksync
     {
       image = "lscr.io/linuxserver/openshot:v3.5.1-ls66";

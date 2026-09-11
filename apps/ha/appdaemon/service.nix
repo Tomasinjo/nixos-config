@@ -9,8 +9,10 @@ let
   serviceId = 20;
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { 
+      inherit serviceName serviceId serviceHostname servicePort; 
+      requiresInternet = "true"; # pip
+    })
     {
       image = "acockburn/appdaemon:4.5.13";
 

@@ -9,8 +9,7 @@ let
   serviceId = 10;
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "opencloudeu/opencloud-rolling:7.4.0";
 
@@ -75,8 +74,7 @@ let
 
 
   radicaleContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
       image = "opencloudeu/radicale:v3.7.8";
 
