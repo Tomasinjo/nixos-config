@@ -11,8 +11,10 @@ let
   # Note: Has DNAT rule from internet on sensei, port 51413
 
   containerConfig = oci-framework.mergeAll [
-    oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { 
+      inherit serviceName serviceId serviceHostname servicePort; 
+      requiresInternet = "true";  # connecting to peers
+    })
     {
       image = "lscr.io/linuxserver/qbittorrent:5.1.4-r3-ls453";
 
@@ -26,6 +28,8 @@ let
         "${vars.dir.hoarder_data}/media:/media"
         "${vars.dir.games}/downloads:/games"
       ];
+
+      user = "";  # linuxserver image, sets user after startup using env
     }
   ];
 

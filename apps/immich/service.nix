@@ -15,8 +15,7 @@ let
   dbName = "immich";
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.exposed_mtls { inherit serviceName serviceId serviceHostname servicePort; })
     oci-framework.hardware.quicksync
     {
       image = "ghcr.io/immich-app/immich-server:v3.1.0";
@@ -63,31 +62,22 @@ let
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.db { inherit serviceName serviceId; })
+    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       image = "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23";
       
       environment = {
-        "POSTGRES_PASSWORD" = dbPass;
-        "POSTGRES_USER" = dbUser;
-        "POSTGRES_DB" = dbName;
         "POSTGRES_INITDB_ARGS" = "'--data-checksums'";
       };
       
       volumes = [
-        "${vars.dir.nixos_config}/apps/immich/db-data:/var/lib/postgresql/data"
-      ];
-
-      extraOptions = [
-        "--shm-size=128m"
+        "${vars.dir.nixos_config}/apps/immich/db-data:/data/postgres"
       ];
     }
   ];
 
   redisContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
       image = "docker.io/valkey/valkey:9@sha256:546304417feac0874c3dd576e0952c6bb8f06bb4093ea0c9ca303c73cf458f63";
       
@@ -99,8 +89,7 @@ let
 
 
   mlContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 5; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 5; })
     oci-framework.hardware.quicksync
     {
       image = "ghcr.io/immich-app/immich-machine-learning:v3.1.0-openvino";

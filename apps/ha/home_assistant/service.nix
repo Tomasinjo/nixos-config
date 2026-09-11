@@ -13,8 +13,10 @@ let
   dbName = "hass";
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.exposed_mtls { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.exposed_mtls { 
+      inherit serviceName serviceId serviceHostname servicePort; 
+      requiresInternet = "true"; # cloud integrations, weather
+    })
     {
       image = "homeassistant/home-assistant:2026.8.3";
 
@@ -46,7 +48,6 @@ let
   ];
 
   dbContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
     (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
     {
       volumes = [
@@ -56,8 +57,7 @@ let
   ];
 
   mqttContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
       image = "eclipse-mosquitto:2.0";
 

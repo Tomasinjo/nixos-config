@@ -9,8 +9,10 @@ let
   serviceId = 5;
 
   containerConfig = oci-framework.mergeAll [
-    oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { 
+      inherit serviceName serviceId serviceHostname servicePort; 
+      requiresInternet = "true"; # for imdb 
+    })
     {
       image = "linuxserver/radarr:6.0.4.10291-ls293";
 
@@ -18,6 +20,8 @@ let
         "${vars.dir.nixos_config}/apps/arrs/radarr/app-data:/config"
         "${vars.dir.hoarder_data}/media:/media"
       ];
+
+      user = "";  # linuxserver image, sets user after startup using env
     }
   ];
 

@@ -9,14 +9,15 @@ let
   serviceId = 19;
 
   containerConfig = oci-framework.mergeAll [
-    oci-framework.base.linuxserver
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "lscr.io/linuxserver/grocy:v4.6.0-ls321";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/grocy/app-data:/config"
       ];
+
+      user = "";  # linuxserver image, sets user after startup using env
     }
   ];
 

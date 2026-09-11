@@ -9,8 +9,7 @@ let
   serviceId = 31;
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.internal { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "dpage/pgadmin4:9.17";
 
@@ -25,6 +24,10 @@ let
       ];
 
       user = "";  # does not support changing uids, runs with uid 5050
+
+      removeExtraOptions = [
+        "--security-opt=no-new-privileges:true"
+      ];
     }
   ];
 

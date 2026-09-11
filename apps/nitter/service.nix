@@ -9,8 +9,10 @@ let
   serviceId = 38;
 
   appContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.web.exposed_gatekeeper { inherit serviceHostname servicePort serviceName serviceId; })
+    (oci-framework.web.exposed_gatekeeper { 
+      inherit serviceName serviceId serviceHostname servicePort; 
+      requiresInternet = "true"; # fetching from twitter
+    })
     {
       image = "zedeus/nitter:latest";
 
@@ -22,8 +24,7 @@ let
   ];
 
   redisContainerConfig = oci-framework.mergeAll [
-    oci-framework.base.standard
-    (oci-framework.container { inherit serviceName serviceId; containerId = 4; })
+    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
       image = "docker.io/library/redis:7.4.10";
 
