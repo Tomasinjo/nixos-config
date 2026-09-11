@@ -3,6 +3,7 @@
   lib,
   pkgs,
   vars,
+  inputs,
   ...
 }:
 
@@ -22,7 +23,7 @@ let
 
   getContainers = import ../../helpers/get-containers.nix { inherit inputs lib; };
   serviceWithInternetAccess = getContainers {
-    filter = (name: container: container.labels."requires.internet" == "true");
+      filter = name: c: (c.labels."requires.internet" or "false") == "true";
   };
 
   containers_allow_out_ip4 = lib.concatMapAttrsStringSep ", " (
@@ -183,38 +184,9 @@ in
                 # frigate to cameras
                 iifname ${vars.net.sensei.server-vlan.name} ip saddr 10.0.16.2 ip daddr { 192.168.30.78, 192.168.30.80, 192.168.30.85, 192.168.30.56, 192.168.30.57, 192.168.30.58, 192.168.30.158 } accept
                 
-                # allow outbound
-                ip saddr  10.0.1.2 oifname "ppp0" accept  # traefik out - cert renewal
-                ip saddr  10.0.3.2 oifname "ppp0" accept  # prowlarr out - indexing
-                ip saddr  10.0.4.2 oifname "ppp0" accept  # qbittrorent out
-                ip saddr  10.0.5.2 oifname "ppp0" accept  # radarr out - imdb
-                ip saddr  10.0.6.2 oifname "ppp0" accept  # sonarr out - imdb
-                ip saddr 10.0.12.2 oifname "ppp0" accept  # degoog - search engines
-                ip saddr 10.0.17.2 oifname "ppp0" accept  # glance - fetch news
-                ip saddr 10.0.20.2 oifname "ppp0" accept  # appdaemon out - pip
-                ip saddr 10.0.21.2 oifname "ppp0" accept  # esphome out - library downloads
-                ip saddr 10.0.22.2 oifname "ppp0" accept  # hass out - hacs updates, cloud devices
-                ip saddr 10.0.32.2 oifname "ppp0" accept  # teslamate out - tesla api
-                ip saddr 10.0.33.2 oifname "ppp0" accept  # jellyfin out - imdb
-                ip saddr 10.0.38.2 oifname "ppp0" accept  # nitter out - twitter
-                ip saddr 10.0.39.2 oifname "ppp0" accept  # mass out - online radio
-                ip saddr 10.0.40.2 oifname "ppp0" accept  # pinchflat - yt downloads
-
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1001::2 oifname "ppp0" accept  # traefik out - cert renewal
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1003::2 oifname "ppp0" accept  # prowlarr out - indexing
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1004::2 oifname "ppp0" accept  # qbittrorent out
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1005::2 oifname "ppp0" accept  # radarr out - imdb
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1006::2 oifname "ppp0" accept  # sonarr out - imdb
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1012::2 oifname "ppp0" accept  # degoog - search engines
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1017::2 oifname "ppp0" accept  # glance - fetch news
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1020::2 oifname "ppp0" accept  # appdaemon out - pip
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1021::2 oifname "ppp0" accept  # esphome out - library downloads
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1022::2 oifname "ppp0" accept  # hass out - hacs updates, cloud devices
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1032::2 oifname "ppp0" accept  # teslamate out - tesla api
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1033::2 oifname "ppp0" accept  # jellyfin out - imdb
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1038::2 oifname "ppp0" accept  # nitter out - twitter
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1039::2 oifname "ppp0" accept  # mass out - online radio
-                ip6 saddr ${vars.net.zenki.containers.prefix6}:1040::2 oifname "ppp0" accept  # pinchflat - yt downloads
+                # allow outbound, based on podman labels
+                ip  saddr { ${containers_allow_out_ip4} } oifname "ppp0" accept
+                ip6 saddr { ${containers_allow_out_ip6} } oifname "ppp0" accept
               }
 
               chain output {
