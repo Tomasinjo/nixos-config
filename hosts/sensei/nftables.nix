@@ -45,6 +45,7 @@ in
             table inet filter {
               chain input {
                 type filter hook input priority 0; policy drop;
+                ct state { established, related } accept
 
                 ct state invalid drop
 
