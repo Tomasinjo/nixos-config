@@ -20,6 +20,19 @@ let
     )
   );
 
+  getContainers = import ../../helpers/get-containers.nix { inherit inputs lib; };
+  serviceWithInternetAccess = getContainers {
+    filter = (name: container: container.labels."requires.internet" == "true");
+  };
+
+  containers_allow_out_ip4 = lib.concatMapAttrsStringSep ", " (
+    name: value: value.labels."address.ipv4"
+  ) serviceWithInternetAccess;
+
+  containers_allow_out_ip6 = lib.concatMapAttrsStringSep ", " (
+    name: value: value.labels."address.ipv6"
+  ) serviceWithInternetAccess;
+
 in
 {
   networking.nat.enable = false;
