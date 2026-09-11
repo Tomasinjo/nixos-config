@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { 
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true; # dependency downloads
+      requiresInternet = "true"; # dependency downloads
     })
     {
       image = "esphome/esphome:2026.8.0";

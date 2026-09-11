@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper { 
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true; # search engines
+      requiresInternet = "true"; # search engines
     })
     {
       image = "ghcr.io/degoog-org/degoog:0.24.0";

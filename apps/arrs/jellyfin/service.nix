@@ -11,7 +11,7 @@ let
   containerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper { 
       inherit serviceName serviceId serviceHostname servicePort;
-      requiresInternet = true; # for imdb 
+      requiresInternet = "true"; # for imdb 
     })
     oci-framework.hardware.quicksync
     {

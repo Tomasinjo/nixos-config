@@ -64,7 +64,7 @@ let
       image = "postgis/postgis:17-3.5-alpine";  # overrides predefined image
 
       volumes = [
-        "${vars.dir.nixos_config}/apps/dawarich/db-data:/var/lib/postgresql/data"
+        "${vars.dir.nixos_config}/apps/dawarich/db-data:/data/postgres"
         "${vars.dir.nixos_config}/apps/dawarich/shared-data:/var/shared"
       ];
 

@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { 
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true; # for imdb 
+      requiresInternet = "true"; # for imdb 
     })
     {
       image = "lscr.io/linuxserver/sonarr:4.0.19.2979-ls321";

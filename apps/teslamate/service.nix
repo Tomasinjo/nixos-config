@@ -61,7 +61,7 @@ let
       inherit serviceName serviceId;
       serviceHostname = teslamateServiceHostname;
       servicePort = teslamateServicePort;
-      requiresInternet = true;  # tesla api
+      requiresInternet = "true";  # tesla api
     })
     {
       image = "teslamate/teslamate:4.1.1";

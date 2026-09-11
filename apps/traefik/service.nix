@@ -9,7 +9,7 @@ let
     (oci-framework.core { 
       inherit serviceName serviceId; 
       containerId = 2;
-      requiresInternet = true;  # acme cert renewals
+      requiresInternet = "true";  # acme cert renewals
     }) 
     {
       image = "traefik:v3.7.11";

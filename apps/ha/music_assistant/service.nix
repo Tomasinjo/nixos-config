@@ -19,7 +19,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper {
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true;  # internet radio
+      requiresInternet = "true";  # internet radio
     })
     {
       image = "ghcr.io/music-assistant/server:2.9.13";

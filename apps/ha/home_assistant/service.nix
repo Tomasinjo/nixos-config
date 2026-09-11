@@ -15,7 +15,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_mtls { 
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true; # cloud integrations, weather
+      requiresInternet = "true"; # cloud integrations, weather
     })
     {
       image = "homeassistant/home-assistant:2026.8.3";

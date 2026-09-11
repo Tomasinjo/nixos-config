@@ -24,6 +24,10 @@ let
       ];
 
       user = "";  # does not support changing uids, runs with uid 5050
+
+      removeExtraOptions = [
+        "--security-opt=no-new-privileges:true"
+      ];
     }
   ];
 

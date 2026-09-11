@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { 
       inherit serviceName serviceId serviceHostname servicePort;
-      requiresInternet = true; # dependency downloads? not sure
+      requiresInternet = "true"; # dependency downloads? not sure
     })
     {
       image = "quay.io/jupyter/scipy-notebook:x86_64-notebook-7.0.6";

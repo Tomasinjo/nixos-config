@@ -13,7 +13,7 @@ let
   containerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { 
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true;  # connecting to peers
+      requiresInternet = "true";  # connecting to peers
     })
     {
       image = "lscr.io/linuxserver/qbittorrent:5.1.4-r3-ls453";

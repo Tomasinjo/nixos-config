@@ -33,7 +33,7 @@ let
   ollamaContainerConfig = oci-framework.mergeAll [
     (oci-framework.core { 
       inherit serviceName serviceId; containerId = 4; 
-      requiresInternet = true; # model pull
+      requiresInternet = "true"; # model pull
     })
     oci-framework.hardware.cuda
     {

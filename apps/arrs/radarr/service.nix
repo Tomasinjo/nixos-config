@@ -11,7 +11,7 @@ let
   containerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { 
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true; # for imdb 
+      requiresInternet = "true"; # for imdb 
     })
     {
       image = "linuxserver/radarr:6.0.4.10291-ls293";

@@ -11,7 +11,7 @@ let
   containerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { 
       inherit serviceName serviceId serviceHostname servicePort;
-      requiresInternet = true;  # indexing
+      requiresInternet = "true";  # indexing
     })
     {
       image = "lscr.io/linuxserver/prowlarr:2.5.2.5491-ls156";

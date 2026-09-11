@@ -71,7 +71,7 @@ let
       };
       
       volumes = [
-        "${vars.dir.nixos_config}/apps/immich/db-data:/var/lib/postgresql/data"
+        "${vars.dir.nixos_config}/apps/immich/db-data:/data/postgres"
       ];
     }
   ];

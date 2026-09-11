@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper { 
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true; # fetching from twitter
+      requiresInternet = "true"; # fetching from twitter
     })
     {
       image = "zedeus/nitter:latest";

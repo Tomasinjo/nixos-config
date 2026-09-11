@@ -72,7 +72,7 @@ let
 
 
 
-  core = { serviceName, serviceId, containerId, requiresInternet ? false }: {
+  core = { serviceName, serviceId, containerId, requiresInternet ? "false" }: {
     volumes = [
       "/etc/localtime:/etc/localtime:ro"
     ];
@@ -90,14 +90,15 @@ let
       "--security-opt=no-new-privileges:true"
       "--log-opt=max-size=10m"
       "--log-opt=max-file=3"
-      "--replace" # replace old container, also reclaims assigned IP
     ];
     networks = [ "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" ];
     labels = {
       "glance.name" = lib.concatStringsSep " " (map (s: (lib.toUpper (builtins.substring 0 1 s)) + (builtins.substring 1 (-1) s)) (lib.splitString " " (builtins.replaceStrings ["-"] [" "] serviceName)));
       "glance.icon" = "di:${serviceName}";
       "glance.hide" = "true";
-      "requiresInternet" = requiresInternet;
+      "requires.internet" = requiresInternet; # evaluated by sensei to allow outbound connections
+      "address.ipv4" = mkIp  serviceId containerId;
+      "address.ipv6" = mkIp6 serviceId containerId;
     };
   };
 
@@ -110,7 +111,7 @@ let
       serviceHostname,
       servicePort,
       containerId ? 2,
-      requiresInternet ? false
+      requiresInternet ? "false"
     }: merge (core { inherit serviceName serviceId containerId requiresInternet; }) {
       labels = {
         "traefik.enable" = "true";
@@ -143,7 +144,7 @@ let
       dbPass, 
       dbName, 
       containerId ? 3,
-      requiresInternet ? false
+      requiresInternet ? "false"
     }: merge (core { inherit serviceName serviceId containerId requiresInternet; }) {
       image = "postgres:16.14";
       environment = {

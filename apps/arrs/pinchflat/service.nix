@@ -11,7 +11,7 @@ let
   containerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { 
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true;  # yt downloads
+      requiresInternet = "true";  # yt downloads
     })
     {
       image = "keglin/pinchflat:v2025.6.6";

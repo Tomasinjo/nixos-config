@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { 
       inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = true; # news, github 
+      requiresInternet = "true"; # news, github 
     })
     {
       image = "glanceapp/glance:v0.8.5";

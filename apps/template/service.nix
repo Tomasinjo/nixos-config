@@ -7,7 +7,7 @@
 
 # if container needs to talk with other containers, add allow entry to networking.nix nftables on zenki
 # if it requires access to any internal network/host add entry to nftables in sensei
-# if it needs internet access, set requiresInternet = true;
+# if it needs internet access, set requiresInternet = "true";
 
 let
   oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
@@ -41,7 +41,7 @@ let
     # If container requires internet access. Works for web based containers as well:
     #(oci-framework.core { 
     #  inherit serviceName serviceId; containerId = 4;
-    #  requiresInternet = true;
+    #  requiresInternet = "true";
     #})
 
     {
