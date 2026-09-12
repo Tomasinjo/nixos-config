@@ -30,6 +30,12 @@ let
         "BACKEND_HOSTNAME" = "${backendServiceHostame}.${vars.net.domain}";
         "HTTP_MODE" = "https";
       };
+
+      user = ""; # nginx permission denied if not root
+
+      extraOptions = [
+        "--sysctl=net.ipv4.ip_unprivileged_port_start=0" # allows binding low ports, nginx uses 80 in container
+      ];
     }
   ];
 
@@ -56,6 +62,10 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/piped/backend-data/config.properties:/app/config.properties:ro"
       ];
+
+      labels = {
+        "glance.hide" = "true";
+      };
     }
   ];
 
@@ -70,6 +80,10 @@ let
     })
     {
       image = "1337kavin/piped-proxy:latest";
+
+      labels = {
+        "glance.hide" = "true";
+      };
     }
   ];
 
