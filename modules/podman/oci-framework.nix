@@ -40,8 +40,8 @@ let
             ${pkgs.podman}/bin/podman network inspect ${netName} >/dev/null 2>&1 || \
               ${pkgs.podman}/bin/podman network create \
                 ${lib.optionalString isInternal "--internal"} \
-                "--subnet=${subnet4} --gateway=${gateway4}" \
-                "--ipv6 --subnet=${subnet6} --gateway=${gateway6}" \
+                --subnet=${subnet4} --gateway=${gateway4} \
+                --ipv6 --subnet=${subnet6} --gateway=${gateway6} \
                 --interface-name="${safeBridgeName}" \
                 ${netName}
           '';
