@@ -107,5 +107,6 @@ in {
       db.password = secrets.apps.dawarich.db.password;
     };
     glance.app.github_token = secrets.apps.glance.app.github_token;
+    piped.db.password = secrets.apps.piped.db.password;
   };
 }
