@@ -99,15 +99,16 @@
         }
       }
 
-      table ip nat {
+      table inet nat_bypass {
         chain PREROUTING {
           type nat hook prerouting priority dstnat; policy accept;
         }
         chain POSTROUTING {
           type nat hook postrouting priority srcnat - 1; policy accept;
-          
-          # Disable SNAT so podman containers use their static ip for outbound traffic
+
+          # disable NAT for outbound container traffic
           ip saddr ${vars.net.zenki.containers.subnet} accept
+          ip6 saddr ${vars.net.zenki.containers.subnet6} accept
         }
       }
 
