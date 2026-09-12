@@ -9,7 +9,7 @@ let
   serviceId = 6;
 
   appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { 
+    (oci-framework.web.exposed_gatekeeper { 
       inherit serviceName serviceId serviceHostname servicePort; 
       requiresInternet = "true"; # for imdb 
     })

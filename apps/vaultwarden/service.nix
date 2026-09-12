@@ -9,7 +9,7 @@ let
   serviceId = 36;
 
   appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
+    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
       image = "vaultwarden/server:1.37.1";
 

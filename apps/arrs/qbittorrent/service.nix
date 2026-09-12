@@ -11,7 +11,7 @@ let
   # Note: Has DNAT rule from internet on sensei, port 51413
 
   containerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { 
+    (oci-framework.web.exposed_gatekeeper { 
       inherit serviceName serviceId serviceHostname servicePort; 
       requiresInternet = "true";  # connecting to peers
     })
