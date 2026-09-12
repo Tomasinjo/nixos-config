@@ -138,8 +138,8 @@ in
                 # exceptions that are allowed to access the internet
                 iifname "${vars.net.sensei.iot-vlan.name}" ip saddr { ${vlan30_allow_out_ips} } ip daddr != { ${aliases.internal_ipv4} } accept
 
-                # mqtt clients to HA
-                iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${cip4 "home-assistant-app"} tcp dport 1883 accept
+                # mqtt clients to mosquitto
+                iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${cip4 "mqtt"} tcp dport 1883 accept
 
 
                 ############ Server ############
@@ -221,6 +221,16 @@ in
                 ip saddr ${vars.net.sensei.lab-vlan.ipv4.subnet}/${vars.net.sensei.lab-vlan.ipv4.mask} oifname "protonvpn" masquerade
               }
             }
+
+            table ip6 nat {
+              chain postrouting {
+                type nat hook postrouting priority srcnat; policy accept;
+                
+                # to avoid blocking search requests
+                ip6 saddr ${cip6 "degoog-app"} oifname "ppp0" snat ip6 to ${vars.net.sensei.ipv6}9a:: - ${vars.net.sensei.ipv6}ff:ffff:ffff:ffff:ffff random
+              }
+            }
+
             table inet mss-clamp {
                 chain forward {
                     type filter hook forward priority filter; policy accept;
