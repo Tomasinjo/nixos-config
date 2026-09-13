@@ -22,7 +22,7 @@ let
       requiresInternet = "true";  # internet radio
     })
     {
-      image = "ghcr.io/music-assistant/server:2.9.13";
+      image = "ghcr.io/music-assistant/server:2.10.3";
 
       environment = {
         "LOG_LEVEL" = "info"; # possible=(critical, error, warning, info, debug, verbose)
