@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "ghcr.io/qdrant/qdrant/qdrant:v1.19.0-unprivileged";
+      image = "ghcr.io/qdrant/qdrant/qdrant:v1.19.1-unprivileged";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/llm/qdrant/app-data/storage:/qdrant/storage"

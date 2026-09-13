@@ -26,7 +26,7 @@ let
   redisContainerConfig = oci-framework.mergeAll [
     (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
-      image = "docker.io/library/redis:7.4.10";
+      image = "docker.io/library/redis:7.4.11";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/nitter/redis-data:/data"

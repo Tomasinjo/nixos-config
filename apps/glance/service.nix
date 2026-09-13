@@ -14,7 +14,7 @@ let
       requiresInternet = "true"; # news, github 
     })
     {
-      image = "glanceapp/glance:v0.8.5";
+      image = "glanceapp/glance:v0.8.6";
 
       environment = {
         "GITHUB_TOKEN" = vars.apps.glance.app.github_token;

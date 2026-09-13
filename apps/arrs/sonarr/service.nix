@@ -14,7 +14,7 @@ let
       requiresInternet = "true"; # for imdb 
     })
     {
-      image = "lscr.io/linuxserver/sonarr:4.0.19.2979-ls321";
+      image = "lscr.io/linuxserver/sonarr:4.0.19.2979-ls324";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/arrs/sonarr/app-data:/config"
