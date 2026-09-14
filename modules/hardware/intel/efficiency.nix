@@ -12,7 +12,7 @@
   systemd.timers.set-cpu-efficiency = {
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      OnBootSec = "10min";          # Wait 10 minutes after boot
+      OnBootSec = "10min";
       Unit = "set-cpu-efficiency.service";
     };
   };

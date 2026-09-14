@@ -5,7 +5,7 @@
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
-    gamescopeSession.enable = true; # Useful for HDR or upscaling
+    gamescopeSession.enable = true;
   };
   hardware.graphics.enable32Bit = true;
 

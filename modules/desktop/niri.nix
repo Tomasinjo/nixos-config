@@ -12,7 +12,6 @@
   programs.noctalia-greeter = {
     enable = true; 
     greeter-args = "";
-    # Full declarative greeter.toml (overwritten on each activation).
     settings = {
       cursor = {
         theme = "Bibata-Modern-Ice";

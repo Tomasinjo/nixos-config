@@ -43,9 +43,7 @@ let
   configFile = pkgs.writeText "nvidia-fan-config.json" (builtins.toJSON fanConfigData);
 
 
-  ######################################################
-  # Script controls case fan, same speed as GPU fan    #
-  ######################################################
+  # Script controls case fan, same speed as GPU fan
   nvidia-fan-control-bash = pkgs.writeShellApplication {
     name = "nvidia-pwm4-control";
     runtimeInputs = [ pkgs.jq config.hardware.nvidia.package pkgs.coreutils ];

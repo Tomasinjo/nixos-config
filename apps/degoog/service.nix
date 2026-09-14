@@ -20,6 +20,7 @@ let
         "DEGOOG_DISTRUST_PROXY" = "0";
         "PUID" = toString vars.containerUser.uid;
         "PGID" = toString vars.containerUser.gid;
+        "DEGOOG_SETTINGS_PASSWORDS" = vars.apps.degoog.app.setting_password;
       };
 
       volumes = [

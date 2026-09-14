@@ -2,32 +2,27 @@
 
 let
   gameStart = pkgs.writeShellScriptBin "game-start" ''
-    /run/current-system/sw/bin/systemctl stop docker-ollama.service
+    /run/current-system/sw/bin/systemctl stop podman-ollama.service
   '';
 
   gameEnd = pkgs.writeShellScriptBin "game-end" ''
-    /run/current-system/sw/bin/systemctl start docker-ollama.service
+    /run/current-system/sw/bin/systemctl start podman-ollama.service
   '';
 in
 {
-  # Add scripts to PATH
   environment.systemPackages = [ gameStart gameEnd ];
 
-  # Configure GameMode to use these scripts
   programs.gamemode.enable = true;
   programs.gamemode.settings = {
-    # Disable ioprio optimization (causes errors on this system)
     general = {
       ioprio = "off";
       inhibit_screensaver = 0;
-      disable_splitlock = 0;  # Disable split lock mitigation (requires pkexec)
+      disable_splitlock = 0;
     };
-    # Disable CPU pinning (not needed for this system)
     cpu = {
       pin_cores = "no";
       park_cores = "no";
     };
-    # Custom scripts for docker-ollama service management
     custom = {
       start = "${gameStart}/bin/game-start";
       end = "${gameEnd}/bin/game-end";
