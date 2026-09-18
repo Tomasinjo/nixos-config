@@ -146,7 +146,7 @@ let
       containerId ? 3,
       requiresInternet ? "false"
     }: merge (core { inherit serviceName serviceId containerId requiresInternet; }) {
-      image = "postgres:16.14";
+      image = "postgres:16.15";
       environment = {
         POSTGRES_USER = dbUser;
         POSTGRES_PASSWORD = dbPass;
