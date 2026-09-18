@@ -11,7 +11,7 @@ let
   containerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "lscr.io/linuxserver/grocy:v4.6.0-ls321";
+      image = "lscr.io/linuxserver/grocy:v4.7.1-ls341";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/grocy/app-data:/config"
