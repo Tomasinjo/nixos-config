@@ -76,7 +76,7 @@ let
   radicaleContainerConfig = oci-framework.mergeAll [
     (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
-      image = "opencloudeu/radicale:v3.7.8";
+      image = "opencloudeu/radicale:v3.8.0";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/cloud/opencloud/radicale-data/config:/etc/radicale/config"
