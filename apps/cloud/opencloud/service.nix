@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "opencloudeu/opencloud-rolling:7.4.0";
+      image = "opencloudeu/opencloud-rolling:8.0.1";
 
       environment = {
         "OC_ADD_RUN_SERVICES" = "collaboration"; # enable stuff like antivirus, webdav, see docs
