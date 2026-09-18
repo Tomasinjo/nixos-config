@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "dpage/pgadmin4:9.17";
+      image = "dpage/pgadmin4:9.18";
 
       environment = {
         "PGADMIN_DEFAULT_EMAIL" = vars.email.tom;
