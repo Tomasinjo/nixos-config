@@ -15,7 +15,7 @@ let
   containerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "ghcr.io/umami-software/umami:3.3.1";
+      image = "ghcr.io/umami-software/umami:3.4.0";
 
       environment = {
         "DATABASE_URL" = "postgresql://${dbUser}:${dbPass}@${serviceName}-db:5432/${dbName}";
