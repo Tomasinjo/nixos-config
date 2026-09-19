@@ -115,6 +115,7 @@ let
     }: merge (core { inherit serviceName serviceId containerId requiresInternet; }) {
       labels = {
         "traefik.enable" = "true";
+        "traefik.docker.network" = "${serviceName}-net";
         "traefik.http.routers.${serviceHostname}.rule" = "Host(`${serviceHostname}.${vars.net.domain}`)";
         "traefik.http.routers.${serviceHostname}.entrypoints" = "https,http";
         "traefik.http.routers.${serviceHostname}.tls" = "true";

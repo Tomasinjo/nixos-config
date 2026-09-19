@@ -39,6 +39,7 @@ let
 
       labels = {
         "traefik.enable" = "true";
+        "traefik.docker.network" = "${serviceName}-net";
         "traefik.http.services.blog-service.loadbalancer.server.port" = "8080";
         "traefik.http.routers.rp.rule" = "Host(`www.${vars.apps.blog.si.domain}`) || Host(`${vars.apps.blog.si.domain}`)";
         "traefik.http.routers.rp.entrypoints" = "https,http";
