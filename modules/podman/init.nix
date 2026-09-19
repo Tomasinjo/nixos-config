@@ -90,7 +90,7 @@
     ../../apps/kiwix/service.nix
     ../../apps/grafana/service.nix
     ../../apps/glance/service.nix
-    ../../apps/openshot/service.nix
+    #../../apps/openshot/service.nix
     ../../apps/degoog/service.nix
     ../../apps/nitter/service.nix
     ../../apps/piped/service.nix
