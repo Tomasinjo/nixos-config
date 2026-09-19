@@ -19,5 +19,6 @@
     opencloud-desktop
     arduino-ide
     kdePackages.okular # pdf reader. To import sigen certs use nix-shell -p nssTools.tools, pk12util -d sql:$HOME/.pki/nssdb -i Downloads/sigen-ca.p12
+    appimage-run
   ];
 }

@@ -20,11 +20,11 @@
 
       opener = {
         appimage = [
-          { run = ''hyprctl dispatch exec -- "$1"''; orphan = true; desc = "Run"; }
+          { run = "appimage-run %s"; orphan = true; desc = "Run AppImage"; }
         ];
 
         executable = [  
-          { run = ''hyprctl dispatch exec -- kitty "$1"''; orphan = true; desc = "Run in Kitty"; }
+          { run = ''niri msg action spawn -- kitty "$1"''; orphan = true; desc = "Run"; }
         ];
 
         edit = [
@@ -62,6 +62,8 @@
 
       open = {
         prepend_rules = [
+          { url = "*.AppImage"; use = [ "appimage" ]; }
+          { url = "*.appimage"; use = [ "appimage" ]; }
           { mime = "application/x-*"; use = [ "executable" ]; }
           { mime = "image/*"; use = [ "imv" "gimp" ]; }
           { mime = "video/*"; use = [ "vlc" ]; }
@@ -87,10 +89,6 @@
           { url = "*.htm"; use = [ "firefox" "edit" "VScode" ]; }
           { mime = "text/*"; use = [ "edit" "VScode" ]; }
         ];
-	      append_rules = [
-          { url = "*.AppImage"; use = [ "appimage" ]; }
-          { url = "*.appimage"; use = [ "appimage" ]; }
-	      ];
       };
     };
 
