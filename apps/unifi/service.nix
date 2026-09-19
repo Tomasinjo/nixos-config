@@ -18,7 +18,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "lscr.io/linuxserver/unifi-network-application:10.5.67-ls141";
+      image = "lscr.io/linuxserver/unifi-network-application:10.6.106-ls146";
 
       environment = {
         "MONGO_USER" = mongoUser;
