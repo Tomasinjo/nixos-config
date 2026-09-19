@@ -11,7 +11,7 @@ let
       owner = "ThomasBaruzier";
       repo = "gddr6-core-junction-vram-temps";
       rev = "main";
-      sha256 = "sha256-dAAd4NuWnMfAKCVDuG9LFB5cVccDnH1csFrkGuOoO/M=";
+      sha256 = "sha256-5qc3e0TI9cg0JVha3WXiV6yRywHscHrUa/QzbSJH7RE=";
     };
 
     nativeBuildInputs = with pkgs; [ gcc pkg-config ];

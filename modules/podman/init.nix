@@ -77,6 +77,7 @@
     ../../apps/llm/comfyui/service.nix
     ../../apps/llm/open-webui/service.nix
     ../../apps/llm/qdrant/service.nix
+    ../../apps/llm/hermes/service.nix
     ../../apps/cloud/opencloud/service.nix
     ../../apps/cloud/euro-office/service.nix
     ../../apps/paperless/service.nix
