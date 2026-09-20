@@ -10,11 +10,6 @@
 
   programs.zsh.enable = true;
 
-  # log interactive commands to journald (ships to VictoriaLogs on zenki;
-  # lets the log-watch agent correlate error spikes with user actions)
-  imports = [ ./command-history.nix ];
-  services.command-history.enable = true;
-
   time.timeZone = vars.timeZone;
   i18n.defaultLocale = "en_US.UTF-8";
 
