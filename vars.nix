@@ -109,5 +109,6 @@ in {
     glance.app.github_token = secrets.apps.glance.app.github_token;
     piped.db.password = secrets.apps.piped.db.password;
     degoog.app.setting_password = secrets.apps.degoog.app.setting_password;
+    hermes.app.glm = secrets.apps.hermes.app.glm;
   };
 }

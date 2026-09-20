@@ -163,7 +163,9 @@
           ip saddr 10.0.24.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # jupyter to fafi-db
           ip saddr 10.0.31.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # pgadmin to fafi-db
           ip saddr 10.0.31.2 ip daddr 10.0.22.3 tcp dport 5432 accept   # pgadmin to hass-db
-          ip saddr 10.0.10.2 ip daddr 10.0.1.2 tcp dport 443 accept      # opencloud to traefik, for oidc, see OC service.nix
+          ip saddr 10.0.10.2 ip daddr 10.0.1.2  tcp dport 443 accept    # opencloud to traefik, for oidc, see OC service.nix
+          ip saddr 10.0.42.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # hermes to ollama 
+          ip saddr 10.0.42.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # hermes to victoria 
 
           # containers cant talk with each other unless overriden above
           ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} drop
@@ -196,6 +198,8 @@
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1015::3 tcp dport 5432 accept     # pgadmin to fafi-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::3 tcp dport 5432 accept     # pgadmin to hass-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1010::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport 443 accept      # opencloud to traefik, for oidc, see OC service.nix
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # hermes to ollama
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1037::2 tcp dport 9428 accept     # hermes to victoria
 
           # containers cant talk with each other unless overriden above
           ip6 saddr ${vars.net.zenki.containers.subnet6} ip6 daddr ${vars.net.zenki.containers.subnet6} drop

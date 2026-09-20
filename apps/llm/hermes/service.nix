@@ -19,6 +19,7 @@ let
 
       environment = {
         "HERMES_DASHBOARD" = "1";
+        "GLM_API_KEY" = vars.apps.hermes.app.glm;
       };
 
       volumes = [
