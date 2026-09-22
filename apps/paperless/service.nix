@@ -68,7 +68,7 @@ let
       image = "ghcr.io/tomasinjo/paper-llama:main";
 
       environment = {
-        "PAPERLESS_URL" = "https://${serviceHostname}.${vars.net.domain}";
+        "PAPERLESS_URL" = "http://${serviceName}-app:8000";
         "PAPERLESS_TOKEN" = vars.apps.paperless.app.api_key;
         "OLLAMA_URL" = "http://10.0.27.4:11434";
         "OLLAMA_MODEL" = "gemma3:27b-32k";
