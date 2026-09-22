@@ -71,6 +71,7 @@
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "zenki"; };
           }
+          hermes-agent.nixosModules.default
         ];
       };
 
