@@ -52,7 +52,6 @@
     ./backup-daily-weekly.nix
     ./backup-quarterly.nix
     ./deploy.nix
-    ./vector.nix
     ./get_networks.nix
     ../../apps/arrs/jellyfin/service.nix
     ../../apps/arrs/pinchflat/service.nix

@@ -15,6 +15,7 @@
     ../../modules/ssh.nix
     ../../modules/utilities.nix
     ../../modules/wireshark.nix  # for dumpcap, remote capture via wireshark
+    ../../modules/vector.nix
     ../../modules/cowabunga/syslog-receiver.nix
     #../../modules/cowabunga/fail2ban.nix
     ../../modules/cowabunga/shit_list.nix
@@ -35,6 +36,8 @@
   ];
 
   programs.wireshark.package = pkgs.wireshark-cli; # wireshark is enabled in wireshark.nix, this just limits it to cli tools
+
+  modules.vector.enable = true; # journald + zsh history (merges with suricata's vector instance)
 
   # NTP server and client
   services.chrony = {

@@ -13,7 +13,10 @@
     ../../modules/wireshark.nix
     ../../modules/hardware/intel/intel-qsv.nix
     ../../modules/hardware/upower.nix
+    ../../modules/vector.nix
   ];
+
+  modules.vector.enable = true; # journald + zsh history
 
 
   # Boot configuration

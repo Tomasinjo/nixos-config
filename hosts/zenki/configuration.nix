@@ -1,10 +1,11 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, vars, ... }:
 {
   imports = [
     ./hardware-configuration.nix
     ./networking.nix
     ../../modules/common.nix
     ../../modules/podman/init.nix
+    ../../modules/vector.nix
     ../../modules/cowabunga/syslog-sender.nix
     ../../modules/ssh.nix
     ../../modules/zfs/init.nix
@@ -26,6 +27,15 @@
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  modules.vector = {
+    enable = true;
+    enablePodman = true;
+    extraFiles = [
+      "${vars.dir.nixos_config}/apps/ha/appdaemon/app-data/logs/appdaemon.log"
+      "${vars.dir.nixos_config}/apps/ha/appdaemon/app-data/logs/error.log"
+    ];
+  };
 
   programs.nix-ld.enable = true; # allow unsigned links, requred for connecting with vscode remote ssh
 

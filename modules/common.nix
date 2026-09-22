@@ -10,6 +10,13 @@
 
   programs.zsh.enable = true;
 
+  # Shell command audit log, written by the home-manager zsh config and read by modules/vector.nix
+  users.groups.vector = { };
+  systemd.tmpfiles.rules = [
+    "d /var/log/zsh 0750 ${vars.username} vector -"
+    "a+ /var/log/zsh - - - - default:g:vector:r-x" # files created by zsh stay readable by vector regardless of umask
+  ];
+
   time.timeZone = vars.timeZone;
   i18n.defaultLocale = "en_US.UTF-8";
 

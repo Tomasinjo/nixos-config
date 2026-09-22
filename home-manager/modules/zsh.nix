@@ -2,6 +2,7 @@
 
 let
   cfg = config.modules.shell;
+  logFile = "/var/log/zsh/history.jsonl"; # dir provisioned by modules/common.nix
 in
 {
   options.modules.shell = {
@@ -41,7 +42,38 @@ in
         bindkey '^[[1;5D' backward-word              # C-Left
         bindkey '^[0d'    backward-word              # C-Left
         bindkey '^[[5D'   backward-word              # C-Left
+
+
+        ### logging each command and status code
+        autoload -Uz add-zsh-hook
+        typeset -g _log_last_cmd=""
+
+        _json_log_preexec() {
+          _log_last_cmd="$1"
+        }
+
+        _json_log_precmd() {
+          local exit_code=$?
+
+          if [[ -n "$_log_last_cmd" ]]; then
+            ${pkgs.jq}/bin/jq -nc \
+              --arg timestamp "$(date -u +"%Y-%m-%dT%H:%M:%SZ")" \
+              --arg user "$USER" \
+              --arg cmd "$_log_last_cmd" \
+              --argjson exit "$exit_code" \
+              '{timestamp: $timestamp, user: $user, command: $cmd, exit_code: $exit}' \
+              >> "${logFile}"
+
+            # Reset state
+            _log_last_cmd=""
+          fi
+        }
+
+        add-zsh-hook preexec _json_log_preexec
+        add-zsh-hook precmd _json_log_precmd
       '';
+
+
       shellAliases = {
         ls = "eza";
         ll = "eza -la";
