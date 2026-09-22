@@ -22,6 +22,7 @@
     ../../modules/gaming/steam.nix
     # ../../modules/gaming/sunshine.nix
     ../../modules/wireshark.nix  # for dumpcap, remote capture via wireshark
+    ../../modules/hermes/hermes.nix
 
   ];
 

@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, vars, ... }:
 
 {
   services.hermes-agent = {
@@ -10,8 +10,8 @@
       host = "0.0.0.0";
     };
 
-    # managed in files
-    configFile = /etc/hermes/config.yaml;
+    # managed as file
+    configFile = ./config.yaml;
 
     environment = {
       GLM_API_KEY = vars.apps.hermes.app.glm;
