@@ -120,6 +120,7 @@
           ct state { established, related } accept
           
           iifname "${vars.net.zenki.server-vlan.interface_name}" tcp dport 22 accept
+          iifname "${vars.net.zenki.server-vlan.interface_name}" tcp dport 9119 accept
           
           ip protocol icmp accept
           meta l4proto ipv6-icmp accept

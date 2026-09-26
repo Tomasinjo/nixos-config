@@ -1,0 +1,240 @@
+model:
+  default: qwen3.8:27b-262k
+  provider: custom
+  base_url: "http://10.0.27.4:11434/v1"
+  api_mode: chat_completions
+  
+model_aliases:
+  glm:
+    model: glm-5.3
+    provider: zai
+    base_url: "https://api.z.ai/api/coding/paas/v4"
+    api_mode: chat_completions
+
+database:
+  journal_mode: wal
+runtime:
+  nofile_soft_limit: 4096
+agent:
+  max_turns: 500
+  service_tier: ''
+  fast_auto_seconds: 60
+  verbose: false
+  reasoning_effort: medium
+  personalities: {}
+terminal:
+  backend: local
+  cwd: .
+  timeout: 180
+  home_mode: auto
+  container_cpu: 1
+  container_memory: 5120
+  container_disk: 51200
+  container_persistent: true
+  docker_mount_cwd_to_workspace: false
+  lifetime_seconds: 300
+browser:
+  inactivity_timeout: 120
+  extension_control:
+    enabled: false
+  cloud_provider: local
+tool_loop_guardrails:
+  warnings_enabled: true
+  hard_stop_enabled: false
+  non_interactive_hard_stop_enabled: true
+  warn_after:
+    exact_failure: 2
+    same_tool_failure: 3
+    idempotent_no_progress: 2
+  hard_stop_after:
+    exact_failure: 5
+    same_tool_failure: 8
+    idempotent_no_progress: 5
+compression:
+  enabled: true
+  checkpoint_required: false
+  progress_notices: false
+  threshold: 0.5
+  target_ratio: 0.2
+  protect_last_n: 20
+  min_tail_user_messages: 1
+  max_attempts: 3
+  proactive_prune_tokens: 0
+  proactive_prune_min_result_chars: 8000
+  proactive_prune_min_reclaim_tokens: 4096
+  hygiene_max_turn_hold_seconds: 10
+  protect_first_n: 3
+  codex_gpt55_autoraise: true
+  codex_app_server_auto: native
+  codex_responses_native: false
+  idle_compact_after_seconds: 0
+prompt_caching:
+  cache_ttl: 5m
+display:
+  compact: false
+  busy_input_mode: interrupt
+  bell_on_complete: false
+  bell_on_prompt: false
+  show_reasoning: false
+  background_process_notifications: concise
+  streaming: true
+  skin: default
+  interim_assistant_messages: true
+  tool_progress: all
+  cleanup_progress: false
+  long_running_notifications: true
+  busy_ack_detail: true
+dashboard:
+  trusted_proxies:
+  basic_auth:
+    username: tom
+    password_hash: scrypt$16384$8$1$LKVHTdk4xrf+Cn0VuBhhUg==$l7SPzi2HFnoldrW5cHE0QtwaDJMjpx3rWnirQTgGSAY=
+  public_url: 
+stt:
+  enabled: true
+  language: en
+  local:
+    model: base
+  openai:
+    model: whisper-1
+    language: ''
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  memory_char_limit: 2200
+  user_char_limit: 1375
+  nudge_interval: 10
+delegation:
+  max_iterations: 250
+skills:
+  creation_nudge_interval: 15
+plugins:
+  enabled: []
+  disabled:
+    - telegram-platform
+cron:
+  catch_up_missed: true
+kanban:
+  review_dispatch: true
+code_execution:
+  timeout: 300
+  max_tool_calls: 50
+gateway:
+  signal_interrupt_grace_timeout: 1
+  delivery_ledger: true
+  platform_connect_timeout: 30
+  loop_watchdog: true
+  loop_watchdog_probe_interval_s: 30.0
+  loop_watchdog_probe_timeout_s: 10.0
+  loop_watchdog_max_strikes: 3
+  bot_loop_guard:
+    enabled: true
+    max_events: 20
+    window_seconds: 300
+    cooldown_seconds: 600
+  startup_watchdog: true
+  startup_watchdog_timeout_seconds: 300
+  write_sessions_json: true
+  multiplex_profiles: true
+  auto_migrate: true
+  profile_routes:
+    - name: loginho-telegram
+      platform: telegram
+      chat_id: "760766836"
+      profile: loginho
+  scale_to_zero:
+    idle_timeout_minutes: 2
+  restart_loop_guard:
+    max_restarts: 3
+    window_seconds: 60
+    max_gap_seconds: 300
+  respawn_storm:
+    max_starts: 5
+    window_seconds: 120
+  message_timestamps:
+    enabled: false
+  max_inbound_media_bytes: 134217728
+  trust_env: true
+  strict: false
+  media_delivery_allow_dirs: []
+  trust_recent_files: true
+  trust_recent_files_seconds: 600
+  api_server:
+    max_concurrent_runs: 10
+streaming:
+  enabled: false
+telemetry:
+  shared_metrics:
+    enabled: false
+    send: false
+updates:
+  check: true
+  pre_update_backup: false
+  backup_keep: 5
+  non_interactive_local_changes: stash
+_config_version: 44
+group_sessions_per_user: true
+platform_toolsets:
+  cli:
+    - hermes-cli
+  telegram:
+    - hermes-telegram
+  discord:
+    - hermes-discord
+  whatsapp:
+    - hermes-whatsapp
+  slack:
+    - hermes-slack
+  signal:
+    - hermes-signal
+  homeassistant:
+    - hermes-homeassistant
+  qqbot:
+    - hermes-qqbot
+  yuanbao:
+    - hermes-yuanbao
+  teams:
+    - hermes-teams
+  google_chat:
+    - hermes-google_chat
+platforms:
+  telegram:
+    enabled: true
+
+# ── Security ──────────────────────────────────────────────────────────
+# Secret redaction is ON by default — strings that look like API keys,
+# tokens, and passwords are masked in tool output, logs, and chat
+# responses before the model or user ever sees them. Set redact_secrets
+# to false to disable (e.g. when developing the redactor itself).
+# tirith pre-exec scanning is enabled by default when the tirith binary
+# is available. Configure via security.tirith_* keys or env vars
+# (TIRITH_ENABLED, TIRITH_BIN, TIRITH_TIMEOUT, TIRITH_FAIL_OPEN).
+#
+# security:
+#   redact_secrets: true
+#   tirith_enabled: true
+#   tirith_path: "tirith"
+#   tirith_timeout: 5
+#   tirith_fail_open: true
+
+# ── Fallback Model ────────────────────────────────────────────────────
+# Automatic provider failover when primary is unavailable.
+# Uncomment and configure to enable. Triggers on rate limits (429),
+# overload (529), service errors (503), or connection failures.
+#
+# Supported providers:
+#   openrouter   (OPENROUTER_API_KEY)  — routes to any model
+#   openai-codex (OAuth — hermes auth) — OpenAI Codex
+#   nous         (OAuth — hermes auth) — Nous Portal
+#   zai          (ZAI_API_KEY)         — Z.AI / GLM
+#   kimi-coding  (KIMI_API_KEY)        — Kimi / Moonshot
+#   kimi-coding-cn (KIMI_CN_API_KEY)   — Kimi / Moonshot (China)
+#   minimax      (MINIMAX_API_KEY)     — MiniMax
+#   minimax-cn   (MINIMAX_CN_API_KEY)  — MiniMax (China)
+#   bedrock      (AWS IAM / boto3)     — AWS Bedrock (Converse API)
+#
+# For custom OpenAI-compatible endpoints, add base_url and key_env.
+#
+# fallback_model:
+#   provider: openrouter
+#   model: anthropic/claude-sonnet-4

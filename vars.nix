@@ -75,7 +75,10 @@ in {
       username = secrets.apps.esphome.username;
       password = secrets.apps.esphome.password;
     };
-    home-assistant.db.password = secrets.apps.home-assistant.db.password;
+    home-assistant = {
+      db.password = secrets.apps.home-assistant.db.password;
+      app.long_lived_token = secrets.apps.home-assistant.app.long_lived_token;
+    };
     immich.db.password = secrets.apps.immich.db.password;
     open-webui.app.secret = secrets.apps.open-webui.app.secret;
     opencloud.app = {
