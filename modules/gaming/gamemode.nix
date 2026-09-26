@@ -45,7 +45,7 @@ in
           subject.user == "${vars.username}") {
         var verb = action.lookup("verb");
         var unit = action.lookup("unit");
-        if (unit == "docker-ollama.service" && (verb == "start" || verb == "stop" || verb == "restart")) {
+        if (unit == "podman-ollama.service" && (verb == "start" || verb == "stop" || verb == "restart")) {
           return polkit.Result.YES;
         }
       }
