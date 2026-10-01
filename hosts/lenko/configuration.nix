@@ -37,6 +37,7 @@
     nix-direnv
     moonlight-qt
     glib # required by phone connect plugin for nocatalia
+    uv
   ];
 
   # for platformio

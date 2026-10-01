@@ -343,6 +343,7 @@ in
             scale = 1.0;
           };
         };
+        gestures.hot-corners.enable = false;
       };
     };
   };
