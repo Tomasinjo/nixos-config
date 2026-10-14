@@ -32,8 +32,9 @@ in {
   };
 
   wg.protonvpn.privatekey = secrets.wg.protonvpn.privatekey;
-  crowdsec.enrollkey = secrets.crowdsec.enrollkey;
-  crowdsec.bouncer_key = secrets.crowdsec.bouncer_key; # internal use, bouncer talking with console
+  github_pat_nixos = secrets.github_pat_nixos;
+  github_ghcr = secrets.github_ghcr;
+  dockerhub_pat = secrets.dockerhub_pat;
 
   apps = {
     umami = {
