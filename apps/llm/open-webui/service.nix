@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "ghcr.io/open-webui/open-webui:0.11-slim";
+      image = "ghcr.io/open-webui/open-webui:0.12-slim";
 
       environment = {
         "OLLAMA_BASE_URLS" = "http://ollama:11434";
