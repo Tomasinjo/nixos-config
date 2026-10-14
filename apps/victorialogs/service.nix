@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "docker.io/victoriametrics/victoria-logs:v1.52.0";
+      image = "docker.io/victoriametrics/victoria-logs:v1.53.0";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/victorialogs/app-data:/victoria-logs-data"
