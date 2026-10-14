@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "grafana/grafana:13.2.2";
+      image = "grafana/grafana:13.2.4";
 
       environment = {
         "GF_SERVER_ROOT_URL" = "https://${serviceHostname}.${vars.net.domain}/";
