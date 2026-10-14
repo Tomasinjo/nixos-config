@@ -18,7 +18,7 @@ let
     (oci-framework.web.exposed_mtls { inherit serviceName serviceId serviceHostname servicePort; })
     oci-framework.hardware.quicksync
     {
-      image = "ghcr.io/immich-app/immich-server:v3.2.2";
+      image = "ghcr.io/immich-app/immich-server:v3.3.3";
 
       environment = {
         "DB_USERNAME" = dbUser;
@@ -92,7 +92,7 @@ let
     (oci-framework.core { inherit serviceName serviceId; containerId = 5; })
     oci-framework.hardware.quicksync
     {
-      image = "ghcr.io/immich-app/immich-machine-learning:v3.2.2-openvino";
+      image = "ghcr.io/immich-app/immich-machine-learning:v3.3.3-openvino";
       
       environment = {
         "MACHINE_LEARNING_MODEL_TTL" = "300";

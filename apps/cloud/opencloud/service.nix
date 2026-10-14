@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "opencloudeu/opencloud-rolling:8.0.1";
+      image = "opencloudeu/opencloud-rolling:8.1.0";
 
       environment = {
         "OC_ADD_RUN_SERVICES" = "collaboration"; # enable stuff like antivirus, webdav, see docs
@@ -76,7 +76,7 @@ let
   radicaleContainerConfig = oci-framework.mergeAll [
     (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
-      image = "opencloudeu/radicale:v3.8.0";
+      image = "opencloudeu/radicale:v3.8.1";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/cloud/opencloud/radicale-data/config:/etc/radicale/config"

@@ -26,7 +26,7 @@ let
   containerConfig = oci-framework.mergeAll [
     (oci-framework.core { inherit serviceName serviceId; containerId = 2; })
     {
-      image = "joseluisq/static-web-server:2.44.0";
+      image = "joseluisq/static-web-server:2.44.1";
 
       environment = {
         "SERVER_CONFIG_FILE" = "/etc/config.toml";

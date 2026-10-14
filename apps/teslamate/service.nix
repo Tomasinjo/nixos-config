@@ -24,7 +24,7 @@ let
       containerId = 4; # Override containerId to avoid collision with app
     })
     {
-      image = "teslamate/grafana:4.2.0";
+      image = "teslamate/grafana:4.3.0";
 
       environment = {
         "DATABASE_USER" = dbUser;
@@ -64,7 +64,7 @@ let
       requiresInternet = "true";  # tesla api
     })
     {
-      image = "teslamate/teslamate:4.2.0";
+      image = "teslamate/teslamate:4.3.0";
 
       environment = {
         "ENCRYPTION_KEY" = vars.apps.teslamate.app.key;
