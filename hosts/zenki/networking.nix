@@ -166,7 +166,10 @@
           ip saddr 10.0.31.2 ip daddr 10.0.22.3 tcp dport 5432 accept   # pgadmin to hass-db
           ip saddr 10.0.10.2 ip daddr 10.0.1.2  tcp dport 443 accept    # opencloud to traefik, for oidc, see OC service.nix
           ip saddr 10.0.42.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # hermes to ollama 
-          ip saddr 10.0.42.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # hermes to victoria 
+          ip saddr 10.0.42.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # hermes to victoria
+          ip saddr 10.0.1.6  ip daddr 10.0.10.2 tcp dport 9200 accept   # gatekeeper to opencloud
+          ip saddr 10.0.1.6  ip daddr 10.0.23.2 tcp dport 2283 accept   # gatekeeper to immich
+
 
           # containers cant talk with each other unless overriden above
           ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} drop
