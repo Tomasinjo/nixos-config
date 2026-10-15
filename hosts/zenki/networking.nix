@@ -142,6 +142,8 @@
 
           # ==== inter-stack policy ====
           ip saddr 10.0.1.2 ip daddr 10.0.0.0/16 accept                 # traefik to all containers
+          ip saddr 10.0.1.6 ip daddr 10.0.10.2 tcp dport 9200 accept   # gatekeeper to opencloud
+          ip saddr 10.0.1.6 ip daddr 10.0.23.2 tcp dport 2283 accept   # gatekeeper to immich
           ip saddr 10.0.3.2 ip daddr 10.0.5.2 tcp dport 7878 accept     # prowlar to radarr
           ip saddr 10.0.5.2 ip daddr 10.0.3.2 tcp dport 9696 accept     # radarr to prowlarr
           ip saddr 10.0.3.2 ip daddr 10.0.6.2 tcp dport 8989 accept     # prowlar to sonarr
@@ -167,9 +169,8 @@
           ip saddr 10.0.10.2 ip daddr 10.0.1.2  tcp dport 443 accept    # opencloud to traefik, for oidc, see OC service.nix
           ip saddr 10.0.42.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # hermes to ollama 
           ip saddr 10.0.42.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # hermes to victoria
-          ip saddr 10.0.1.6  ip daddr 10.0.10.2 tcp dport 9200 accept   # gatekeeper to opencloud
-          ip saddr 10.0.1.6  ip daddr 10.0.23.2 tcp dport 2283 accept   # gatekeeper to immich
-
+          ip saddr 10.0.43.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # dr sre to ollama 
+          ip saddr 10.0.43.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # dr sre to victoria
 
           # containers cant talk with each other unless overriden above
           ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} drop

@@ -36,6 +36,9 @@ in {
   github_ghcr = secrets.github_ghcr;
   dockerhub_pat = secrets.dockerhub_pat;
 
+  telegram_bot_token = secrets.telegram_bot_token;
+  telegram_allowed_users = secrets.telegram_allowed_users;
+
   apps = {
     umami = {
       db.password = secrets.apps.umami.db.password;
@@ -115,8 +118,6 @@ in {
     degoog.app.setting_password = secrets.apps.degoog.app.setting_password;
     hermes.app = {
       glm = secrets.apps.hermes.app.glm;
-      telegram_bot_token = secrets.apps.hermes.app.telegram_bot_token;
-      telegram_allowed_users = secrets.apps.hermes.app.telegram_allowed_users;
     };
   };
 }
