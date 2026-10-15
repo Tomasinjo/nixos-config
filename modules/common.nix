@@ -35,6 +35,8 @@
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true; # Saves space by de-duplicating files
     download-buffer-size = 524288000; # 500mb
+    trusted-users = [ "root" vars.username ];
   };
   nixpkgs.config.allowUnfree = true;
+
 }
