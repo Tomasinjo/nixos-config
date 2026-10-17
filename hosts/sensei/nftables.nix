@@ -117,6 +117,9 @@ in
                 iifname "${vars.net.sensei.common-vlan.name}" ip  daddr ${cip4 "traefik"} accept
                 iifname "${vars.net.sensei.common-vlan.name}" ip6 daddr ${cip6 "traefik"} accept
                 
+                # to ollama
+                iifname "${vars.net.sensei.common-vlan.name}" ip  daddr ${cip4 "ollama"} accept
+
                 # Speakers to MA
                 iifname "${vars.net.sensei.common-vlan.name}" ip saddr { 192.168.10.152, 192.168.10.154 } ip daddr ${cip4 "music-assistant-app"} tcp dport 8097 accept 
 
