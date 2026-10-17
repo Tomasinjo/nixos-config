@@ -171,6 +171,7 @@
           ip saddr 10.0.42.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # hermes to victoria
           ip saddr 10.0.43.2 ip daddr 10.0.27.4 tcp dport 11434 accept  # dr sre to ollama 
           ip saddr 10.0.43.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # dr sre to victoria
+          ip saddr 10.0.44.2 ip daddr 10.0.27.4 tcp dport 11434 accept  # mealie to ollama 
 
           # containers cant talk with each other unless overriden above
           ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} drop
@@ -207,6 +208,7 @@
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1037::2 tcp dport 9428 accept     # hermes to victoria
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1043::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::4 tcp dport 11434 accept    # dr_sre to ollama
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1043::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1037::2 tcp dport 9428 accept     # dr_sre to victoria
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1044::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::4 tcp dport 11434 accept    # mealie to ollama
 
           # containers cant talk with each other unless overriden above
           ip6 saddr ${vars.net.zenki.containers.subnet6} ip6 daddr ${vars.net.zenki.containers.subnet6} drop

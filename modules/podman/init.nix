@@ -94,5 +94,6 @@
     ../../apps/nitter/service.nix
     ../../apps/piped/service.nix
     ../../apps/llm/dr_sre/service.nix
+    ../../apps/mealie/service.nix
   ];
 }

@@ -119,5 +119,6 @@ in {
     hermes.app = {
       glm = secrets.apps.hermes.app.glm;
     };
+    mealie.db.password = secrets.apps.mealie.db.password;
   };
 }
