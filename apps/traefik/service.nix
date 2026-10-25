@@ -87,12 +87,18 @@ let
 
       labels = {
         "traefik.enable" = "true";
+        
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.address" = "http://10.0.1.6:5000/verify_share_request?protocol=http&container_name_port=10.0.23.2:2283";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.trustForwardHeader" = "true";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.maxResponseBodySize" = "10485760";
+
         "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.address" = "http://10.0.1.6:5000/verify_share_request?protocol=http&container_name_port=10.0.10.2:9200";
         "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.trustForwardHeader" = "true";
         "traefik.http.middlewares.gatekeeper_opencloud_share.forwardauth.maxResponseBodySize" = "10485760";
+
+        "traefik.http.middlewares.gatekeeper_mealie_share.forwardauth.address" = "http://10.0.1.6:5000/verify_share_request?protocol=http&container_name_port=10.0.44.2:9000";
+        "traefik.http.middlewares.gatekeeper_mealie_share.forwardauth.trustForwardHeader" = "true";
+        "traefik.http.middlewares.gatekeeper_mealie_share.forwardauth.maxResponseBodySize" = "10485760";
       };
     }
   ];

@@ -37,6 +37,13 @@ let
       volumes = [
         "${vars.dir.nixos_config}/apps/mealie/app-data:/app/data/"
       ];
+
+      labels = {
+        "traefik.http.routers.mealie-share.rule" = "Host(`${serviceHostname}.${vars.net.domain}`) && PathRegexp(`^\/g\/home\/shared\/r\/(?:[A-Z,a-z,0-9]){8}-(?:[A-Z,a-z,0-9]){4}-(?:[A-Z,a-z,0-9]){4}-(?:[A-Z,a-z,0-9]){4}-(?:[A-Z,a-z,0-9]){12}$`)";
+        "traefik.http.routers.mealie-share.entrypoints" = "https,http";
+        "traefik.http.routers.mealie-share.tls" = "true";
+        "traefik.http.routers.mealie-share.middlewares" = "gatekeeper_mealie_share@docker";
+      };
     }
   ];
 
