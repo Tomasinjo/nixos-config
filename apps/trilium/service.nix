@@ -13,7 +13,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "triliumnext/trilium:v0.106.0";
+      image = "triliumnext/trilium:v0.106.1";
 
       environment = {
         "TRILIUM_DATA_DIR" = dataDir;

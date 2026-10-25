@@ -14,7 +14,7 @@ let
       requiresInternet = "true"; # search engines
     })
     {
-      image = "ghcr.io/degoog-org/degoog:1.1.0";
+      image = "ghcr.io/degoog-org/degoog:1.1.1";
 
       environment = {
         "DEGOOG_DISTRUST_PROXY" = "0";
