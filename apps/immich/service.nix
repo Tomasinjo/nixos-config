@@ -79,7 +79,7 @@ let
   redisContainerConfig = oci-framework.mergeAll [
     (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
     {
-      image = "docker.io/valkey/valkey:9@sha256:546304417feac0874c3dd576e0952c6bb8f06bb4093ea0c9ca303c73cf458f63";
+      image = "docker.io/valkey/valkey:9@sha256:c123e3715db63d06d4ad6964884037aa0d5d4d703939b9929954112889708e1d";
       
       volumes = [
         "${vars.dir.nixos_config}/apps/immich/redis-data:/data"
