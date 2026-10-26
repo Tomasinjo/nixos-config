@@ -7,6 +7,10 @@
   "nix": {
     "enabled": true
   },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 8pm on Friday"]
+  },
   "customManagers": [
     {
       "customType": "regex",
@@ -20,8 +24,12 @@
       "datasourceTemplate": "docker"
     }
   ],
+  "platformAutomerge": false,
+  "automergeType": "pr",
+  
   "packageRules": [
     {
+      "addLabels": ["update"],
       "description": "Parses linuxserver unusual image names. Rules above apply normally.",
       "versioning": "regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)((\\.|-r)(?<build>\\d+))?-ls(?<revision>\\d+)$",
       "matchPackageNames": [
@@ -29,42 +37,39 @@
       ]
     },
     {
-      "description": "Weekly PR for Nix updates (grouped)",
-      "matchManagers": ["nix"],
-      "groupName": "Nix Dependencies",
-      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest"],
-      "schedule": ["before 8pm on Friday"]
-    },
-    {
-      "description": "Weekly automerge of Docker images - patches (grouped)",
+      "description": "Weekly automerge of container images - patches (grouped)",
       "matchManagers": ["custom.regex"],
       "matchUpdateTypes": ["patch", "digest"],
-      "groupName": "Docker Patch",
+      "groupName": "container images - minor",
       "schedule": ["before 8pm on Friday"],
-      "automerge": true
+      "automerge": true,
+      "addLabels": ["update"]
     },
     {
-      "description": "Weekly PRs for Docker images - minor/major",
+      "description": "Weekly PRs for container images - minor/major",
       "matchManagers": ["custom.regex"],
       "matchUpdateTypes": ["minor", "major"],
       "schedule": ["before 8pm on Friday"],
-      "automerge": false
+      "automerge": false,
+      "addLabels": ["update"]
     },
     {
-      "description": "Weekly automerge of trusted Docker images - minor/patch (grouped)",
+      "description": "Weekly automerge of trusted container images - minor/patch (grouped)",
       "matchManagers": ["custom.regex"],
       "matchPackageNames": ["postgres", "mongo", "redis", "wollomatic/socket-proxy", "eclipse-mosquitto"],
       "matchUpdateTypes": ["minor", "patch", "digest"],
-      "groupName": "Trusted Service",
+      "groupName": "stable container images",
       "automerge": true,
-      "schedule": ["before 8pm on Friday"]
+      "schedule": ["before 8pm on Friday"],
+      "addLabels": ["update"]
     },
     {
-      "description": "Ignore major updates for trusted Docker images",
+      "description": "Ignore major updates for trusted container images",
       "matchManagers": ["custom.regex"],
       "matchPackageNames": ["postgres", "mongo", "redis", "wollomatic/socket-proxy", "eclipse-mosquitto"],
       "matchUpdateTypes": ["major"],
-      "enabled": false
+      "enabled": false,
+      "addLabels": ["update"]
     }
   ]
 }

@@ -11,6 +11,14 @@
       autodiscoverFilter = [ "Tomasinjo/nixos-config" ];
       baseDir = "/var/lib/renovate";
       cacheDir = "/var/cache/renovate";
+      hostRules = [
+        {
+          matchHost = "ghcr.io";
+          hostType = "docker";
+          username = "tomasinjo";
+          password = vars.github_ghcr;
+        }
+      ];
     };
     environment = {
       RENOVATE_TOKEN = vars.github_pat_nixos;
