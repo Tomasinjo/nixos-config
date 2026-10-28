@@ -38,6 +38,7 @@
     moonlight-qt
     glib # required by phone connect plugin for nocatalia
     uv
+    nodejs
   ];
 
   # for platformio
