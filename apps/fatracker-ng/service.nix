@@ -16,14 +16,19 @@ let
     (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
 
     {
-      image = "ghcr.io/tomasinjo/fatracker-ng:1.0.1";
+      image = "ghcr.io/tomasinjo/fatracker-ng:1.1.1";
 
       environment = {
         "DATABASE_URL" = "postgresql+psycopg://${dbUser}:${dbPass}@${serviceName}-db:5432/${dbName}";
         "WEBHOOK_API_KEY" = vars.apps.fatracker.webhook_api_key;
-        "MCP_TOKEN" = vars.fatracker.mcp_api_key;
+        "MCP_TOKEN" = vars.apps.fatracker.mcp_api_key;
         "REPORT_TIMEZONE" = "Europe/Ljubljana";
+        STRONG_EMAIL=vars.apps.fatracker.strong_email;
+        STRONG_PASSWORD=vars.apps.fatracker.strong_password;
       };
+      volumes = [
+        "${vars.dir.nixos_config}/apps/fatracker-ng/app-data:/data"
+      ];
     }
   ];
 

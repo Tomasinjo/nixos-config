@@ -124,6 +124,8 @@ in {
       db_password = secrets.apps.fatracker.db_password;
       webhook_api_key = secrets.apps.fatracker.webhook_api_key;
       mcp_api_key = secrets.apps.fatracker.mcp_api_key;
+      strong_email = secrets.apps.fatracker.strong_email;
+      strong_password = secrets.apps.fatracker.strong_password;
     };
   };
 }
