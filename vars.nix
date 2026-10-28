@@ -120,5 +120,10 @@ in {
       glm = secrets.apps.hermes.app.glm;
     };
     mealie.db.password = secrets.apps.mealie.db.password;
+    fatracker = {
+      db_password = secrets.apps.fatracker.db_password;
+      webhook_api_key = secrets.apps.fatracker.webhook_api_key;
+      mcp_api_key = secrets.apps.fatracker.mcp_api_key;
+    };
   };
 }

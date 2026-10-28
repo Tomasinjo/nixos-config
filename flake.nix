@@ -36,9 +36,6 @@
       url = "github:noctalia-dev/noctalia-greeter";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    hermes-agent = {
-      url = "github:NousResearch/hermes-agent";
-    };
   };
 
   outputs = {
@@ -52,7 +49,6 @@
     niri-flake,
     noctalia,
     noctalia-greeter,
-    hermes-agent,
     ...
   }@inputs: let
     vars = import ./vars.nix;
@@ -71,7 +67,6 @@
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "zenki"; };
           }
-          hermes-agent.nixosModules.default
         ];
       };
 
@@ -101,7 +96,6 @@
             };
           })
           niri-flake.nixosModules.niri
-          hermes-agent.nixosModules.default
         ];
       };
 
