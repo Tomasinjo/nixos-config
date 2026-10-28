@@ -13,7 +13,6 @@
     ../../modules/desktop/obs_studio.nix
     ../../modules/desktop/wine.nix
     ../../modules/yazi.nix
-    ../../modules/desktop/hermes.nix
   ];
 
 }
