@@ -39,5 +39,5 @@
   };
   nixpkgs.config.allowUnfree = true;
 
-  boot.kernelPackages = pkgs.linuxPackages_7_2.kernel.version
+  boot.kernelPackages = pkgs.linuxPackages_7_2.kernel.version;
 }
