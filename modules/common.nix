@@ -39,5 +39,5 @@
   };
   nixpkgs.config.allowUnfree = true;
 
-  boot.kernelPackages = pkgs.linuxPackages_7_2;
+  #boot.kernelPackages = pkgs.linuxPackages_7_2; # gasket doesnt work
 }
