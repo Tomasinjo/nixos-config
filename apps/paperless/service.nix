@@ -15,7 +15,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "ghcr.io/paperless-ngx/paperless-ngx:3.3.4";
+      image = "ghcr.io/paperless-ngx/paperless-ngx:3.4.1";
 
       environment = {
         "PAPERLESS_REDIS" = "redis://${serviceName}-redis:6379";
