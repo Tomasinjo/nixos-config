@@ -16,7 +16,7 @@ let
     (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
 
     {
-      image = "ghcr.io/tomasinjo/fatracker-ng:1.1.1";
+      image = "ghcr.io/tomasinjo/fatracker-ng:1.1.2";
 
       environment = {
         "DATABASE_URL" = "postgresql+psycopg://${dbUser}:${dbPass}@${serviceName}-db:5432/${dbName}";
