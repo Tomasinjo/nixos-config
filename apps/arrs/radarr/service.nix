@@ -14,7 +14,7 @@ let
       requiresInternet = "true"; # for imdb 
     })
     {
-      image = "lscr.io/linuxserver/radarr:6.0.4.10291-ls293";
+      image = "lscr.io/linuxserver/radarr:6.4.4.10685-ls324";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/arrs/radarr/app-data:/config"
