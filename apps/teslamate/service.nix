@@ -24,7 +24,7 @@ let
       containerId = 4; # Override containerId to avoid collision with app
     })
     {
-      image = "teslamate/grafana:4.3.0";
+      image = "teslamate/grafana:4.4.0";
 
       environment = {
         "DATABASE_USER" = dbUser;
