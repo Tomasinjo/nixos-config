@@ -38,7 +38,7 @@ let
 
   dockerproxyContainerConfig = oci-framework.mergeAll [
     {
-      image = "wollomatic/socket-proxy:1.13.1";
+      image = "wollomatic/socket-proxy:1.13.2";
 
       volumes = [
         "/var/run/docker.sock:/var/run/docker.sock:ro"
