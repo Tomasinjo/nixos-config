@@ -35,7 +35,6 @@
     wireguard-tools
     direnv # for python projects so vscode recognizes nix shell
     nix-direnv
-    moonlight-qt
     glib # required by phone connect plugin for nocatalia
     uv
     nodejs
