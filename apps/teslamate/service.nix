@@ -64,7 +64,7 @@ let
       requiresInternet = "true";  # tesla api
     })
     {
-      image = "teslamate/teslamate:4.3.0";
+      image = "teslamate/teslamate:4.4.0";
 
       environment = {
         "ENCRYPTION_KEY" = vars.apps.teslamate.app.key;
