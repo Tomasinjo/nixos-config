@@ -14,7 +14,7 @@ let
       requiresInternet = "true";  # indexing
     })
     {
-      image = "lscr.io/linuxserver/prowlarr:2.6.5.5623-ls165";
+      image = "lscr.io/linuxserver/prowlarr:2.7.0.5723-ls166";
 
       volumes = [
         "${vars.dir.nixos_config}/apps/arrs/prowlarr/app-data:/config"
