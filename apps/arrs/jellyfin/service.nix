@@ -15,7 +15,7 @@ let
     })
     oci-framework.hardware.quicksync
     {
-      image = "jellyfin/jellyfin:12.2";
+      image = "jellyfin/jellyfin:12.4";
 
       environment = {
         "JELLYFIN_PublishedServerUrl" = "https://${serviceHostname}.${vars.net.domain}";
