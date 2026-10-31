@@ -1,8 +1,14 @@
-{ config, pkgs, lib, vars, ... }:
+{ config, pkgs, lib, vars, inputs, ... }:
 
 {
   services.renovate = {
     enable = true;
+
+    package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.renovate;
+
+    # needed for flake.lock maintenance
+    runtimePackages = [ pkgs.nix ];
+
     schedule = "*-*-* 08:00:00";
     settings = {
       platform = "github";
@@ -30,7 +36,10 @@
       RENOVATE_TOKEN = vars.github_pat_nixos;
       GITHUB_COM_TOKEN = vars.github_pat_nixos;
 
-      LOG_LEVEL = "debug"; # or "debug"
+      # use the list api instead of tag listings (ignores auth, too many requests errors)
+      RENOVATE_X_DOCKER_HUB_TAGS_DISABLE = "1";
+
+      LOG_LEVEL = "info"; # info or debug
     };
   };
 }
