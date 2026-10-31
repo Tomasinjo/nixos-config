@@ -9,7 +9,7 @@
   },
   "lockFileMaintenance": {
     "enabled": true,
-    "schedule": ["before 8pm on Friday"]
+    "schedule": ["at any time"]
   },
   "customManagers": [
     {
@@ -41,15 +41,15 @@
       "matchManagers": ["custom.regex"],
       "matchUpdateTypes": ["patch", "digest"],
       "groupName": "container images - minor",
-      "schedule": ["before 8pm on Friday"],
-      "automerge": true,
+      "schedule": ["at any time"],
+      "automerge": false,
       "addLabels": ["update"]
     },
     {
       "description": "Weekly PRs for container images - minor/major",
       "matchManagers": ["custom.regex"],
       "matchUpdateTypes": ["minor", "major"],
-      "schedule": ["before 8pm on Friday"],
+      "schedule": ["at any time"],
       "automerge": false,
       "addLabels": ["update"]
     },
@@ -60,7 +60,7 @@
       "matchUpdateTypes": ["minor", "patch", "digest"],
       "groupName": "stable container images",
       "automerge": true,
-      "schedule": ["before 8pm on Friday"],
+      "schedule": ["at any time"],
       "addLabels": ["update"]
     },
     {

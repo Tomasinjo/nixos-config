@@ -18,18 +18,19 @@
           username = "tomasinjo";
           password = vars.github_ghcr;
         }
+        {
+          matchHost = "docker.io";
+          hostType = "docker";
+          username = "tomasinjo";
+          password = vars.dockerhub_pat;
+        }
       ];
     };
     environment = {
       RENOVATE_TOKEN = vars.github_pat_nixos;
       GITHUB_COM_TOKEN = vars.github_pat_nixos;
 
-      DOCKER_USERNAME = "tomasinjo";
-      DOCKER_PASSWORD = vars.dockerhub_pat;
-
-      DOCKER_GHCR_IO_TOKEN = vars.github_ghcr;
-
-      LOG_LEVEL = "info"; # or "debug"
+      LOG_LEVEL = "debug"; # or "debug"
     };
   };
 }
