@@ -14,7 +14,7 @@ let
       requiresInternet = "true"; # dependency downloads
     })
     {
-      image = "esphome/esphome:2026.10.0";
+      image = "esphome/esphome:2026.10.1";
 
       environment = {
         "USERNAME" = vars.apps.esphome.username;

@@ -12,7 +12,7 @@ let
       requiresInternet = "true";  # acme cert renewals
     }) 
     {
-      image = "traefik:v3.7.16";
+      image = "traefik:v3.7.17";
 
       environment = {
         CF_DNS_API_TOKEN = vars.apps.traefik.app.cloudflare_api_key;
