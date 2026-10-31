@@ -36,6 +36,9 @@
       url = "github:noctalia-dev/noctalia-greeter";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+  #  polaris = {
+  #    url = "git+https://github.com/papi-ux/polaris?ref=refs/tags/v1.4.13&submodules=1";
+  #  };
   };
 
   outputs = {
@@ -49,6 +52,7 @@
     niri-flake,
     noctalia,
     noctalia-greeter,
+    #polaris,
     ...
   }@inputs: let
     vars = import ./vars.nix;
@@ -59,6 +63,8 @@
         specialArgs = { inherit inputs vars self; };
         modules = [
           ./hosts/zenki/configuration.nix
+          #polaris.nixosModules.overlay
+          #polaris.nixosModules.polaris
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

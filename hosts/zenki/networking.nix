@@ -118,10 +118,15 @@
 
           iifname "lo" accept
           ct state { established, related } accept
-          
+
           iifname "${vars.net.zenki.server-vlan.interface_name}" tcp dport 22 accept
           iifname "${vars.net.zenki.server-vlan.interface_name}" tcp dport 9119 accept
-          
+
+          # polaris game stream
+          iifname "${vars.net.zenki.interface_name}" udp dport 5353 accept # mDNS discovery (avahi)
+          iifname "${vars.net.zenki.interface_name}" tcp dport { 47984, 47989, 47990, 48010 } accept
+          iifname "${vars.net.zenki.interface_name}" udp dport { 47998, 47999, 48000, 48010 } accept
+
           ip protocol icmp accept
           meta l4proto ipv6-icmp accept
 
