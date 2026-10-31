@@ -37,7 +37,7 @@ let
       containerId = 4;    # avoid colision with grocy with cid 2
     })
     {
-      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.0.3";
+      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.2.2";
 
       environment = {
         "APP_LOG_FILE" = ""; # log to stdout
