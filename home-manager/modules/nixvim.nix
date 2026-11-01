@@ -261,13 +261,13 @@
           lua_ls.enable = true;   # Lua
           pyright.enable = true;  # Python
           bashls.enable = true;   # Bash
-          ts_ls.enable = true;    # TypeScript/JavaScript
-          rust_analyzer = {
-            enable = true;
-            installRustc = true;
-            installCargo = true;
-          };
-          clangd.enable = true;   # C/C++
+          # ts_ls.enable = true;    # TypeScript
+          #rust_analyzer = {
+          #  enable = true;
+          #  installRustc = true;
+          #  installCargo = true;
+          #};
+          #clangd.enable = true;   # C/C++
           jsonls.enable = true;   # JSON
           yamlls.enable = true;   # YAML
         };
