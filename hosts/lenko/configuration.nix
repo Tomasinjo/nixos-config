@@ -40,6 +40,8 @@
     nodejs
   ];
 
+  programs.wireshark.package = pkgs.wireshark;
+
   # for platformio
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [

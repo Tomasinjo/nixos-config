@@ -1,7 +1,6 @@
 { config, pkgs, vars, ... }:
 
 {
-  environment.systemPackages = [ pkgs.wireshark ];
 
   programs.wireshark = {
     enable = true;

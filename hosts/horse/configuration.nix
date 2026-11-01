@@ -23,5 +23,7 @@
     nix-direnv
   ];
 
+  programs.wireshark.package = pkgs.wireshark;
+
   system.stateVersion = "25.11";
 }

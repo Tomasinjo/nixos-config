@@ -35,8 +35,6 @@
     nftables
   ];
 
-  programs.wireshark.package = pkgs.wireshark-cli; # wireshark is enabled in wireshark.nix, this just limits it to cli tools
-
   modules.vector.enable = true; # journald + zsh history (merges with suricata's vector instance)
 
   # NTP server and client
@@ -54,10 +52,7 @@
     '';
   };
 
-  swapDevices = [ {
-    device = "/var/lib/swapfile";
-    size = 4096;
-  }];
+  swapDevices = [];
 
   system.stateVersion = "25.11";
 }
