@@ -35,6 +35,7 @@ let
       serviceHostname = b2gServiceHostname; 
       servicePort = b2gServicePort;
       containerId = 4;    # avoid colision with grocy with cid 2
+      requiresInternet = "true";
     })
     {
       image = "ghcr.io/tomasinjo/barcode-to-grocy:1.2.2";
