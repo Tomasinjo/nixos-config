@@ -38,13 +38,16 @@ let
       requiresInternet = "true";
     })
     {
-      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.2.2";
+      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.3.4";
 
       environment = {
         "APP_LOG_FILE" = ""; # log to stdout
         "GROCY_BASE_URL" = "http://${serviceName}-app";
         "GROCY_API_KEY" = vars.apps.grocy.api_key;
         "GROCY_VERIFY_TLS" = "false";
+        "MFP_USERNAME" = vars.apps.grocy.mfp_username;
+        "MFP_PASSWORD" = vars.apps.grocy.mfp_password;
+        "VKJ_TOKEN" = vars.apps.grocy.vkj_bearer;
         "LOG_LEVEL" = "DEBUG";
       };
     }

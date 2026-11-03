@@ -127,6 +127,11 @@ in {
       strong_email = secrets.apps.fatracker.strong_email;
       strong_password = secrets.apps.fatracker.strong_password;
     };
-    grocy.api_key = secrets.apps.grocy.api_key;
+    grocy = {
+      api_key = secrets.apps.grocy.api_key;
+      mfp_username = secrets.apps.grocy.mfp_username;
+      mfp_password = secrets.apps.grocy.mfp_password;
+      vkj_bearer = secrets.apps.grocy.vkj_bearer;
+    };
   };
 }
