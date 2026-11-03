@@ -38,7 +38,7 @@ let
       requiresInternet = "true";
     })
     {
-      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.2.2";
+      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.3.1";
 
       environment = {
         "APP_LOG_FILE" = ""; # log to stdout
