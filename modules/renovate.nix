@@ -4,7 +4,7 @@
   services.renovate = {
     enable = true;
 
-    package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.renovate;
+    package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.renovate;
 
     # needed for flake.lock maintenance
     runtimePackages = [ pkgs.nix ];
