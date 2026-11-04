@@ -179,7 +179,7 @@
     description = "Sleep for 7 hours";
     serviceConfig = {
       Type = "oneshot";
-      ExecStart = "${pkgs.utillinux}/bin/rtcwake -m mem -s 25200";
+      ExecStart = "${pkgs.util-linux}/bin/rtcwake -m mem -s 25200";
     };
   };
   
