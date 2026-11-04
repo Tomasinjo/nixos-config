@@ -90,13 +90,15 @@
       dock = {
         enabled = true;
         active_monitor_only = true;
-        background_opacity = 0.9;
+        background_opacity = 0.0;
         cross_axis_padding = 0;
         icon_size = 20;
         item_spacing = 10;
         main_axis_padding = 8;
         reserve_space = false;
         shadow = false;
+        compositor_blur = false;
+        magnification_scale = 2.0;
       };
 
       idle = {
@@ -129,6 +131,8 @@
 
       lockscreen = {
         blurred_desktop = true;
+        transition = [ "zoom" ];
+        transition_duration = 1000;
       };
 
       lockscreen_widgets = {
@@ -291,7 +295,7 @@
       };
 
       shell = {
-        font_family = "DejaVu Sans";
+        font_family = "JetBrainsMono Nerd Font";
         settings_show_advanced = false;
 
         launcher = {
@@ -301,7 +305,10 @@
 
         panel = {
           open_near_click_session = true;
+          transparency_mode = "soft";
         };
+
+        clipboard_confirm_clear_history = false;
       };
 
       theme = {
@@ -319,6 +326,11 @@
       plugin_settings."icefish/phone-connect" = {
         battery_display = "hidden";
         enable_clipboard_action = false;
+      };
+
+      battery = {
+        device."/org/freedesktop/UPower/devices/battery_hidpp_battery_0".warning_threshold = 10;
+        device."/org/freedesktop/UPower/devices/keyboard_dev_D0_AC_60_98_4B_59".warning_threshold = 10;
       };
 
       wallpaper = {
