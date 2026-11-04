@@ -233,10 +233,10 @@ in
           keyboard = {
             xkb = {
               layout = "us,si";
-              model = "";
+              model = null;
               options = "grp:win_space_toggle";
-              rules = "";
-              variant = "";
+              rules = null;
+              variant = null;
             };
             numlock = true;
           };
@@ -343,7 +343,12 @@ in
             scale = 1.0;
           };
         };
-        gestures.hot-corners.enable = false;
+        gestures.hot-corners = {
+          top-left = false;
+          top-right = false;
+          bottom-left = false;
+          bottom-right = false;
+        };
       };
     };
   };
