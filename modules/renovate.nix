@@ -25,6 +25,13 @@
           password = vars.github_ghcr;
         }
         {
+          # lscr.io is ghcr-backed (auth realm is ghcr.io) but a separate host
+          matchHost = "lscr.io";
+          hostType = "docker";
+          username = "tomasinjo";
+          password = vars.github_ghcr;
+        }
+        {
           matchHost = "docker.io";
           hostType = "docker";
           username = "tomasinjo";
