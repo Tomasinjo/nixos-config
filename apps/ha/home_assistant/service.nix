@@ -18,7 +18,7 @@ let
       requiresInternet = "true"; # cloud integrations, weather
     })
     {
-      image = "homeassistant/home-assistant:2026.10.4";
+      image = "homeassistant/home-assistant:2026.11.0";
 
       environment = {
         "PUID" = toString vars.containerUser.uid;
