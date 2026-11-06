@@ -1,4 +1,4 @@
-{ config, pkgs, vars, ... }:
+{ inputs, config, pkgs, vars, ... }:
 
 {
   users.users.${vars.username} = {
@@ -39,5 +39,10 @@
   };
   nixpkgs.config.allowUnfree = true;
 
+  environment.systemPackages = with pkgs; [
+    sops
+    ssh-to-age
+    age
+  ];
   #boot.kernelPackages = pkgs.linuxPackages_7_2; # gasket doesnt work
 }

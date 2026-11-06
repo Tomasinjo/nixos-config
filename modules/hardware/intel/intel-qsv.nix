@@ -1,18 +1,18 @@
 { lib, config, pkgs, ... }:
 
 {
-  options.hardware.intel-qsv = {
-    groupId = lib.mkOption {
-      type = lib.types.int;
-      default = 303;
-      description = "The GID of the render group";
-    };
-    deviceNode = lib.mkOption {
-      type = lib.types.str;
-      default = "/dev/dri/renderD128";
-      description = "The device node for Intel QSV";
-    };
-  };
+  #options.hardware.intel-qsv = {
+  #  groupId = lib.mkOption {
+  #    type = lib.types.int;
+  #    default = 303;
+  #    description = "The GID of the render group";
+  #  };
+  #  deviceNode = lib.mkOption {
+  #    type = lib.types.str;
+  #    default = "/dev/dri/renderD128";
+  #    description = "The device node for Intel QSV";
+  #  };
+  #};
 
   config = {
     boot.initrd.kernelModules = [ "i915" ];
@@ -34,6 +34,6 @@
     };
 
     # Ensure the render group gets the expected GID
-    users.groups.render.gid = config.hardware.intel-qsv.groupId;
+    #users.groups.render.gid = config.hardware.intel-qsv.groupId;
   };
 }

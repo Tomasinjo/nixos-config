@@ -3,6 +3,7 @@
   imports = [
     ./hardware-configuration.nix
     ./networking.nix
+    ./sops.nix
     ../../modules/common.nix
     ../../modules/podman/init.nix
     ../../modules/vector.nix

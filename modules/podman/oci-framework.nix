@@ -86,6 +86,10 @@ let
       "PGID" = toString vars.containerUser.gid; # for linuxserver images
     };
     user = "${toString vars.containerUser.uid}:${toString vars.containerUser.gid}"; # must be overrided to empty string for linuxserver images
+    podman = {
+      user = "podman-svc";
+      extraOptions = [ "--userns=auto" ]; # assigns unique uid for each container, additional isolation, alternative to separate accounts for each stack/container
+    };
     extraOptions = [
       "--security-opt=no-new-privileges:true"
       "--log-opt=max-size=10m"
@@ -169,19 +173,22 @@ let
   hardware = {
     cuda = {
       devices = [ "nvidia.com/gpu=all" ];
+      extraOptions = [
+        "--group-add=keep-groups" # keeps same groups as host. This ensure podman-svc can access this device
+      ];
     };
     
     quicksync = {
-      devices = [ "${config.hardware.intel-qsv.deviceNode}:${config.hardware.intel-qsv.deviceNode}" ];
+      devices = [ "/dev/dri/renderD128:/dev/dri/renderD128" ];
       extraOptions = [
-        "--group-add=${toString config.hardware.intel-qsv.groupId}"
+        "--group-add=keep-groups" # keeps same groups as host. This ensure podman-svc can access this device
       ];
     };
 
     coral = {
       devices = [ "/dev/apex_0:/dev/apex_0" ];
       extraOptions = [
-        "--group-add=${if config.users.groups ? coral then toString config.users.groups.coral.gid else "989"}"
+        "--group-add=keep-groups" # keeps same groups as host. This ensure podman-svc can access this device
       ];
     };
   };

@@ -39,9 +39,25 @@
     groups.${vars.containerUser.name} = {
       gid = vars.containerUser.gid;
     };
+
+    users."podman-svc" = {
+      isSystemUser = true;
+      group = "podman-svc";
+      uid = 2222;
+      extraGroups = [
+        "coral"
+        "render" # intel igpu
+        "video"  # nvidia
+      ];
+    };
+    groups."podman-svc" = {
+      gid = 2222;
+    };
+
     users.${vars.username}.extraGroups = [
       vars.containerUser.name
-      "podman"
+      "podman" # remove?
+      "podman-svc"
     ];
   };
 
