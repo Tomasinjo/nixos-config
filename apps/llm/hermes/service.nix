@@ -15,7 +15,7 @@ let
     })
 
     {
-      image = "nousresearch/hermes-agent:v0.22.5";
+      image = "nousresearch/hermes-agent:v0.23.0";
 
       environment = {
         "HERMES_DASHBOARD" = "1";
