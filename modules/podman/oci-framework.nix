@@ -86,14 +86,12 @@ let
       "PGID" = toString vars.containerUser.gid; # for linuxserver images
     };
     user = "${toString vars.containerUser.uid}:${toString vars.containerUser.gid}"; # must be overrided to empty string for linuxserver images
-    podman = {
-      user = "podman-svc";
-      extraOptions = [ "--userns=auto" ]; # assigns unique uid for each container, additional isolation, alternative to separate accounts for each stack/container
-    };
+    podman.user = "podman-svc";
     extraOptions = [
       "--security-opt=no-new-privileges:true"
       "--log-opt=max-size=10m"
       "--log-opt=max-file=3"
+      "--userns=auto" # related to podman.user: assigns unique uid for each container, additional isolation, alternative to separate accounts for each stack/container
     ];
     networks = [ "${serviceName}-net:ip=${mkIp serviceId containerId},ip6=${mkIp6 serviceId containerId}" ];
     labels = {

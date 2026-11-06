@@ -44,10 +44,17 @@
       isSystemUser = true;
       group = "podman-svc";
       uid = 2222;
+
+      home = "/var/lib/podman-svc";
+      createHome = true;
+      autoSubUidGidRange = true;  # auto allocation of sub uids and gids for isolation between containers, required for rootless podman
+      linger = true;  # allows running user systemd services even if user logs out. Might not be required in future releases.
+
       extraGroups = [
         "coral"
-        "render" # intel igpu
-        "video"  # nvidia
+        "render"  # intel igpu
+        "video"   # nvidia
+        "dialout" # zigbee dongle
       ];
     };
     groups."podman-svc" = {
