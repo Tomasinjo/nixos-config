@@ -15,7 +15,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "lightdash/lightdash:3.116.0";
+      image = "lightdash/lightdash:3.179.0";
 
       environment = {
         "PGHOST" = "${serviceName}-db";
