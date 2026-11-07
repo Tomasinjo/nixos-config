@@ -11,7 +11,7 @@ let
   appContainerConfig = oci-framework.mergeAll [
     (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
     {
-      image = "vaultwarden/server:1.37.4";
+      image = "vaultwarden/server:1.37.5";
 
       environment = {
         "WEBSOCKET_ENABLED" = "true";
