@@ -13,7 +13,7 @@ in
         expose = "internal";
       };
       internet = false;
-      image = "docker.io/victoriametrics/victoria-logs:v1.53.0";
+      image = "docker.io/victoriametrics/victoria-logs:v1.54.0";
       mounts = [ "/victoria-logs-data" ];
       cmd = [
         "-storageDataPath=victoria-logs-data"
