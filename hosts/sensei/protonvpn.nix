@@ -8,7 +8,7 @@ in
     table = "off";
     address = [ "10.2.0.2/32" "2a07:b944::2:2/128" ];
     dns = [ "10.2.0.1" "2a07:b944::2:1" ];
-    privateKeyFile = config.sops.secrets."ext/protonvpn_wg_privatekey";
+    privateKeyFile = config.sops.secrets."ext/protonvpn_wg_privatekey".path;
     peers = [{
       publicKey = "vH2i8RY1qc66XfqwrixBpvH4K9GYJatkugJj0GHgoUQ=";
       allowedIPs = [ "0.0.0.0/0" "::/0" ];
