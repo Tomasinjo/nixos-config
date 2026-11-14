@@ -21,7 +21,7 @@ in
         expose = "gatekeeper";
       };
       internet = true;  # internet radio
-      image = "ghcr.io/music-assistant/server:2.10.9";
+      image = "ghcr.io/music-assistant/server:2.10.12";
       mounts = [ "/data" ];
       environment = {
         "LOG_LEVEL" = "info"; # possible = critical, error, warning, info, debug, verbose

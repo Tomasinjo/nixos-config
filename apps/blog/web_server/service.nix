@@ -9,7 +9,7 @@ in
   svc.build {
     app = svc.container {
       internet = false;
-      image = "joseluisq/static-web-server:2.44.1";
+      image = "joseluisq/static-web-server:2.44.2";
       mounts = [
         "config.toml:/etc/config.toml"
         "src/resnicno_pametna/public:/var/www/resnicno_pametna/"

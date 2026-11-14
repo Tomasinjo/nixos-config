@@ -13,7 +13,7 @@ in
         expose = "gatekeeper";
       };
       internet = true; # for imdb 
-      image = "lscr.io/linuxserver/radarr:6.4.4.10685-ls324";
+      image = "lscr.io/linuxserver/radarr:6.4.4.10685-ls326";
       mounts = [ "/config" ];
       extraMounts = [ "${vars.dir.hoarder_data}/media:/media" ];
       user = "";  # linuxserver image, sets user after startup using env

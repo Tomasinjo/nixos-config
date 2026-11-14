@@ -13,7 +13,7 @@ in
         expose = "internal";
       };
       internet = true;  # pip
-      image = "acockburn/appdaemon:4.5.13";
+      image = "acockburn/appdaemon:4.5.16";
       mounts = [ "/conf" ];
       environment = {
         HA_URL = "http://10.0.22.2:8123";
