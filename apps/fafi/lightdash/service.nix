@@ -18,7 +18,7 @@ in
         expose = "internal";
       };
       internet = false;
-      image = "lightdash/lightdash:3.116.0";
+      image = "lightdash/lightdash:3.259.1";
       mounts = [ "/usr/app/dbt" ];
       environment = {
         PGHOST = "${svc.containerName "db"}";
