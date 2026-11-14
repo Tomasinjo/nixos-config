@@ -13,7 +13,7 @@ in
         expose = "internal";
       };
       internet = true;
-      image = "nousresearch/hermes-agent:v0.22.5";
+      image = "nousresearch/hermes-agent:v0.23.1";
       mounts = [ "/opt/data" ];
       environment = {
         HERMES_DASHBOARD = "1";
