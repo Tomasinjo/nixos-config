@@ -13,7 +13,7 @@ in
         expose = "gatekeeper";
       };
       internet = false;
-      image = "triliumnext/trilium:v0.106.1";
+      image = "triliumnext/trilium:v0.107.0";
       mounts = [ "/home/node/trilium-data" ];
       environment = {
         "TRILIUM_DATA_DIR" = "/home/node/trilium-data";
