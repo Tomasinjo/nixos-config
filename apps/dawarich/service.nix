@@ -1,49 +1,52 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "dawarich";
-  serviceHostname = "dawarich";
-  servicePort = 3000;
-  serviceId = 11;
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "dawarich"; id = 11; dir = ./.; };
 
   dbUser = "dawarich";
-  dbPass = vars.apps.dawarich.db.password;
   dbName = "dawarich";
+  hostname = "dawarich";
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
-    {
-      image = "freikin/dawarich:1.21.0";
-
-      environment = {
-        "RAILS_ENV" = "production";
-        "REDIS_URL" = "redis://${serviceName}-redis:6379";
-        "DATABASE_HOST" = "${serviceName}-db";
-        "DATABASE_PORT" = "5432";
-        "DATABASE_USERNAME" = dbUser;
-        "DATABASE_PASSWORD" = dbPass;
-        "DATABASE_NAME" = dbName;
-        "APPLICATION_HOSTS" = "localhost,${serviceHostname}.${vars.net.domain}";
-        "TIME_ZONE" = "Europe/Ljubljana";
-        "APPLICATION_PROTOCOL" = "http";
-        "PROMETHEUS_EXPORTER_ENABLED" = "false";
-        "PROMETHEUS_EXPORTER_HOST" = "0.0.0.0";
-        "PROMETHEUS_EXPORTER_PORT" = "9394";
-        "SECRET_KEY_BASE" = vars.apps.dawarich.app.secret;
-        "RAILS_LOG_TO_STDOUT" = "true";
-        "SELF_HOSTED" = "true";
-        "STORE_GEODATA" = "true";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = hostname;
+        port = 3000; 
+        expose = "gatekeeper";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/dawarich/app-data/public:/var/app/public"
-        "${vars.dir.nixos_config}/apps/dawarich/app-data/watched:/var/app/tmp/imports/watched"
-        "${vars.dir.nixos_config}/apps/dawarich/app-data/storage:/var/app/storage"
-        "${vars.dir.nixos_config}/apps/dawarich/db-data:/dawarich_db_data"
+      internet = false;
+      image = "freikin/dawarich:1.21.0";
+      mounts = [
+        "public:/var/app/public"
+        "watched:/var/app/tmp/imports/watched"
+        "storage:/var/app/storage"
       ];
-      
+      extraMounts = [
+        "${vars.dir.nixos_config}/apps/dawarich/db-data/db:/dawarich_db_data"
+      ];
+      environment = {
+        RAILS_ENV = "production";
+        REDIS_URL = "redis://${svc.containerName "redis"}:6379";
+        DATABASE_HOST = svc.containerName "db";
+        DATABASE_PORT = "5432";
+        DATABASE_USERNAME = dbUser;
+        DATABASE_NAME = dbName;
+        APPLICATION_HOSTS = "localhost,${hostname}.${vars.net.domain}";
+        TIME_ZONE = "Europe/Ljubljana";
+        APPLICATION_PROTOCOL = "http";
+        PROMETHEUS_EXPORTER_ENABLED = "false";
+        PROMETHEUS_EXPORTER_HOST = "0.0.0.0";
+        PROMETHEUS_EXPORTER_PORT = "9394";
+        RAILS_LOG_TO_STDOUT = "true";
+        SELF_HOSTED = "true";
+        STORE_GEODATA = "true";
+      };
+      secrets = { 
+        DATABASE_PASSWORD = "apps/dawarich/db/password";
+        SECRET_KEY_BASE = "apps/dawarich/app/secret";
+      };
       entrypoint = "web-entrypoint.sh";
       cmd = [
         "bin/rails"
@@ -53,95 +56,69 @@ let
         "-b"
         "::"
       ];
-    }
-  ];
+    };
 
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { 
-      inherit serviceName serviceId dbUser dbPass dbName; 
-    })
-    {
-      image = "postgis/postgis:17-3.5-alpine";  # overrides predefined image
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/dawarich/db-data:/data/postgres"
-        "${vars.dir.nixos_config}/apps/dawarich/shared-data:/var/shared"
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+      image = "postgis/postgis:17-3.5-alpine";
+      mounts = [
+        "db:/data/postgres"
+        "shared:/var/shared"
       ];
-
-      removeExtraOptions = [ "--shm-size=256m" ]; # remove template default, set higher below
-
       extraOptions = [
         "--shm-size=1G"
       ];
-    }
-  ];
+    };
 
-
-  redisContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
-    {
+    redis = svc.container {
+      id = 4;
+      internet = false;
       image = "redis:7.4-alpine";
-      volumes = [
-        "${vars.dir.nixos_config}/apps/dawarich/shared-data:/data"
+      extraMounts = [
+        "${vars.dir.nixos_config}/apps/dawarich/db-data/shared:/data"
       ];
-
       cmd = [
         "redis-server" 
         "--save" "900" "1" 
         "--save" "300" "10" 
         "--appendonly" "no"
       ];
-    }
-  ];
+    };
 
   # mostly same as app container. sidekiq is specific to ruby, something related to running tasks that take long time to completed.
   # redis is used for communication between sidekiq and app.
-  sidekiqContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { inherit serviceName serviceId; containerId = 5; })
-    {
+    sidekiq = svc.container {
+      id = 5;
+      internet = false;
       image = "freikin/dawarich:1.21.0";
-
-      environment = {
-        "RAILS_ENV" = "production";
-        "REDIS_URL" = "redis://${serviceName}-redis:6379";
-        "DATABASE_HOST" = "${serviceName}-db";
-        "DATABASE_PORT" = "5432";
-        "DATABASE_USERNAME" = dbUser;
-        "DATABASE_PASSWORD" = dbPass;
-        "DATABASE_NAME" = dbName;
-        "APPLICATION_HOSTS" = "localhost,${serviceHostname}.${vars.net.domain}";
-        "TIME_ZONE" = "Europe/Ljubljana";
-        "APPLICATION_PROTOCOL" = "http";
-        "PROMETHEUS_EXPORTER_ENABLED" = "false";
-        "PROMETHEUS_EXPORTER_HOST" = "0.0.0.0";
-        "PROMETHEUS_EXPORTER_PORT" = "9394";
-        "SECRET_KEY_BASE" = vars.apps.dawarich.app.secret;
-        "RAILS_LOG_TO_STDOUT" = "true";
-        "SELF_HOSTED" = "true";
-        "STORE_GEODATA" = "true";
-      };
-
-      volumes = [
+      extraMounts = [
         "${vars.dir.nixos_config}/apps/dawarich/app-data/public:/var/app/public"
         "${vars.dir.nixos_config}/apps/dawarich/app-data/watched:/var/app/tmp/imports/watched"
         "${vars.dir.nixos_config}/apps/dawarich/app-data/storage:/var/app/storage"
       ];
-      
+      environment = {
+        RAILS_ENV = "production";
+        REDIS_URL = "redis://${svc.containerName "redis"}:6379";
+        DATABASE_HOST = svc.containerName "db";
+        DATABASE_PORT = "5432";
+        DATABASE_USERNAME = dbUser;
+        DATABASE_NAME = dbName;
+        APPLICATION_HOSTS = "localhost,${hostname}.${vars.net.domain}";
+        TIME_ZONE = "Europe/Ljubljana";
+        APPLICATION_PROTOCOL = "http";
+        PROMETHEUS_EXPORTER_ENABLED = "false";
+        PROMETHEUS_EXPORTER_HOST = "0.0.0.0";
+        PROMETHEUS_EXPORTER_PORT = "9394";
+        RAILS_LOG_TO_STDOUT = "true";
+        SELF_HOSTED = "true";
+        STORE_GEODATA = "true";
+      };
+      secrets = { 
+        DATABASE_PASSWORD = "apps/dawarich/db/password";
+        SECRET_KEY_BASE = "apps/dawarich/app/secret";
+      };
       entrypoint = "sidekiq-entrypoint.sh";
-      
-      cmd = [
-        "sidekiq"
-      ];
-    }
-  ];
-
-
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-redis" = redisContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-sidekiq" = sidekiqContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      cmd = [ "sidekiq" ];
+    };
+  }

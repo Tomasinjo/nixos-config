@@ -1,97 +1,79 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "paperless"; id = 30; dir = ./.; };
 
-  serviceName = "paperless";
-  serviceHostname = "papir";
-  servicePort = 8000;
-  serviceId = 30;
-
+  hostname = "papir";
   dbUser = "paperless";
-  dbPass = vars.apps.paperless.db.password;
   dbName = "paperless";
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
-    {
-      image = "ghcr.io/paperless-ngx/paperless-ngx:3.4.1";
-
-      environment = {
-        "PAPERLESS_REDIS" = "redis://${serviceName}-redis:6379";
-        "PAPERLESS_DBENGINE" = "postgresql";
-        "PAPERLESS_DBHOST" = "${serviceName}-db";
-        "USERMAP_UID" = toString vars.containerUser.uid;
-        "USERMAP_GID" = toString vars.containerUser.gid;
-        "PAPERLESS_OCR_LANGUAGES" = "slv";
-        "PAPERLESS_URL" = "https://${serviceHostname}.${vars.net.domain}";
-        "PAPERLESS_ADMIN_USER" = "fikus";
-        "PAPERLESS_ADMIN_PASSWORD" = vars.apps.paperless.app.admin_password;
-        "PAPERLESS_SECRET_KEY" = vars.apps.paperless.app.secret_key;
-        "PAPERLESS_CONSUMER_DELETE_DUPLICATES" = "true";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = hostname;
+        port = 8000; 
+        expose = "gatekeeper";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/paperless/app-data:/usr/src/paperless/data"
-        "${vars.dir.nixos_config}/apps/paperless/app-media:/usr/src/paperless/media"
+      internet = false;
+      image = "ghcr.io/paperless-ngx/paperless-ngx:3.4.1";
+      mounts = [
+        "data:/usr/src/paperless/data"
+        "media:/usr/src/paperless/media"
+      ];
+      extraMounts = [
         "${vars.dir.impo_data}/paperless/archive:/usr/src/paperless/media/documents/archive"
         "${vars.dir.impo_data}/paperless/consume:/usr/src/paperless/consume"
       ];
-
-      user = "";  # the image support non-root container by default
-    }
-  ];
-
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/paperless/db-data:/data/postgres"
-      ];
-    }
-  ];
-
-  redisContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
-    {
-      image = "docker.io/library/redis:7.4.12";
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/paperless/redis-data:/data"
-      ];
-    }
-  ];
-
-  paperllamaContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { inherit serviceName serviceId; containerId = 5; })
-    {
-      image = "ghcr.io/tomasinjo/paper-llama:0.1.2";
-
       environment = {
-        "PAPERLESS_URL" = "http://${serviceName}-app:8000";
-        "PAPERLESS_TOKEN" = vars.apps.paperless.app.api_key;
-        "OLLAMA_URL" = "http://10.0.27.4:11434";
-        "OLLAMA_MODEL" = "qwen3.8:27b-262k";
-        "SCAN_INTERVAL" = "3600";
-        "OVERRIDE_EXISTING_TAGS" = "True";
-        "LOG_LEVEL" = "INFO";
-        "OCR_SOURCE" = "llm";  # llm or paperless
-        "LLM_OCR_SOURCE_PAGE_LIMIT" = "20"; # Applicable when "OCR_SOURCE=llm". If document has more pages, paperless OCR will be used
+        PAPERLESS_REDIS = "redis://${svc.containerName "redis"}:6379";
+        PAPERLESS_DBENGINE = "postgresql";
+        PAPERLESS_DBHOST = svc.containerName "db";
+        USERMAP_UID = toString vars.containerUser.uid;
+        USERMAP_GID = toString vars.containerUser.gid;
+        PAPERLESS_OCR_LANGUAGES = "slv";
+        PAPERLESS_URL = "https://${hostname}.${vars.net.domain}";
+        PAPERLESS_ADMIN_USER = "fikus";
+        PAPERLESS_CONSUMER_DELETE_DUPLICATES = "true";
       };
+      secrets = { 
+        PAPERLESS_ADMIN_PASSWORD = "apps/paperless/app/admin_password";
+        PAPERLESS_SECRET_KEY = "apps/paperless/app/secret_key";
+      };
+      user = "";  # the image support non-root container by default
+    };
 
-      volumes = [
-        "${vars.dir.nixos_config}/apps/paperless/paperllama-data/prompt.txt:/app/prompt.txt:ro"
-      ];
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
 
+    redis = svc.container {
+      id = 4;
+      internet = false;
+      image = "docker.io/library/redis:7.4.12";
+      mounts = [ "/data" ];
+    };
+
+    paperllama = svc.container {
+      id = 5;
+      internet = false;
+      image = "ghcr.io/tomasinjo/paper-llama:0.1.2";
+      mounts = [ "prompt.txt:/app/prompt.txt" ];
+      environment = {
+        PAPERLESS_URL = "http://${svc.containerName "app"}:8000";
+        OLLAMA_URL = "http://10.0.27.2:11434";
+        OLLAMA_MODEL = "qwen3.8:27b-262k";
+        SCAN_INTERVAL = "3600";
+        OVERRIDE_EXISTING_TAGS = "True";
+        LOG_LEVEL = "INFO";
+        OCR_SOURCE = "llm";  # llm or paperless
+        LLM_OCR_SOURCE_PAGE_LIMIT = "20"; # Applicable when "OCR_SOURCE=llm". If document has more pages, paperless OCR will be used
+      };
+      secrets = {
+        PAPERLESS_TOKEN = "apps/paperless/app/api_key";
+      };
       cmd = ["python" "main.py" "--mode" "auto"];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-redis" = redisContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-llama" = paperllamaContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

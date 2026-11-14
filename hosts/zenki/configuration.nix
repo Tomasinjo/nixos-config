@@ -3,6 +3,8 @@
   imports = [
     ./hardware-configuration.nix
     ./networking.nix
+    ../../secrets/apps.nix
+    ../../secrets/external.nix
     ../../modules/common.nix
     ../../modules/podman/init.nix
     ../../modules/vector.nix
@@ -21,7 +23,6 @@
     ../../modules/gaming/gamemode.nix
     ../../modules/gaming/steam.nix
     ../../modules/wireshark.nix  # for dumpcap, remote capture via wireshark
-    #../../modules/hermes/hermes.nix
     ../../modules/renovate.nix
 
   ];

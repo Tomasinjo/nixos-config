@@ -36,6 +36,10 @@
       url = "github:noctalia-dev/noctalia-greeter";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   #  polaris = {
   #    url = "git+https://github.com/papi-ux/polaris?ref=refs/tags/v1.4.13&submodules=1";
   #  };
@@ -52,6 +56,7 @@
     niri-flake,
     noctalia,
     noctalia-greeter,
+    sops-nix,
     #polaris,
     ...
   }@inputs: let
@@ -73,6 +78,7 @@
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "zenki"; };
           }
+          sops-nix.nixosModules.sops
         ];
       };
 
@@ -102,6 +108,7 @@
             };
           })
           niri-flake.nixosModules.niri
+          sops-nix.nixosModules.sops
         ];
       };
 
@@ -121,6 +128,7 @@
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "horse"; };
           }
           niri-flake.nixosModules.niri
+          sops-nix.nixosModules.sops
         ];
       };
 
@@ -137,6 +145,7 @@
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "sensei"; };
           }
+          sops-nix.nixosModules.sops
         ];
       };
 
@@ -153,6 +162,7 @@
             home-manager.users.tom = ./home-manager/users/tom.nix;
             home-manager.extraSpecialArgs = { inherit inputs vars; hostName = "boarder"; };
           }
+          sops-nix.nixosModules.sops
         ];
       };
     };

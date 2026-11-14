@@ -1,78 +1,53 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "home-assistant";
-  serviceHostname = "ha";
-  servicePort = 8123;
-  serviceId = 22;
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "home-assistant"; id = 22; dir = ./.; };
 
   dbUser = "fikus";
-  dbPass = vars.apps.home-assistant.db.password;
   dbName = "hass";
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_mtls { 
-      inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = "true"; # cloud integrations, weather
-    })
-    {
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "ha";
+        port = 8123; 
+        expose = "mtls";
+      };
+      internet = true;  # cloud integrations, weather
       image = "homeassistant/home-assistant:2026.10.4";
-
-      environment = {
-        "PUID" = toString vars.containerUser.uid;
-        "GUID" = toString vars.containerUser.gid;
-      };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/ha/home_assistant/app-data:/config"
-        "${vars.dir.nixos_config}/apps/ha/home_assistant/app-media:/media"
-        "/dev/serial/by-id:/dev/serial/by-id"
+      mounts = [
+        "config:/config"
+        "media:/media"
       ];
-      
+      extraMounts = [ "/dev/serial/by-id:/dev/serial/by-id" ];
+      environment = {};  # PUID and GUID are passed by default
       labels = {
-        "traefik.http.routers.${serviceHostname}.service" = "ha_service@file";
+        "traefik.http.routers.ha.service" = "ha_service@file";
       };
-
       user = ""; # it is set by env vars
-
       devices = [
         "/dev/ttyUSB0:/dev/ttyUSB0" # zigbee
       ];
-
       capabilities = {
         "NET_RAW" = true;
       };
-    }
-  ];
+    };
 
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/ha/home_assistant/db-data:/data/postgres"
-      ];
-    }
-  ];
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
 
-  mqttContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
-    {
+    mqtt = svc.container {
+      id = 4;
+      internet = false;
       image = "eclipse-mosquitto:2.0";
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/config:/mosquitto/config"
-        "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/data:/mosquitto/data"
-        "${vars.dir.nixos_config}/apps/ha/home_assistant/mqtt-data/log:/mosquitto/log"
+      mounts = [
+        "config:/mosquitto/config"
+        "data:/mosquitto/data"
+        "log:/mosquitto/log"
       ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-  virtualisation.oci-containers.containers."mqtt" = mqttContainerConfig;
-  
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

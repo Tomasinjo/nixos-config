@@ -1,46 +1,35 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "nocodb";
-  serviceHostname = "noco";
-  servicePort = 8080;
-  serviceId = 15;
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "nocodb"; id = 15; dir = ./.; };
 
   dbUser = "fikus";
-  dbPass = vars.apps.nocodb.db.password;
   dbName = "fafimiga";
+  hostname = "noco";
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
-    {
-      image = "nocodb/nocodb:0.301.5";
-
-      environment = {
-        "NC_DB" = "pg://fafi-db:5432?u=${dbUser}&p=${dbPass}&d=${dbName}";
-        "NC_PUBLIC_URL" = "https://${serviceHostname}.${vars.net.domain}";
-        "NC_DISABLE_TELE" = "true";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = hostname;
+        port = 8080; 
+        expose = "gatekeeper";
       };
+      internet = false;
+      image = "nocodb/nocodb:0.301.5";
+      mounts = [ "/usr/app/data" ];
+      environment = {
+        NC_DISABLE_TELE = "true";
+        NC_PUBLIC_URL = "https://${hostname}.${vars.net.domain}";
+      };
+      secrets = { 
+        NC_DB = "apps/nocodb/db/url";
+      };
+    };
 
-      volumes = [
-        "${vars.dir.nixos_config}/apps/fafi/nocodb/app-data:/usr/app/data"
-      ];
-    }
-  ];
-
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/fafi/nocodb/db-data:/data/postgres"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."fafi-db" = dbContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
+  }

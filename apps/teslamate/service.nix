@@ -1,93 +1,65 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "teslamate";
-  serviceId = 32;
-
-  grafanaServiceHostname = "tesla";
-  grafanaServicePort = 3000;
-
-  teslamateServiceHostname = "teslamate";
-  teslamateServicePort = 4000;
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "teslamate"; id = 32; dir = ./.; };
 
   dbUser = "teslamate";
-  dbPass = vars.apps.teslamate.db.password;
   dbName = "teslamate";
 
-  grafanaContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal {  
-      inherit serviceName serviceId;
-      serviceHostname = grafanaServiceHostname;
-      servicePort = grafanaServicePort;
-      containerId = 4; # Override containerId to avoid collision with app
-    })
-    {
-      image = "teslamate/grafana:4.4.0";
-
-      environment = {
-        "DATABASE_USER" = dbUser;
-        "DATABASE_PASS" = dbPass;
-        "DATABASE_NAME" = dbName;
-        "DATABASE_HOST" = "${serviceName}-db"; 
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "teslamate";
+        port = 4000; 
+        expose = "internal";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/teslamate/app-data:/var/lib/grafana"
-      ];
-
-      labels = {
-        # Custom display names for bookmarks
-        "glance.name" = "Tesla Dashboards";
-        "fikus.name" = "Tesla";
-      };
-    }
-  ];
-
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { 
-      inherit serviceName serviceId dbUser dbPass dbName; 
-    })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/teslamate/db-data:/data/postgres"
-      ];
-    }
-  ];
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal {  
-      inherit serviceName serviceId;
-      serviceHostname = teslamateServiceHostname;
-      servicePort = teslamateServicePort;
-      requiresInternet = "true";  # tesla api
-    })
-    {
+      internet = true;
       image = "teslamate/teslamate:4.4.0";
-
       environment = {
-        "ENCRYPTION_KEY" = vars.apps.teslamate.app.key;
         "DATABASE_USER" = dbUser;
-        "DATABASE_PASS" = dbPass;
         "DATABASE_NAME" = dbName;
-        "DATABASE_HOST" = "${serviceName}-db";
+        "DATABASE_HOST" = svc.containerName "db";
         "MQTT_HOST"     = "10.0.22.4";
-        "MQTT_USERNAME" = vars.apps.mqtt.user;
-        "MQTT_PASSWORD" = vars.apps.mqtt.password;
       };
-
+      secrets = { 
+        ENCRYPTION_KEY = "apps/teslamate/app/key"; 
+        DATABASE_PASS  = "apps/teslamate/db/password";
+        MQTT_USERNAME  = "apps/mqtt/user";
+        MQTT_PASSWORD  = "apps/mqtt/password";
+      };
       labels = {
         "glance.name" = "TeslaMate";
       };
-    }
-  ];
+    };
 
-in {
-  # 1. Containers
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-grafana" = grafanaContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
+    grafana = svc.container {
+      id = 4;
+      web = { 
+        host = "tesla";
+        port = 3000; 
+        expose = "internal";
+      };
+      internet = false;
+      image = "teslamate/grafana:4.4.0";
+      mounts = [ "/var/lib/grafana" ];
+      environment = {
+        DATABASE_USER = dbUser;
+        DATABASE_NAME = dbName;
+        DATABASE_HOST = svc.containerName "db"; 
+      };
+      secrets = { 
+        DATABASE_PASS = "apps/teslamate/db/password";
+      };
+      labels = {
+        "glance.name" = "Tesla Dashboards";
+        "fikus.name" = "Tesla"; # Custom display names for bookmarks
+      };
+    };
 
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
+  }

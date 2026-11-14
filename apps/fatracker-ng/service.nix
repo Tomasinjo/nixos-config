@@ -1,49 +1,37 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "fatracker-ng";
-  serviceHostname = "fatracker";
-  servicePort = 8000;
-  serviceId = 45;
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "fatracker-ng"; id = 45; dir = ./.; };
 
   dbUser = "fatracker";
-  dbPass = vars.apps.fatracker.db_password;
   dbName = "fatracker";
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
-
-    {
-      image = "ghcr.io/tomasinjo/fatracker-ng:1.1.2";
-
-      environment = {
-        "DATABASE_URL" = "postgresql+psycopg://${dbUser}:${dbPass}@${serviceName}-db:5432/${dbName}";
-        "WEBHOOK_API_KEY" = vars.apps.fatracker.webhook_api_key;
-        "MCP_TOKEN" = vars.apps.fatracker.mcp_api_key;
-        "REPORT_TIMEZONE" = "Europe/Ljubljana";
-        STRONG_EMAIL=vars.apps.fatracker.strong_email;
-        STRONG_PASSWORD=vars.apps.fatracker.strong_password;
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "fatracker";
+        port = 8000; 
+        expose = "gatekeeper";
       };
-      volumes = [
-        "${vars.dir.nixos_config}/apps/fatracker-ng/app-data:/data"
-      ];
-    }
-  ];
+      internet = true; # for strong
+      image = "ghcr.io/tomasinjo/fatracker-ng:1.1.2";
+      mounts = [ "/data" ];
+      environment = {
+        REPORT_TIMEZONE = "Europe/Ljubljana";
+      };
+      secrets = { 
+        DATABASE_URL = "apps/fatracker-ng/db/url";
+        WEBHOOK_API_KEY = "apps/fatracker-ng/webhook_api_key";
+        MCP_TOKEN = "apps/fatracker-ng/mcp_api_key";
+        STRONG_EMAIL = "ext/strong/email";
+        STRONG_PASSWORD = "ext/strong/password";
+      };
+    };
 
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/fatracker-ng/db-data:/data/postgres"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
+  }

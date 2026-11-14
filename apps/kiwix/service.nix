@@ -1,27 +1,23 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "kiwix"; id = 25; dir = ./.; };
 
-  serviceName = "kiwix";
-  serviceHostname = "kb";
-  servicePort = 8080;
-  serviceId = 25;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    {
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "kb";
+        port = 8080; 
+        expose = "internal";
+      };
+      internet = false;
       image = "ghcr.io/kiwix/kiwix-serve:3.8.2";
-
-      volumes = [
-        "${vars.dir.impo_data}/kiwix:/data"
-      ];
-      
+      mounts = [];
+      extraMounts = [ "${vars.dir.impo_data}/kiwix:/data" ];
+      environment = {};
+      secrets = {};
       cmd = ["*.zim"];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

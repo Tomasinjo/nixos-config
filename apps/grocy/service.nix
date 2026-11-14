@@ -1,60 +1,46 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "grocy"; id = 19; dir = ./.; };
 
-  serviceName = "grocy";
-  serviceId = 19;
-
-  grocyServiceHostname = "grocy";
-  grocyServicePort = 80;
-  
-  b2gServiceHostname = "b2g";
-  b2gServicePort = 8000;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal {
-      inherit serviceName serviceId; 
-      serviceHostname = grocyServiceHostname; 
-      servicePort = grocyServicePort;
-    })
-    {
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "grocy";
+        port = 80; 
+        expose = "internal";
+      };
+      internet = false;
       image = "lscr.io/linuxserver/grocy:v4.7.1-ls341";
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/grocy/app-data:/config"
-      ];
-
+      mounts = [ "/config" ];
+      environment = {};
+      secrets = {};
       user = "";  # linuxserver image, sets user after startup using env
-    }
-  ];
+    };
 
-  b2gcontainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { 
-      inherit serviceName serviceId; 
-      serviceHostname = b2gServiceHostname; 
-      servicePort = b2gServicePort;
-      containerId = 4;    # avoid colision with grocy with cid 2
-      requiresInternet = "true";
-    })
-    {
+    b2g = svc.container {
+      id = 4;
+      web = { 
+        host = "b2g";
+        port = 8000; 
+        expose = "internal";
+      };
+      internet = true;
       image = "ghcr.io/tomasinjo/barcode-to-grocy:1.3.4";
-
+      mounts = [];
       environment = {
-        "APP_LOG_FILE" = ""; # log to stdout
-        "GROCY_BASE_URL" = "http://${serviceName}-app";
-        "GROCY_API_KEY" = vars.apps.grocy.api_key;
+        "GROCY_BASE_URL" = "http://${svc.containerName "app"}";
         "GROCY_VERIFY_TLS" = "false";
-        "MFP_USERNAME" = vars.apps.grocy.mfp_username;
-        "MFP_PASSWORD" = vars.apps.grocy.mfp_password;
-        "VKJ_TOKEN" = vars.apps.grocy.vkj_bearer;
+        "APP_LOG_FILE" = ""; # log to stdout
         "LOG_LEVEL" = "DEBUG";
       };
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-bg2" = b2gcontainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      secrets = {
+        "GROCY_API_KEY" = "apps/grocy/api_key";
+        "MFP_USERNAME" = "ext/mfp/username";
+        "MFP_PASSWORD" = "ext/mfp/password";
+        "VKJ_TOKEN" = "ext/vkj_bearer";
+      };
+    };
+  }

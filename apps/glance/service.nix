@@ -1,37 +1,26 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "glance"; id = 17; dir = ./.; };
 
-  serviceName = "glance";
-  serviceHostname = "home";
-  servicePort = 8080;
-  serviceId = 17;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { 
-      inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = "true"; # news, github 
-    })
-    {
-      image = "glanceapp/glance:v0.8.7";
-
-      environment = {
-        "GITHUB_TOKEN" = vars.apps.glance.app.github_token;
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "home";
+        port = 8080; 
+        expose = "internal";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/glance/app-data/config:/app/config"
-        "${vars.dir.nixos_config}/apps/glance/app-data/assets:/app/assets"
+      internet = true;  # news, github 
+      image = "glanceapp/glance:v0.8.7";
+      mounts = [
+        "config:/app/config"
+        "assets:/app/assets"
       ];
-
-      networks = [
-        "dockerproxy-net"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      environment = {};
+      secrets = {
+        GITHUB_TOKEN = "ext/github_token";
+      };
+    };
+  }

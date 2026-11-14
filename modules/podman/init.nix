@@ -39,9 +39,10 @@
     groups.${vars.containerUser.name} = {
       gid = vars.containerUser.gid;
     };
+
     users.${vars.username}.extraGroups = [
       vars.containerUser.name
-      "podman"
+      "podman" # remove?
     ];
   };
 
@@ -75,6 +76,7 @@
     ../../apps/jupyter/service.nix
     ../../apps/llm/comfyui/service.nix
     ../../apps/llm/open-webui/service.nix
+    ../../apps/llm/ollama/service.nix
     ../../apps/llm/qdrant/service.nix
     ../../apps/cloud/opencloud/service.nix
     ../../apps/cloud/euro-office/service.nix
@@ -82,6 +84,7 @@
     ../../apps/pgadmin/service.nix
     ../../apps/teslamate/service.nix
     ../../apps/traefik/service.nix
+    ../../apps/dockerproxy/service.nix
     ../../apps/trilium/service.nix
     ../../apps/unifi/service.nix
     ../../apps/vaultwarden/service.nix

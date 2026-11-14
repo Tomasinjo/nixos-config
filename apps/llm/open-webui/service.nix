@@ -1,63 +1,30 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "open-webui";
-  serviceHostname = "chat";
-  servicePort = 8080;
-  serviceId = 27;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
-    {
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "open-webui"; id = 46; dir = ./.; };
+  hostname = "chat";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = hostname;
+        port = 8080; 
+        expose = "gatekeeper";
+      };
+      internet = false;
       image = "ghcr.io/open-webui/open-webui:0.12-cuda";
-
+      mounts = [ "/app/backend/data" ];
       environment = {
-        "OLLAMA_BASE_URLS" = "http://ollama:11434";
-        "ENV" = "prod";
-        "WEBUI_AUTH" = "True";
-        "WEBUI_NAME" = "Fikus AI Chat";
-        "WEBUI_URL" = "https://${serviceHostname}.${vars.net.domain}";
-        "WEBUI_SECRET_KEY" = vars.apps.open-webui.app.secret;
+        OLLAMA_BASE_URLS = "http://10.0.27.2:11434";
+        ENV = "prod";
+        WEBUI_AUTH = "True";
+        WEBUI_NAME = "Fikus AI Chat";
+        WEBUI_URL = "https://${hostname}.${vars.net.domain}";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/llm/open-webui/app-data:/app/backend/data"
-      ];
-
-      user = "";  # does not support non-root
-    }
-  ];
-
-  ollamaContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { 
-      inherit serviceName serviceId; containerId = 4; 
-      requiresInternet = "true"; # model pull
-    })
-    oci-framework.hardware.cuda
-    {
-      image = "ollama/ollama:0.40.13";
-
-      environment = {
-        "OLLAMA_KEEP_ALIVE" = "24h";
-        "OLLAMA_DEBUG" = "0";
-        "OLLAMA_FLASH_ATTENTION" = "1";
-        "OLLAMA_KV_CACHE_TYPE" = "q4_0";
+      secrets = {
+        WEBUI_SECRET_KEY = "apps/open-webui/app/secret";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/llm/open-webui/ollama-data:/root/.ollama"
-      ];
-
       user = "";  # does not support non-root
-    }
-  ];
-
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."ollama" = ollamaContainerConfig;
-  
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

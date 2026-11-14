@@ -161,8 +161,8 @@
           ip saddr 10.0.18.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # grafana to victoria
           ip saddr 10.0.20.2 ip daddr 10.0.22.2 tcp dport 8123 accept   # appdaemon to hass
           ip saddr 10.0.20.2 ip daddr 10.0.22.4 tcp dport 1883 accept   # appdaemon to mqtt
-          ip saddr 10.0.28.2 ip daddr 10.0.27.4 tcp dport 11434 accept  # qdrant to ollama
-          ip saddr 10.0.30.5 ip daddr 10.0.27.4 tcp dport 11434 accept  # paperllama to ollama
+          ip saddr 10.0.28.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # qdrant to ollama
+          ip saddr 10.0.30.5 ip daddr 10.0.27.2 tcp dport 11434 accept  # paperllama to ollama
           ip saddr 10.0.32.2 ip daddr 10.0.22.4 tcp dport 1883 accept   # teslamate to mqtt
           ip saddr 10.0.22.2 ip daddr 10.0.39.2 tcp dport 8095 accept   # hass to mass
           ip saddr 10.0.39.2 ip daddr 10.0.22.2 tcp dport 8123 accept   # mass to hass, for TTS
@@ -172,14 +172,15 @@
           ip saddr 10.0.31.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # pgadmin to fafi-db
           ip saddr 10.0.31.2 ip daddr 10.0.22.3 tcp dport 5432 accept   # pgadmin to hass-db
           ip saddr 10.0.10.2 ip daddr 10.0.1.2  tcp dport 443 accept    # opencloud to traefik, for oidc, see OC service.nix
-          ip saddr 10.0.42.2 ip daddr 10.0.27.4 tcp dport 11434 accept  # hermes to ollama
+          ip saddr 10.0.42.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # hermes to ollama
           ip saddr 10.0.42.2 ip daddr 10.0.45.2 tcp dport 8000 accept   # hermes to fatracker MCP
-          ip saddr 10.0.43.2 ip daddr 10.0.27.4 tcp dport 11434 accept  # dr sre to ollama 
+          ip saddr 10.0.43.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # dr sre to ollama 
           ip saddr 10.0.43.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # dr sre to victoria
-          ip saddr 10.0.44.2 ip daddr 10.0.27.4 tcp dport 11434 accept  # mealie to ollama
+          ip saddr 10.0.44.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # mealie to ollama
           ip saddr 10.0.1.6  ip daddr 10.0.44.2 tcp dport 9000 accept   # gatekeeper to mealie
           ip saddr 10.0.18.2 ip daddr 10.0.45.3 tcp dport 5432 accept   # grafana to fatracker-db
           ip saddr 10.0.31.2 ip daddr 10.0.45.3 tcp dport 5432 accept   # pgadmin to fatracker-db
+          ip saddr 10.0.17.2 ip daddr 10.0.47.2 tcp dport 2375 accept   # glance to dockerproxy
 
           # containers cant talk with each other unless overriden above
           ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} drop
@@ -202,8 +203,8 @@
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1018::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1037::2 tcp dport 9428 accept     # grafana to victoria
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1020::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::2 tcp dport 8123 accept     # appdaemon to hass
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1020::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::4 tcp dport 1883 accept     # appdaemon to mqtt
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1028::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::4 tcp dport 11434 accept    # qdrant to ollama
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1030::5 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::4 tcp dport 11434 accept    # paperllama to ollama
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1028::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # qdrant to ollama
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1030::5 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # paperllama to ollama
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1032::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::4 tcp dport 1883 accept     # teslamate to mqtt
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1022::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1039::2 tcp dport 8095 accept     # hass to mass
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1039::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1033::2 tcp dport 8096 accept     # mass to jellyfin
@@ -212,11 +213,11 @@
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1015::3 tcp dport 5432 accept     # pgadmin to fafi-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::3 tcp dport 5432 accept     # pgadmin to hass-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1010::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport 443 accept      # opencloud to traefik, for oidc, see OC service.nix
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::4 tcp dport 11434 accept    # hermes to ollama
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # hermes to ollama
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1045::2 tcp dport 8000 accept     # hermes to fatracker MCP
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1043::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::4 tcp dport 11434 accept    # dr_sre to ollama
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1043::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # dr_sre to ollama
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1043::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1037::2 tcp dport 9428 accept     # dr_sre to victoria
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1044::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::4 tcp dport 11434 accept    # mealie to ollama
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1044::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # mealie to ollama
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1018::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1045::3 tcp dport 5432 accept     # grafana to fatracker-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1045::3 tcp dport 5432 accept     # pgadmin to fatracker-db
 

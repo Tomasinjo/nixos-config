@@ -3,6 +3,7 @@
   imports = [
     ./hardware-configuration.nix
     ./networking.nix
+    ../../secrets/external.nix
     ./kea.nix
     ./nftables.nix
     ./unbound.nix

@@ -1,37 +1,26 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "degoog"; id = 12; dir = ./.; };
 
-  serviceName = "degoog";
-  serviceHostname = "search";
-  servicePort = 4444;
-  serviceId = 12;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { 
-      inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = "true"; # search engines
-    })
-    {
-      image = "ghcr.io/degoog-org/degoog:1.1.1";
-
-      environment = {
-        "DEGOOG_DISTRUST_PROXY" = "0";
-        "PUID" = toString vars.containerUser.uid;
-        "PGID" = toString vars.containerUser.gid;
-        "DEGOOG_SETTINGS_PASSWORDS" = vars.apps.degoog.app.setting_password;
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "search";
+        port = 4444; 
+        expose = "gatekeeper";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/degoog/app-data:/app/data"
-      ];
-
+      internet = true; # search engines
+      image = "ghcr.io/degoog-org/degoog:1.1.1";
+      mounts = [ "/app/data" ];
+      environment = {
+        DEGOOG_DISTRUST_PROXY = "0";
+      };
+      secrets = {
+        DEGOOG_SETTINGS_PASSWORDS = "apps/degoog/app/setting_password";
+      };
       user = "";
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

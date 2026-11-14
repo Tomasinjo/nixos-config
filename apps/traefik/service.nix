@@ -1,90 +1,39 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-  serviceId = 1;
-  serviceName = "traefik";
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "traefik"; id = 1; dir = ./.; };
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { 
-      inherit serviceName serviceId; 
-      containerId = 2;
-      requiresInternet = "true";  # acme cert renewals
-    }) 
-    {
+in
+  svc.build {
+    app = svc.container {
+      internet = true;  # acme cert renewals
       image = "traefik:v3.7.17";
-
-      environment = {
-        CF_DNS_API_TOKEN = vars.apps.traefik.app.cloudflare_api_key;
+      mounts = [
+        "config:/etc/traefik"
+        "plugins:/plugins-storage"  # to set correct permissions. fails to write if non-root
+      ];
+      environment = {};
+      secrets = {
+        CF_DNS_API_TOKEN = "ext/cloudflare_api_key";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/traefik/app-data:/etc/traefik"
-        "${vars.dir.nixos_config}/apps/traefik/app-data:/plugins-storage"  # to set correct permissions. fails to write if non-root
-      ];
-
-      dependsOn = [ "dockerproxy" ];
-
-      networks = [
-        "dockerproxy-net"
-      ];
-
+      dependsOn = [ "dockerproxy-app" ];
       extraOptions = [
         "--sysctl=net.ipv4.ip_unprivileged_port_start=0" # allows binding low ports
       ];
-    }
-  ];
+    };
 
-
-  dockerproxyContainerConfig = oci-framework.mergeAll [
-    {
-      image = "wollomatic/socket-proxy:1.13.2";
-
-      volumes = [
-        "/var/run/docker.sock:/var/run/docker.sock:ro"
-      ];
-
-      networks = [
-        "dockerproxy-net"
-      ];
-      
-      # run as root so it can read /var/run/docker.sock
-      user = "0:0";
-
-      extraOptions = [
-        "--read-only"
-        "--memory=64M"
-        "--cap-drop=ALL"
-        "--security-opt=no-new-privileges:true"
-      ];
-
-      cmd = [
-        "-loglevel=info"
-        "-allowfrom=traefik,glance-app"
-        "-listenip=0.0.0.0"
-        "-allowGET=/(v1\..{1,2}/)?(version|containers/.*|events.*)"  # this regexp allows readonly access only for requests from traefik and glance 
-        "-allowHEAD=/_ping"
-        "-shutdowngracetime=5"
-        "-watchdoginterval=600"
-        "-stoponwatchdog"
-      ];
-    }
-  ];
-
-  gatekeeperContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { serviceName = "traefik"; inherit serviceId; containerId = 6; })
-    {
+    gatekeeper = svc.container {
+      id = 6;
+      internet = false;
       image = "ghcr.io/tomasinjo/gatekeeper:main";
-
-      environment = {
-        "MAX_IP_LEN" = "10";
-        "DEFAULT_SOURCE_RANGE" = "127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,${vars.net.sensei.ipv6_prefix}";
-      };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/traefik/app-data/file_providers/dynamic-whitelist.yml:/app/dynamic-whitelist.yml"
+      extraMounts = [
+        "${vars.dir.nixos_config}/apps/traefik/app-data/config/file_providers/dynamic-whitelist.yml:/app/dynamic-whitelist.yml"
       ];
-
+      environment = {
+        MAX_IP_LEN = "10";
+        DEFAULT_SOURCE_RANGE = "127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,${vars.net.sensei.ipv6_prefix}";
+      };
       labels = {
         "traefik.enable" = "true";
         
@@ -100,26 +49,5 @@ let
         "traefik.http.middlewares.gatekeeper_mealie_share.forwardauth.trustForwardHeader" = "true";
         "traefik.http.middlewares.gatekeeper_mealie_share.forwardauth.maxResponseBodySize" = "10485760";
       };
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."traefik" = appContainerConfig;
-  virtualisation.oci-containers.containers."dockerproxy" = dockerproxyContainerConfig;
-  virtualisation.oci-containers.containers."gatekeeper" = gatekeeperContainerConfig;
-
-  systemd.services = lib.mkMerge [
-    # Creates traefik-net (10.0.1.0/24), 1001::/64
-    (oci-framework.mkNetwork {
-      serviceName = "traefik";
-      inherit serviceId; # 10.0.1.0/24
-    })
-    
-    # Creates dockerproxy-net (Internal bridge)
-    (oci-framework.mkNetwork {
-      serviceName = "dockerproxy";
-      serviceId = 200;
-      isInternal = true; # created with --internal (no internet/routing gateway)
-    })
-  ];
-}
+    };
+  }

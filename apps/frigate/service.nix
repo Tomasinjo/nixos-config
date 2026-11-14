@@ -1,65 +1,42 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "frigate"; id = 16; dir = ./.; };
 
-  serviceName = "frigate";
-  serviceHostname = "nvr";
-  servicePort = 8971;
-  serviceId = 16;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    oci-framework.hardware.quicksync
-    oci-framework.hardware.coral
-    {
-      image = "ghcr.io/blakeblackshear/frigate:0.18.1";
-
-      environment = {
-        "FRIGATE_RTSP_USER" = vars.apps.frigate.rtsp_user;
-        "FRIGATE_RTSP_PASSWORD" = vars.apps.frigate.rtsp_password;
-        "FRIGATE_MQTT_USER" = vars.apps.mqtt.user;
-        "FRIGATE_MQTT_PASSWORD" = vars.apps.mqtt.password;
-        "FRIGATE_MEDIA_DIR" = "${vars.dir.hoarder_data}/Recordings/";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "nvr";
+        port = 8971; 
+        expose = "internal";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/frigate/app-data:/config"
+      internet = false;
+      image = "ghcr.io/blakeblackshear/frigate:0.18.1";
+      mounts = [ "/config" ];
+      extraMounts = [
         "${vars.dir.hoarder_data}/Recordings/:/media/frigate/"
-
-        # The following overrides are required to support running as a non-root user
-        # s6 overrides
-        "${vars.dir.nixos_config}/apps/frigate/overrides/s6/log-prepare-run:/etc/s6-overlay/s6-rc.d/log-prepare/run"
-        "${vars.dir.nixos_config}/apps/frigate/overrides/s6/nginx-check:/etc/s6-overlay/s6-rc.d/nginx/data/check"
-        "${vars.dir.nixos_config}/apps/frigate/overrides/s6/s6-applyuidgid:/package/admin/s6/command/s6-applyuidgid"
-
-        # letsencrypt dirs need to exist so that we can provide certs or so that the container can generate self-signed certs and store them here
-        "${vars.dir.nixos_config}/apps/frigate/overrides/letsencrypt/live/frigate:/etc/letsencrypt/live/frigate"
-        "${vars.dir.nixos_config}/apps/frigate/overrides/letsencrypt/www:/etc/letsencrypt/www"
-
-        # nginx overrides
-        "${vars.dir.nixos_config}/apps/frigate/overrides/nginx/conf/nginx.conf:/usr/local/nginx/conf/nginx.conf"
-        "${vars.dir.nixos_config}/apps/frigate/overrides/nginx/conf/base_path.conf:/usr/local/nginx/conf/base_path.conf"
-        "${vars.dir.nixos_config}/apps/frigate/overrides/nginx/conf/listen.conf:/usr/local/nginx/conf/listen.conf"
-        "${vars.dir.nixos_config}/apps/frigate/overrides/nginx/logs:/usr/local/nginx/logs"
-        "${vars.dir.nixos_config}/apps/frigate/overrides/nginx/temp_dirs:/usr/local/nginx/temp_dirs"
       ];
-      
+      environment = {
+        FRIGATE_MEDIA_DIR = "${vars.dir.hoarder_data}/Recordings/";
+      };
+      secrets = {
+        FRIGATE_RTSP_USER = "apps/frigate/rtsp_user";
+        FRIGATE_RTSP_PASSWORD = "apps/frigate/rtsp_password";
+        FRIGATE_MQTT_USER = "apps/mqtt/user";
+        FRIGATE_MQTT_PASSWORD = "apps/mqtt/password";
+      };
+      hardware = [ "quicksync" "coral" ];
+      user = "";  # does not support nonroot
       capabilities = {
         "PERFMON" = true;
       };
-      removeExtraOptions = [ "--security-opt=no-new-privileges:true" ];
-
       extraOptions = [
-        "--security-opt=no-new-privileges:false" # override the base compose - wont start without it, says it cant access /run.
         "--shm-size=256m"
         "--tmpfs=/tmp/cache:rw,size=1G,mode=1777"
         "--cpuset-cpus=12-19"  # eco cores
       ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      noNewPrivileges = false;  # wont start without it, says it cant access /run.
+    };
+  }

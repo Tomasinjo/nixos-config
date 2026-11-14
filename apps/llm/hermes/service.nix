@@ -1,41 +1,27 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "hermes"; id = 42; dir = ./.; };
 
-  serviceName = "hermes";
-  serviceHostname = "hermes";
-  servicePort = 9119; # dashboard,  also exposes 8642 for gateway API
-  serviceId = 42;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { 
-      inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = "true";
-    })
-
-    {
-      image = "nousresearch/hermes-agent:v0.22.5";
-
-      environment = {
-        "HERMES_DASHBOARD" = "1";
-        "GLM_API_KEY" = vars.apps.hermes.app.glm;
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "hermes";
+        port = 9119;  # dashboard, also exposes 8642 for gateway API
+        expose = "internal";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/llm/hermes/app-data:/opt/data"
-      ];
-
-      cmd = [
-        "gateway" "run"
-      ];
-
+      internet = true;
+      image = "nousresearch/hermes-agent:v0.22.5";
+      mounts = [ "/opt/data" ];
+      environment = {
+        HERMES_DASHBOARD = "1";
+      };
+      secrets = {
+        GLM_API_KEY = "ext/glm_api_key";
+      };
+      cmd = [ "gateway" "run" ];
       user = ""; # starts as root then uses normal account for running
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

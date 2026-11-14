@@ -1,49 +1,40 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "metabase";
-  serviceHostname = "fafi";
-  servicePort = 3000;
-  serviceId = 14;
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "metabase"; id = 14; dir = ./.; };
 
   dbUser = "metabase";
-  dbPass = vars.apps.metabase.db.password;
   dbName = "metabaseappdb";
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
-    {
-      image = "metabase/metabase:v0.58.x";
-
-      environment = {
-        "MB_DB_TYPE" = "postgres";
-        "MB_DB_DBNAME" = dbName;
-        "MB_DB_PORT" = "5432";
-        "MB_DB_USER" = dbUser;
-        "MB_DB_PASS" = dbPass;
-        "MB_DB_HOST" = "${serviceName}-db";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "fafi";
+        port = 3000; 
+        expose = "gatekeeper";
       };
-
-      volumes = [
+      internet = false;
+      image = "metabase/metabase:v0.58.x";
+      mounts = [];
+      extraMounts = [
         "/dev/urandom:/dev/random:ro"
       ];
-    }
-  ];
+      environment = {
+        MB_DB_TYPE = "postgres";
+        MB_DB_DBNAME = dbName;
+        MB_DB_PORT = "5432";
+        MB_DB_USER = dbUser;
+        MB_DB_HOST = svc.containerName "db";
+      };
+      secrets = { 
+        MB_DB_PASS = "apps/metabase/db/password";
+      };
+    };
 
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/fafi/metabase/db-data:/data/postgres"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
+  }

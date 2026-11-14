@@ -1,33 +1,23 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "pinchflat"; id = 40; dir = ./.; };
 
-  serviceName = "pinchflat";
-  serviceHostname = "tube";
-  servicePort = 8945;
-  serviceId = 40;
-
-  containerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { 
-      inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = "true";  # yt downloads
-    })
-    {
-      image = "keglin/pinchflat:v2025.6.6";
-
-      environment = {
-        "LOG_LEVEL" = "info";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "tube";
+        port = 8945; 
+        expose = "internal";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/arrs/pinchflat/app-data:/config"
-        "${vars.dir.hoarder_data}/media/library/tube:/downloads"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = containerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      internet = true; # yt downloads
+      image = "keglin/pinchflat:v2025.6.6";
+      mounts = [ "/config" ];
+      extraMounts = [ "${vars.dir.hoarder_data}/media/library/tube:/downloads" ];
+      environment = {
+        LOG_LEVEL = "info";
+      };
+    };
+  }

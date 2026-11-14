@@ -1,33 +1,27 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "vaultwarden"; id = 36; dir = ./.; };
 
-  serviceName = "vaultwarden";
-  serviceHostname = "bw";
-  servicePort = 8080;
-  serviceId = 36;
+  port = 8080;
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
-    {
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "bw";
+        port = port; 
+        expose = "gatekeeper";
+      };
+      internet = false;
       image = "vaultwarden/server:1.37.4";
-
+      mounts = [ "/data" ];
       environment = {
         "WEBSOCKET_ENABLED" = "true";
         "SIGNUPS_ALLOWED" = "false";
         "INVITATIONS_ALLOWED" = "false";
-        "ROCKET_PORT" = toString servicePort;
+        "ROCKET_PORT" = toString port;
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/vaultwarden/app-data:/data"
-      ];
-    }
-  ];
-
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

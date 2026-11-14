@@ -1,66 +1,55 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "unifi";
-  serviceHostname = "unifi";
-  servicePort = 8443;
-  serviceId = 35;
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "unifi"; id = 35; dir = ./.; };
 
   # controller settings
   #set-inform http://10.0.35.2:8080/inform
 
   mongoUser = "unifi";
-  mongoPass = vars.apps.unifi.mongo.password;
   mongoName = "unifi";
+  hostname = "unifi";
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    {
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = hostname;
+        port = 8443; 
+        expose = "internal";
+      };
+      internet = false;
       image = "lscr.io/linuxserver/unifi-network-application:10.6.109-ls152";
-
+      mounts = [ "/config" ];
+      #extraMounts = [];
       environment = {
-        "MONGO_USER" = mongoUser;
-        "MONGO_PASS" = mongoPass;
-        "MONGO_HOST" = "${serviceName}-db";
-        "MONGO_PORT" = "27017";
-        "MONGO_DBNAME" = mongoName;
-        "MONGO_AUTHSOURCE" = "admin";
+        MONGO_USER = mongoUser;
+        MONGO_HOST = svc.containerName "db";
+        MONGO_PORT = "27017";
+        MONGO_DBNAME = mongoName;
+        MONGO_AUTHSOURCE = "admin";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/unifi/app-data:/config"
-      ];
-      
+      secrets = { 
+        MONGO_PASS = "apps/unifi/mongo/password";
+      };
       labels = {
-        "traefik.http.services.${serviceHostname}.loadbalancer.server.scheme" = "https";
-        "traefik.http.routers.${serviceHostname}.middlewares" = "unifiHeaders@file,internal-whitelist@file";
+        "traefik.http.services.${hostname}.loadbalancer.server.scheme" = "https";
+        "traefik.http.routers.${hostname}.middlewares" = "unifiHeaders@file,internal-whitelist@file";
       };
-
       user = "";  # linuxserver image, sets user after startup using env
-    }
-  ];
+    };
 
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { inherit serviceName serviceId; containerId = 3; })
-    {
+    db = svc.container {
+      id = 3;
+      internet = false;
       image = "mongo:8.3";
-
+      mounts = [ "/data/db" ];
       environment = {
-        "MONGO_INITDB_ROOT_USERNAME" = "root";
-        "MONGO_INITDB_ROOT_PASSWORD" = vars.apps.unifi.mongo.root_password;
+        MONGO_INITDB_ROOT_USERNAME = "root";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/unifi/db-data:/data/db"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      secrets = { 
+        MONGO_INITDB_ROOT_PASSWORD = "apps/unifi/mongo/root_password";
+      };
+    };
+  }

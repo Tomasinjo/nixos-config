@@ -114,11 +114,11 @@ in
                 ether saddr ${vars.net.sensei.common-vlan.members.t14g6.mac}      accept
 
                 # To traefik
-                iifname "${vars.net.sensei.common-vlan.name}" ip  daddr ${cip4 "traefik"} accept
-                iifname "${vars.net.sensei.common-vlan.name}" ip6 daddr ${cip6 "traefik"} accept
+                iifname "${vars.net.sensei.common-vlan.name}" ip  daddr ${cip4 "traefik-app"} accept
+                iifname "${vars.net.sensei.common-vlan.name}" ip6 daddr ${cip6 "traefik-app"} accept
                 
                 # to ollama
-                iifname "${vars.net.sensei.common-vlan.name}" ip  daddr ${cip4 "ollama"} accept
+                iifname "${vars.net.sensei.common-vlan.name}" ip  daddr ${cip4 "ollama-app"} accept
 
                 # Speakers to MA
                 iifname "${vars.net.sensei.common-vlan.name}" ip saddr { 192.168.10.152, 192.168.10.154 } ip daddr ${cip4 "music-assistant-app"} tcp dport 8097 accept 
@@ -142,7 +142,7 @@ in
                 iifname "${vars.net.sensei.iot-vlan.name}" ip saddr { ${vlan30_allow_out_ips} } ip daddr != { ${aliases.internal_ipv4} } accept
 
                 # mqtt clients to mosquitto
-                iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${cip4 "mqtt"} tcp dport 1883 accept
+                iifname "${vars.net.sensei.iot-vlan.name}" ip daddr ${cip4 "home-assistant-mqtt"} tcp dport 1883 accept
 
 
                 ############ Server ############
@@ -152,8 +152,8 @@ in
                 iifname "${vars.net.sensei.server-vlan.name}" ip6 saddr ${vars.net.zenki.server-vlan.ipv6Address} accept
 
                 # To traefik from internet
-                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip  daddr ${cip4 "traefik"} tcp dport { 80, 443 } accept
-                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip6 daddr ${cip6 "traefik"} tcp dport { 80, 443 } accept
+                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip  daddr ${cip4 "traefik-app"} tcp dport { 80, 443 } accept
+                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}" } ip6 daddr ${cip6 "traefik-app"} tcp dport { 80, 443 } accept
 
 
                 ############ Lab (VLAN 69) - routed via VPS ############
@@ -204,8 +204,8 @@ in
                 ip daddr 192.168.50.80 dnat to 193.77.156.2
 
                 # Port forwarding
-                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", wg0 } ip daddr ${vars.net.sensei.ipv4_public} tcp dport 443 dnat to ${cip4 "traefik"}:443
-                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", wg0 } ip daddr ${vars.net.sensei.ipv4_public} tcp dport  80 dnat to ${cip4 "traefik"}:80
+                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", wg0 } ip daddr ${vars.net.sensei.ipv4_public} tcp dport 443 dnat to ${cip4 "traefik-app"}:443
+                iifname { "ppp0", "${vars.net.sensei.common-vlan.name}", wg0 } ip daddr ${vars.net.sensei.ipv4_public} tcp dport  80 dnat to ${cip4 "traefik-app"}:80
                 iifname "ppp0" tcp dport 51413 dnat to ${cip4 "qbittorrent-app"}:51413
                 iifname "ppp0" udp dport 51413 dnat to ${cip4 "qbittorrent-app"}:51413
               }
@@ -214,8 +214,8 @@ in
                 type nat hook postrouting priority srcnat; policy accept;
                 
                 # Hairpin NAT for Traefik
-                ip saddr ${vars.net.sensei.common-vlan.ipv4.subnet}/${vars.net.sensei.common-vlan.ipv4.mask} ip daddr ${cip4 "traefik"} tcp dport { 80, 443 } snat to ${vars.net.sensei.common-vlan.ipv4.gateway}
-                ip saddr ${vars.net.sensei.wireguard.ipv4.subnet}/${vars.net.sensei.wireguard.ipv4.mask}     ip daddr ${cip4 "traefik"} tcp dport { 80, 443 } snat to ${vars.net.sensei.wireguard.ipv4.gateway}
+                ip saddr ${vars.net.sensei.common-vlan.ipv4.subnet}/${vars.net.sensei.common-vlan.ipv4.mask} ip daddr ${cip4 "traefik-app"} tcp dport { 80, 443 } snat to ${vars.net.sensei.common-vlan.ipv4.gateway}
+                ip saddr ${vars.net.sensei.wireguard.ipv4.subnet}/${vars.net.sensei.wireguard.ipv4.mask}     ip daddr ${cip4 "traefik-app"} tcp dport { 80, 443 } snat to ${vars.net.sensei.wireguard.ipv4.gateway}
                 
                 # Outbound NAT (Masquerade on WAN)
                 oifname "ppp0" masquerade

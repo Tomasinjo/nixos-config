@@ -1,5 +1,3 @@
-{ lib, config, pkgs, vars, ... }:
-
 # special configs:
 # - teslamate: two webapps
 # - dawarich: custom database
@@ -7,98 +5,111 @@
 
 # if container needs to talk with other containers, add allow entry to networking.nix nftables on zenki
 # if it requires access to any internal network/host add entry to nftables in sensei
-# if it needs internet access, set requiresInternet = "true";
+# if it needs internet access, set internet = true;
+
+
+{ lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "";
-  serviceHostname = "";
-  servicePort = ;
-  serviceId = 0;
-  # ^^^ this is third octet of subnet, must be unique!
+  oci = import ../../modules/podman/oci-framework2.nix { inherit lib config pkgs vars; };
+  # oci = import ../../../modules/podman/oci-framework2.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = ""; id = ; dir = ./.; };
+  # id is third octet of subnet, must be unique!
   # find current highest: echo 'Current highest serviceId:' && ip a | sed -nE 's/.*inet 10\.0\.([0-9.]+)\..*/\1/p' | sort -n | tail -n 1
+  # name is container's base name, usually service name. It gets appended with role e.g. servicename-app, servicename-db etc
 
   dbUser = "";
-  dbPass = vars.apps.;
   dbName = "";
 
-  appContainerConfig = oci-framework.mergeAll [
-    # Use only when other options do not apply. usually containerId should be 4 or higher.
-    #(oci-framework.core { inherit serviceName serviceId; containerId = 4; })
-    
-    # web based containers, pick one
-    #(oci-framework.web.base { inherit serviceName serviceId serviceHostname servicePort; })
-    #(oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    #(oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
-    #(oci-framework.web.exposed_mtls { inherit serviceName serviceId serviceHostname servicePort; })
-    
-    # For containers that need access to hardware, use in combination with core or web
-    #oci-framework.hardware.cuda
-    #oci-framework.hardware.quicksync
-    #oci-framework.hardware.coral
+# variable name ("app") is container role and is used for:
+# container name, for example servicename-app
+# mounts, it will construct host side directory for example .../app-data/, .../db-data/
+# set container ID, parameter "id" which is fourth octet in static IP. app=2, db=3. Can be omitted for these two.
 
-    # If container requires internet access. Works for web based containers as well:
-    #(oci-framework.core { 
-    #  inherit serviceName serviceId; containerId = 4;
-    #  requiresInternet = "true";
-    #})
+# mounts can be used in following ways:
+# [ "/config" ], will translate to <absolute path to service>/<role>-data:/config
+# [ "config:/config" ], will translate to <absolute path to service>/<role>-data/config:/config
+# do not use leading / on host side
+# do not use :ro, not supported
 
-    {
+# extraMounts are normal mounts, directly merged to oci-containers volumes
+
+# secrets: value is path of sops secret, see sops.nix
+# when saving db password, make sure to use standard path: "<servicename>/db/password"
+# when set like that, it will automatically pass it to postgres password env var.
+
+in
+  svc.build {
+    app = svc.container { 
+      web = { 
+        host = "";
+        port = ; 
+        expose = "internal";
+        #expose = "gatekeeper";
+        #expose = "mtls";
+        #expose = "plain";
+      };
+      internet = false;
       image = "";
+      mounts = [];
+      #extraMounts = [];
+      environment = {
+        DATABASE_HOST = svc.containerName "db";
+      };
+      secrets = { 
+        ENCRYPTION_KEY = "apps/XXXX/app/key";
+      };
+      # autoStart = false;  # use for rarely used service, systemd service must be manually started:
+      # entrypoint = "/bin/sh";
+      # cmd = [ "executable" "--flag" "flag_val" ]; # same as "command" compose directive
+      # extraOptions = [];
+      # hardware = [ "cuda" "quicksync" "coral" ]
+    };
 
-      environment = {};
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/xxx/app-data:"
-      ];
-
+    # seconday service
+    secondary = svc.container {
+      id = 4;
+      #web = {};
+      internet = false;
+      image = "";
+      mounts = [ "/var/lib/grafana" ];
+      environment = {
+      };
+      secrets = { 
+        DATABASE_PASS = "apps/XXXX/db/password";
+      };
       labels = {};
-      
-      # Do not use ports = [];     # available directly on exposed static IP
-      # Do not use networks = [];  # handled by OCI containers
+    };
 
-      #dependsOn = [ "${serviceName}-db" ];  # DO NOT USE IT - backup will stop the db service and with it the dependency, which will not be restarted afterwards.
+    # assumes sops directory <service name>/db/password
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
+  }
 
-      # optional and overrides
-      #entrypoint = "/example.sh";
-      #user = "";  # containers that dont support running as non root, and for linuxserver images (env set in core)
 
-      #removeExtraOptions = [ "--security-opt=no-new-privileges:true" ];  # to remove options set by oci-framework, rare, used in frigate
 
-      #extraOptions = [
-      #  "--security-opt=no-new-privileges:false"
-      #  "--tmpfs=/dev/shm:mode=770,uid=1111,gid=1111,size=268435456"
-      #  "--tmpfs=/tmp/cache:mode=770,uid=1111,gid=1111,size=1G"
-      #  "--cpuset-cpus=12-19"  # eco cores
-      #];
+## Simple service
+{ lib, config, pkgs, vars, ... }:
 
-      # use for rarely used service, systemd service must be manually started:
-      # autoStart = false;
+let
+  oci = import ../../../modules/podman/oci-framework2.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = ""; id = ; dir = ./.; };
 
-      # same as "command" compose directive
-      #cmd = [
-      #  "-loglevel=info"
-      #  "-allowfrom=traefik"
-      #];
-
-      # FQDN: ${serviceHostname}.${vars.net.domain}
-      # IP ${vars.net.zenki.server-vlan.ipv4Address}
-    }
-  ];
-
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/xxxx/db-data:/data/postgres"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "";
+        port = ; 
+        expose = "internal";
+      };
+      internet = true;
+      image = "";
+      mounts = [ "" ];
+      environment = {};
+      secrets = {};
+      #user = "";  # linuxserver image, sets user after startup using env
+    };
+  }

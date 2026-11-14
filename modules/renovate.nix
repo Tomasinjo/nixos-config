@@ -22,31 +22,33 @@
           matchHost = "ghcr.io";
           hostType = "docker";
           username = "tomasinjo";
-          password = vars.github_ghcr;
+          password = "{{ env.GHCR_TOKEN }}";
         }
         {
-          # lscr.io is ghcr-backed (auth realm is ghcr.io) but a separate host
           matchHost = "lscr.io";
           hostType = "docker";
           username = "tomasinjo";
-          password = vars.github_ghcr;
+          password = "{{ env.GHCR_TOKEN }}";
         }
         {
           matchHost = "docker.io";
           hostType = "docker";
           username = "tomasinjo";
-          password = vars.dockerhub_pat;
+          password = "{{ env.DOCKERHUB_PAT }}";
         }
       ];
     };
     environment = {
-      RENOVATE_TOKEN = vars.github_pat_nixos;
-      GITHUB_COM_TOKEN = vars.github_pat_nixos;
-
       # use the list api instead of tag listings (ignores auth, too many requests errors)
       RENOVATE_X_DOCKER_HUB_TAGS_DISABLE = "1";
-
       LOG_LEVEL = "info"; # info or debug
+    };
+
+    credentials = {
+      RENOVATE_TOKEN   = config.sops.secrets."ext/github_pat_nixos".path;
+      GITHUB_COM_TOKEN = config.sops.secrets."ext/github_pat_nixos".path;
+      GHCR_TOKEN       = config.sops.secrets."ext/github_ghcr".path;
+      DOCKERHUB_PAT    = config.sops.secrets."ext/dockerhub_pat".path;
     };
   };
 }

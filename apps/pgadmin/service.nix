@@ -1,37 +1,28 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "pgadmin"; id = 31; dir = ./.; };
 
-  serviceName = "pgadmin";
-  serviceHostname = "pg";
-  servicePort = 80;
-  serviceId = 31;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    {
-      image = "dpage/pgadmin4:9.19";
-
-      environment = {
-        "PGADMIN_DEFAULT_EMAIL" = vars.email.tom;
-        "PGADMIN_DEFAULT_PASSWORD" = vars.apps.pgadmin.app.password;
-        "MFA_ENABLED" = "false";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "pg";
+        port = 80; 
+        expose = "internal";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/pgadmin/app-data:/var/lib/pgadmin"
-      ];
-
+      internet = false;
+      image = "dpage/pgadmin4:9.19";
+      mounts = [ "/var/lib/pgadmin" ];
+      environment = {
+        MFA_ENABLED = "false";
+        PGADMIN_DEFAULT_EMAIL = vars.email.tom;
+      };
+      secrets = {
+        PGADMIN_DEFAULT_PASSWORD = "apps/pgadmin/app/password";
+      };
       user = "";  # does not support changing uids, runs with uid 5050
-
-      removeExtraOptions = [
-        "--security-opt=no-new-privileges:true"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      noNewPrivileges = false;
+    };
+  }

@@ -1,30 +1,24 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "grafana"; id = 18; dir = ./.; };
 
-  serviceName = "grafana";
-  serviceHostname = "graf";
-  servicePort = 3000;
-  serviceId = 18;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    {
-      image = "grafana/grafana:13.2.4";
-
-      environment = {
-        "GF_SERVER_ROOT_URL" = "https://${serviceHostname}.${vars.net.domain}/";
-        "GF_PLUGINS_PREINSTALL" = "victoriametrics-metrics-datasource";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "graf";
+        port = 3000; 
+        expose = "internal";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/grafana/app-data:/var/lib/grafana"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      internet = true;
+      image = "grafana/grafana:13.2.4";
+      mounts = [ "/var/lib/grafana" ];
+      environment = {
+        GF_SERVER_ROOT_URL = "https://graf.${vars.net.domain}/";
+        GF_PLUGINS_PREINSTALL = "victoriametrics-metrics-datasource";
+      };
+      secrets = {};
+    };
+  }
