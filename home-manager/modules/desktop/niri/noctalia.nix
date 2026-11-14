@@ -102,6 +102,7 @@
       };
 
       idle = {
+        pre_action_fade_seconds = 0;
         behavior_order = [ "lock" "screen-off" "lock-and-suspend" ];
 
         behavior = {
