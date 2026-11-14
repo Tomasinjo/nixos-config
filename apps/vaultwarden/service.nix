@@ -15,7 +15,7 @@ in
         expose = "gatekeeper";
       };
       internet = false;
-      image = "vaultwarden/server:1.37.4";
+      image = "vaultwarden/server:1.37.5";
       mounts = [ "/data" ];
       environment = {
         "WEBSOCKET_ENABLED" = "true";

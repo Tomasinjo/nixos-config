@@ -13,7 +13,7 @@ in
         expose = "gatekeeper";
       };
       internet = false;
-      image = "ghcr.io/euro-office/documentserver:v9.3.7";
+      image = "ghcr.io/euro-office/documentserver:v9.3.8";
       environment = {
         "WOPI_ENABLED" = "true";
         "USE_UNAUTHORIZED_STORAGE" = "false";

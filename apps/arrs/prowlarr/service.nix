@@ -13,7 +13,7 @@ in
         expose = "internal";
       };
       internet = true; # indexing
-      image = "lscr.io/linuxserver/prowlarr:2.7.0.5723-ls166";
+      image = "lscr.io/linuxserver/prowlarr:2.7.0.5723-ls168";
       mounts = [ "/config" ];
       user = "";  # linuxserver image, sets user after startup using env
     };

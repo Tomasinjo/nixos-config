@@ -13,7 +13,7 @@ in
         expose = "internal";
       };
       internet = true;  # news, github 
-      image = "glanceapp/glance:v0.8.7";
+      image = "glanceapp/glance:v0.8.8";
       mounts = [
         "config:/app/config"
         "assets:/app/assets"
