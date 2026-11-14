@@ -1,6 +1,12 @@
 { config, pkgs, lib, vars, inputs, ... }:
 
 {
+
+  sops.templates."renovate-secrets.json".content = builtins.toJSON {
+    github_ghcr = config.sops.placeholder."ext/github_ghcr";
+    dockerhub_pat = config.sops.placeholder."ext/dockerhub_pat";
+  };
+
   services.renovate = {
     enable = true;
 
@@ -22,19 +28,19 @@
           matchHost = "ghcr.io";
           hostType = "docker";
           username = "tomasinjo";
-          password = "{{ env.GHCR_TOKEN }}";
+          password = "{{ secrets.github_ghcr }}";
         }
         {
           matchHost = "lscr.io";
           hostType = "docker";
           username = "tomasinjo";
-          password = "{{ env.GHCR_TOKEN }}";
+          password = "{{ secrets.github_ghcr }}";
         }
         {
           matchHost = "docker.io";
           hostType = "docker";
           username = "tomasinjo";
-          password = "{{ env.DOCKERHUB_PAT }}";
+          password = "{{ secrets.dockerhub_pat }}";
         }
       ];
     };
@@ -47,8 +53,7 @@
     credentials = {
       RENOVATE_TOKEN   = config.sops.secrets."ext/github_pat_nixos".path;
       GITHUB_COM_TOKEN = config.sops.secrets."ext/github_pat_nixos".path;
-      GHCR_TOKEN       = config.sops.secrets."ext/github_ghcr".path;
-      DOCKERHUB_PAT    = config.sops.secrets."ext/dockerhub_pat".path;
+      RENOVATE_SECRETS = config.sops.templates."renovate-secrets.json".path;
     };
   };
 }
