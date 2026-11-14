@@ -13,7 +13,7 @@ in
         expose = "gatekeeper";
       };
       internet = false;
-      image = "ghcr.io/open-webui/open-webui:0.12-cuda";
+      image = "ghcr.io/open-webui/open-webui:0.13-cuda";
       mounts = [ "/app/backend/data" ];
       environment = {
         OLLAMA_BASE_URLS = "http://10.0.27.2:11434";
