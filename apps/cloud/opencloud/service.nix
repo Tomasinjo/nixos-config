@@ -15,7 +15,7 @@ in
         expose = "gatekeeper";
       };
       internet = false;
-      image = "opencloudeu/opencloud-rolling:9.0.0";
+      image = "opencloudeu/opencloud-rolling:9.1.0";
       mounts = [
         "config:/etc/opencloud"
         "apps:/var/lib/opencloud/web/assets/apps"
