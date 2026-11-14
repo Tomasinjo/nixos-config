@@ -16,7 +16,7 @@ in
         expose = "internal";
       };
       internet = false;
-      image = "ghcr.io/umami-software/umami:3.4.1";
+      image = "ghcr.io/umami-software/umami:3.5.0";
       mounts = [];
       secrets = { 
         APP_SECRET   = "apps/umami/app/secret";
