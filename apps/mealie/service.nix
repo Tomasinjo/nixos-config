@@ -17,7 +17,7 @@ in
         expose = "gatekeeper";
       };
       internet = true;  # scraping recepies
-      image = "ghcr.io/mealie-recipes/mealie:v3.29.0";
+      image = "ghcr.io/mealie-recipes/mealie:v3.31.0";
       mounts = [ "/app/data/" ];
       environment = {
         HOST_IP = "10.0.1.2,${vars.net.zenki.containers.prefix6}:1001::2";
