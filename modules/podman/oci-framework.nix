@@ -184,7 +184,7 @@ let
       # postgres preset
       db = { user, 
              database,
-             image ? "postgres:16.15", 
+             image ? "postgres:16.16", 
              id ? 3,
              mounts ? [ "/data/postgres" ], 
              environment ? {}, 
