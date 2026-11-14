@@ -1,35 +1,26 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "trilium"; id = 34; dir = ./.; };
 
-  serviceName = "trilium";
-  serviceHostname = "notes";
-  servicePort = 8080;
-  serviceId = 34;
-
-  dataDir = "/home/node/trilium-data";
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { inherit serviceName serviceId serviceHostname servicePort; })
-    {
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "notes";
+        port = 8080; 
+        expose = "gatekeeper";
+      };
+      internet = false;
       image = "triliumnext/trilium:v0.106.1";
-
+      mounts = [ "/home/node/trilium-data" ];
       environment = {
-        "TRILIUM_DATA_DIR" = dataDir;
+        "TRILIUM_DATA_DIR" = "/home/node/trilium-data";
         "USER_UID" = toString vars.containerUser.uid;
         "USER_GID" = toString vars.containerUser.gid;
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/trilium/app-data:${dataDir}"
-      ];
-
+      secrets = {};
       user = ""; # the image support non-root container by passing env variables
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

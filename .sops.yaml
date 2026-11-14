@@ -1,6 +1,7 @@
 # generated on all hosts with: nix shell nixpkgs#ssh-to-age -c ssh-to-age -i /etc/ssh/ssh_host_ed25519_key.pub
 # admin key is public key of age key in config/sops/age/keys.txt generated with:
 # age-keygen -o ~/.config/sops/age/keys.txt
+
 keys:
   - &admin     age1f2fz2lz58c975ny3jq2w394gqg8ffwaepswtjj8pdc0w9jxsg4ysksscxa
   - &sensei    age12ed2d3q2jhekagj9dxrl7snsqhrpag96jvl654l8j4j48kduqsvs3vqqzg
@@ -9,18 +10,10 @@ keys:
   - &boarder   age1auzsxp4wlnnd4uz03mcqp02ev5wv5h3qjxumk0z0c6jezqg38plqxna6x9
 
 creation_rules:
-  - path_regex: secrets/network\.yaml$
-    key_groups:
-      - age: [*admin, *sensei, *lenko, *zenki, *boarder]
-
   - path_regex: secrets/apps\.yaml$
     key_groups:
       - age: [*admin, *zenki]
 
   - path_regex: secrets/external\.yaml$
     key_groups:
-      - age: [*admin, *zenki]
-
-  - path_regex: secrets/personal\.yaml$
-    key_groups:
-      - age: [*admin, *sensei, *lenko, *zenki, *boarder]
+      - age: [*admin, *zenki, *sensei]

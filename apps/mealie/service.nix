@@ -1,64 +1,47 @@
 { lib, config, pkgs, vars, ... }:
 
-
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "mealie";
-  serviceHostname = "mealie";
-  servicePort = 9000;
-  serviceId = 44;
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "mealie"; id = 44; dir = ./.; };
 
   dbUser = "mealie";
-  dbPass = vars.apps.mealie.db.password;
   dbName = "mealie";
+  hostname = "mealie";
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { 
-      inherit serviceName serviceId serviceHostname servicePort;
-      requiresInternet = "true";
-    })
-
-    {
-      image = "ghcr.io/mealie-recipes/mealie:v3.29.0";
-
-      environment = {
-        "HOST_IP" = "10.0.1.2,${vars.net.zenki.containers.prefix6}:1001::2";
-        "ALLOW_SIGNUP" = "false";
-        "BASE_URL" = "https://${serviceHostname}.${vars.net.domain}";
-        "DB_ENGINE" = "postgres";
-        "POSTGRES_USER" = dbUser;
-        "POSTGRES_PASSWORD" = dbPass;
-        "POSTGRES_SERVER" = "${serviceName}-db";
-        "POSTGRES_PORT" = "5432";
-        "POSTGRES_DB" = dbName;
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = hostname;
+        port = 9000; 
+        expose = "gatekeeper";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/mealie/app-data:/app/data/"
-      ];
-
+      internet = true;  # scraping recepies
+      image = "ghcr.io/mealie-recipes/mealie:v3.29.0";
+      mounts = [ "/app/data/" ];
+      environment = {
+        HOST_IP = "10.0.1.2,${vars.net.zenki.containers.prefix6}:1001::2";
+        ALLOW_SIGNUP = "false";
+        BASE_URL = "https://${hostname}.${vars.net.domain}";
+        DB_ENGINE = "postgres";
+        POSTGRES_USER = dbUser;
+        POSTGRES_SERVER = svc.containerName "db";
+        POSTGRES_PORT = "5432";
+        POSTGRES_DB = dbName;
+      };
+      secrets = { 
+        POSTGRES_PASSWORD = "apps/mealie/db/password";
+      };
       labels = {
-        "traefik.http.routers.mealie-share.rule" = "Host(`${serviceHostname}.${vars.net.domain}`) && PathRegexp(`^\/g\/home\/shared\/r\/(?:[A-Z,a-z,0-9]){8}-(?:[A-Z,a-z,0-9]){4}-(?:[A-Z,a-z,0-9]){4}-(?:[A-Z,a-z,0-9]){4}-(?:[A-Z,a-z,0-9]){12}$`)";
+        "traefik.http.routers.mealie-share.rule" = "Host(`${hostname}.${vars.net.domain}`) && PathRegexp(`^\/g\/home\/shared\/r\/(?:[A-Z,a-z,0-9]){8}-(?:[A-Z,a-z,0-9]){4}-(?:[A-Z,a-z,0-9]){4}-(?:[A-Z,a-z,0-9]){4}-(?:[A-Z,a-z,0-9]){12}$`)";
         "traefik.http.routers.mealie-share.entrypoints" = "https,http";
         "traefik.http.routers.mealie-share.tls" = "true";
         "traefik.http.routers.mealie-share.middlewares" = "gatekeeper_mealie_share@docker";
       };
-    }
-  ];
+    };
 
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/mealie/db-data:/data/postgres"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
+  }

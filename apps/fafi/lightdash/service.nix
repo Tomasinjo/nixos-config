@@ -1,91 +1,78 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "lightdash";
-  serviceHostname = "lightdash";
-  servicePort = 8080;
-  serviceId = 13;
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "lightdash"; id = 13; dir = ./.; };
 
   dbUser = "PGUSER";
-  dbPass = vars.apps.lightdash.db.password;
   dbName = "lightdash";
+  hostname = "lightdash";
+  port = 8080;
 
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    {
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = hostname;
+        port = port; 
+        expose = "internal";
+      };
+      internet = false;
       image = "lightdash/lightdash:3.116.0";
-
+      mounts = [ "/usr/app/dbt" ];
       environment = {
-        "PGHOST" = "${serviceName}-db";
-        "PGPORT" = "5432";
-        "PGUSER" = dbUser;
-        "PGPASSWORD" = dbPass;
-        "PGDATABASE" = dbName;
-        "SECURE_COOKIES" = "false";
-        "TRUST_PROXY" = "true";
-        "LIGHTDASH_SECRET" = vars.apps.lightdash.lightdash.secret;
-        "PORT" = toString servicePort;
-        "SITE_URL" = "https://${serviceHostname}.${vars.net.domain}";
-        "LIGHTDASH_LOG_LEVEL" = "info";
-        "LIGHTDASH_INSTALL_ID" = "";
-        "LIGHTDASH_INSTALL_TYPE" = "docker_image";
-        "LIGHTDASH_LICENSE_KEY" = "";
-        "ALLOW_MULTIPLE_ORGS" = "false";
-        "LIGHTDASH_QUERY_MAX_LIMIT" = "5000";
-        "LIGHTDASH_MAX_PAYLOAD" = "5mb";
-        #"HEADLESS_BROWSER_HOST" = "headless-browser";
-        #"HEADLESS_BROWSER_PORT" = "3000";
-        "USE_SECURE_BROWSER" = "";
-        "SCHEDULER_ENABLED" = "true";
-        "GROUPS_ENABLED" = "false";
-        "SERVICE_ACCOUNT_ENABLED" = "false";
-        "NODE_ENV" = "production";
+        PGHOST = "${svc.containerName "db"}";
+        PGPORT = "5432";
+        PGUSER = dbUser;
+        PGDATABASE = dbName;
+        SECURE_COOKIES = "false";
+        TRUST_PROXY = "true";
+        PORT = toString port;
+        SITE_URL = "https://${hostname}.${vars.net.domain}";
+        LIGHTDASH_LOG_LEVEL = "info";
+        LIGHTDASH_INSTALL_ID = "";
+        LIGHTDASH_INSTALL_TYPE = "docker_image";
+        LIGHTDASH_LICENSE_KEY = "";
+        ALLOW_MULTIPLE_ORGS = "false";
+        LIGHTDASH_QUERY_MAX_LIMIT = "5000";
+        LIGHTDASH_MAX_PAYLOAD = "5mb";
+        #HEADLESS_BROWSER_HOST = "headless-browser";
+        #HEADLESS_BROWSER_PORT = "3000";
+        USE_SECURE_BROWSER = "";
+        SCHEDULER_ENABLED = "true";
+        GROUPS_ENABLED = "false";
+        SERVICE_ACCOUNT_ENABLED = "false";
+        NODE_ENV = "production";
         # https://docs.lightdash.com/self-host/customize-deployment/environment-variables
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/fafi/lightdash/app-data:/usr/app/dbt"
-      ];
-      
-      user = "";  # the thing doesnt run without root
-    }
-  ];
-
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/fafi/lightdash/db-data:/data/postgres"
-      ];
-    }
-  ];
-
-  minioContainerConfig = oci-framework.mergeAll [
-    (oci-framework.core { inherit serviceName serviceId; containerId = 4; })
-    {
-      image = "coollabsio/minio:RELEASE.2025-10-15T17-29-55Z";
-
-      environment = {
-        "MINIO_ROOT_USER" = vars.apps.lightdash.minio.user;
-        "MINIO_ROOT_PASSWORD" = vars.apps.lightdash.minio.password;
-        "MINIO_DEFAULT_BUCKETS" = "default";
+      secrets = { 
+        PGPASSWORD = "apps/lightdash/db/password";
+        LIGHTDASH_SECRET = "apps/lightdash/app/secret";
       };
+      # autoStart = false;
+      user = "";  # the thing doesnt run without root
+    };
 
-      volumes = [
-        "${vars.dir.nixos_config}/apps/fafi/lightdash/minio-data/init-minio.sh:/init-minio.sh"
-        "${vars.dir.nixos_config}/apps/fafi/lightdash/minio-data:/data"
+    minio = svc.container {
+      id = 4;
+      internet = false;
+      image = "coollabsio/minio:RELEASE.2025-10-15T17-29-55Z";
+      mounts = [
+        "init-minio.sh:/init-minio.sh"
+        "/data"
       ];
-
+      environment = {
+        MINIO_DEFAULT_BUCKETS = "default";
+      };
+      secrets = { 
+        MINIO_ROOT_USER = "apps/lightdash/minio/user";
+        MINIO_ROOT_PASSWORD = "apps/lightdash/minio/password";
+      };
       entrypoint = "/init-minio.sh";
-    }
-  ];
+    };
 
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-minio" = minioContainerConfig;
-
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
+  }

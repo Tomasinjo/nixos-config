@@ -40,31 +40,9 @@
       gid = vars.containerUser.gid;
     };
 
-    users."podman-svc" = {
-      isSystemUser = true;
-      group = "podman-svc";
-      uid = 2222;
-
-      home = "/var/lib/podman-svc";
-      createHome = true;
-      autoSubUidGidRange = true;  # auto allocation of sub uids and gids for isolation between containers, required for rootless podman
-      linger = true;  # allows running user systemd services even if user logs out. Might not be required in future releases.
-
-      extraGroups = [
-        "coral"
-        "render"  # intel igpu
-        "video"   # nvidia
-        "dialout" # zigbee dongle
-      ];
-    };
-    groups."podman-svc" = {
-      gid = 2222;
-    };
-
     users.${vars.username}.extraGroups = [
       vars.containerUser.name
       "podman" # remove?
-      "podman-svc"
     ];
   };
 
@@ -98,6 +76,7 @@
     ../../apps/jupyter/service.nix
     ../../apps/llm/comfyui/service.nix
     ../../apps/llm/open-webui/service.nix
+    ../../apps/llm/ollama/service.nix
     ../../apps/llm/qdrant/service.nix
     ../../apps/cloud/opencloud/service.nix
     ../../apps/cloud/euro-office/service.nix
@@ -105,6 +84,7 @@
     ../../apps/pgadmin/service.nix
     ../../apps/teslamate/service.nix
     ../../apps/traefik/service.nix
+    ../../apps/dockerproxy/service.nix
     ../../apps/trilium/service.nix
     ../../apps/unifi/service.nix
     ../../apps/vaultwarden/service.nix

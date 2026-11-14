@@ -1,31 +1,21 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "sonarr"; id = 6; dir = ./.; };
 
-  serviceName = "sonarr";
-  serviceHostname = "sonarr";
-  servicePort = 8989;
-  serviceId = 6;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper { 
-      inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = "true"; # for imdb 
-    })
-    {
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "sonarr";
+        port = 8989; 
+        expose = "gatekeeper";
+      };
+      internet = true; # for imdb 
       image = "lscr.io/linuxserver/sonarr:4.0.20.3014-ls329";
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/arrs/sonarr/app-data:/config"
-        "${vars.dir.hoarder_data}/media:/media"
-      ];
-
+      mounts = [ "/config" ];
+      extraMounts = [ "${vars.dir.hoarder_data}/media:/media" ];
       user = "";  # linuxserver image, sets user after startup using env
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

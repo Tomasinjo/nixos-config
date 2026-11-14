@@ -1,29 +1,22 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "victoriametrics"; id = 37; dir = ./.; };
 
-  serviceName = "victoriametrics";
-  serviceHostname = "logs";
-  servicePort = 9428;
-  serviceId = 37;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    {
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "logs";
+        port = 9428; 
+        expose = "internal";
+      };
+      internet = false;
       image = "docker.io/victoriametrics/victoria-logs:v1.53.0";
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/victorialogs/app-data:/victoria-logs-data"
-      ];
-
+      mounts = [ "/victoria-logs-data" ];
       cmd = [
         "-storageDataPath=victoria-logs-data"
       ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

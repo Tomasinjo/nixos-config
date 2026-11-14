@@ -1,36 +1,27 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "esphome"; id = 21; dir = ./.; };
 
-  serviceName = "esphome";
-  serviceHostname = "eh";
-  servicePort = 6052;
-  serviceId = 21;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { 
-      inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = "true"; # dependency downloads
-    })
-    {
-      image = "esphome/esphome:2026.10.1";
-
-      environment = {
-        "USERNAME" = vars.apps.esphome.username;
-        "PASSWORD" = vars.apps.esphome.password;
-        "ESPHOME_DASHBOARD_USE_PING" = "true";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "eh"; 
+        port = 6052;
+        expose = "internal";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/ha/esphome/app-data:/config"
-      ];
-
+      internet = true;
+      image = "esphome/esphome:2026.10.1";
+      mounts = [ "/config" ];
+      environment = { 
+        ESPHOME_DASHBOARD_USE_PING = "true"; 
+      };
+      secrets = { 
+        USERNAME = "apps/esphome/username"; 
+        PASSWORD = "apps/esphome/password"; 
+      };
       user = ""; # fails if run as user: PermissionError: [Errno 13] Permission denied: '/.platformio'
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    };
+  }

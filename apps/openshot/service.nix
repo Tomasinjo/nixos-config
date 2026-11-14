@@ -1,34 +1,25 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "openshot"; id = 29; dir = ./.; };
 
-  serviceName = "openshot";
-  serviceHostname = "openshot";
-  servicePort = 3000;
-  serviceId = 29;
-
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    oci-framework.hardware.quicksync
-    {
-      image = "lscr.io/linuxserver/openshot:v3.5.1-ls66";
-
-      environment = {
-        "PIXELFLUX_WAYLAND" = "true";
-        "DRINODE" = "/dev/dri/renderD128";
-        "DRI_NODE" = "/dev/dri/renderD128";
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "openshot";
+        port = 3000; 
+        expose = "internal";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/openshot/app-data:/config"
-      ];
-    }
-  ];
-
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      internet = false;
+      image = "lscr.io/linuxserver/openshot:v3.5.1-ls66";
+      mounts = [ "/config" ];
+      environment = {
+        PIXELFLUX_WAYLAND = "true";
+        DRINODE = "/dev/dri/renderD128";
+        DRI_NODE = "/dev/dri/renderD128";
+      };
+      hardware = [ "quicksync" ];
+    };
+  }

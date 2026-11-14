@@ -1,41 +1,31 @@
 { lib, config, pkgs, vars, ... }:
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
-
-  serviceName = "umami";
-  serviceHostname = "umami";
-  servicePort = 3000;
-  serviceId = 7;
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "umami"; id = 7; dir = ./.; };
 
   dbUser = "umami";
-  dbPass = vars.apps.umami.db.password;
   dbName = "umami";
 
-  containerConfig = oci-framework.mergeAll [
-    (oci-framework.web.internal { inherit serviceName serviceId serviceHostname servicePort; })
-    {
-      image = "ghcr.io/umami-software/umami:3.4.1";
-
-      environment = {
-        "DATABASE_URL" = "postgresql://${dbUser}:${dbPass}@${serviceName}-db:5432/${dbName}";
-        "APP_SECRET" = vars.apps.umami.app.secret;
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "umami";
+        port = 3000; 
+        expose = "internal";
       };
-    }
-  ];
+      internet = false;
+      image = "ghcr.io/umami-software/umami:3.4.1";
+      mounts = [];
+      secrets = { 
+        APP_SECRET   = "apps/umami/app/secret";
+        DATABASE_URL = "apps/umami/db/url";  # not optimal, but umami only support full connection string postgresql://....
+      };
+    };
 
-  dbContainerConfig = oci-framework.mergeAll [
-    (oci-framework.apps.postgres { inherit serviceName serviceId dbUser dbPass dbName; })
-    {
-      volumes = [
-        "${vars.dir.nixos_config}/apps/blog/umami/db-data:/data/postgres"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = containerConfig;
-  virtualisation.oci-containers.containers."${serviceName}-db" = dbContainerConfig;
-  
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+    db = svc.db {
+      user = dbUser;
+      database = dbName;
+    };
+  }

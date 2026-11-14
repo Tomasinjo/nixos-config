@@ -9,32 +9,22 @@
 # 5353/udp # mdns
 
 let
-  oci-framework = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  oci = import ../../../modules/podman/oci-framework.nix { inherit lib config pkgs vars; };
+  svc = oci.service { name = "music-assistant"; id = 39; dir = ./.; };
 
-  serviceName = "music-assistant";
-  serviceHostname = "mass";
-  servicePort = 8095;
-  serviceId = 39;
-
-  appContainerConfig = oci-framework.mergeAll [
-    (oci-framework.web.exposed_gatekeeper {
-      inherit serviceName serviceId serviceHostname servicePort; 
-      requiresInternet = "true";  # internet radio
-    })
-    {
-      image = "ghcr.io/music-assistant/server:2.10.9";
-
-      environment = {
-        "LOG_LEVEL" = "info"; # possible=(critical, error, warning, info, debug, verbose)
+in
+  svc.build {
+    app = svc.container {
+      web = { 
+        host = "mass";
+        port = 8095; 
+        expose = "gatekeeper";
       };
-
-      volumes = [
-        "${vars.dir.nixos_config}/apps/ha/music_assistant/app-data:/data"
-      ];
-    }
-  ];
-
-in {
-  virtualisation.oci-containers.containers."${serviceName}-app" = appContainerConfig;
-  systemd.services = oci-framework.mkNetwork { inherit serviceName serviceId; };
-}
+      internet = true;  # internet radio
+      image = "ghcr.io/music-assistant/server:2.10.9";
+      mounts = [ "/data" ];
+      environment = {
+        "LOG_LEVEL" = "info"; # possible = critical, error, warning, info, debug, verbose
+      };
+    };
+  }
