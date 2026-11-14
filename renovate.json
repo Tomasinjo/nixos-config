@@ -19,7 +19,7 @@
         "/(^|/)oci-framework\\.nix$/"
       ],
       "matchStrings": [
-        "image\\s*=\\s*\"(?<depName>[^\"]+):(?<currentValue>[^\"]+)\";"
+        "image\\s*[=?]\\s*\"(?<depName>[^\"]+):(?<currentValue>[^\"]+)\""
       ],
       "datasourceTemplate": "docker"
     }
