@@ -89,29 +89,6 @@
   networking.nftables = {
     enable = true;
     ruleset = ''
-      table inet netavark {
-        chain POSTROUTING {
-          type nat hook postrouting priority srcnat; policy accept;
-          
-          # override default podman rule to SNAT traffic between containers
-          ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} accept
-          ip6 saddr ${vars.net.zenki.containers.subnet6} ip6 daddr ${vars.net.zenki.containers.subnet6} accept
-        }
-      }
-
-      table inet nat_bypass {
-        chain PREROUTING {
-          type nat hook prerouting priority dstnat; policy accept;
-        }
-        chain POSTROUTING {
-          type nat hook postrouting priority srcnat - 1; policy accept;
-
-          # disable NAT for outbound container traffic
-          ip saddr ${vars.net.zenki.containers.subnet} accept
-          ip6 saddr ${vars.net.zenki.containers.subnet6} accept
-        }
-      }
-
       table inet filter {
         chain input {
           type filter hook input priority filter; policy drop;

@@ -1,4 +1,4 @@
-{ pkgs, vars, ... }:
+{ lib, pkgs, vars, ... }:
 
 {
   virtualisation.oci-containers.backend = "podman";
@@ -18,6 +18,12 @@
       containersConf.settings = {
         containers = {
           log_driver = "journald";
+        };
+        network = {
+          # competely disable any fw rules by netavark
+          # zenki nftables ruleset and sensei own all container network policy
+          # mkForce overrides the nixos podman module default "nftables"
+          firewall_driver = lib.mkForce "none";
         };
       };
       storage.settings.storage = {
