@@ -17,7 +17,7 @@ in
         expose = "gatekeeper";
       };
       internet = false;
-      image = "freikin/dawarich:1.21.0";
+      image = "freikin/dawarich:1.22.0";
       mounts = [
         "public:/var/app/public"
         "watched:/var/app/tmp/imports/watched"
@@ -91,7 +91,7 @@ in
     sidekiq = svc.container {
       id = 5;
       internet = false;
-      image = "freikin/dawarich:1.21.0";
+      image = "freikin/dawarich:1.22.0";
       extraMounts = [
         "${vars.dir.nixos_config}/apps/dawarich/app-data/public:/var/app/public"
         "${vars.dir.nixos_config}/apps/dawarich/app-data/watched:/var/app/tmp/imports/watched"
