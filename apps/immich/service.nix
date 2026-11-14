@@ -19,7 +19,7 @@ in
         expose = "mtls";
       };
       internet = false;
-      image = "ghcr.io/immich-app/immich-server:v3.3.5";
+      image = "ghcr.io/immich-app/immich-server:v3.4.1";
       mounts = [
         "thumbs:/data/thumbs"
       ];
@@ -81,7 +81,7 @@ in
     ml = svc.container {
       id = 5;
       internet = false;
-      image = "ghcr.io/immich-app/immich-machine-learning:v3.3.5-openvino";
+      image = "ghcr.io/immich-app/immich-machine-learning:v3.4.1-openvino";
       mounts = [
         "model-cache:/cache"
         "dotcache:/.cache"
