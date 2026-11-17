@@ -28,19 +28,21 @@ in
         expose = "internal";
       };
       internet = true;
-      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.3.4";
-      mounts = [];
+      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.4.3";
+      mounts = [ "/app/data" ];
       environment = {
-        "GROCY_BASE_URL" = "http://${svc.containerName "app"}";
-        "GROCY_VERIFY_TLS" = "false";
-        "APP_LOG_FILE" = ""; # log to stdout
-        "LOG_LEVEL" = "DEBUG";
+        GROCY_BASE_URL = "http://${svc.containerName "app"}";
+        GROCY_VERIFY_TLS = "false";
+        APP_LOG_FILE = ""; # log to stdout
+        LOG_LEVEL = "DEBUG";
+        HERMES_WEBHOOK_URL = "http://10.0.42.2:8644/p/zdenka/webhooks/b2g-unknown";
       };
       secrets = {
-        "GROCY_API_KEY" = "apps/grocy/api_key";
-        "MFP_USERNAME" = "ext/mfp/username";
-        "MFP_PASSWORD" = "ext/mfp/password";
-        "VKJ_TOKEN" = "ext/vkj_bearer";
+        GROCY_API_KEY = "apps/grocy/api_key";
+        MFP_USERNAME = "ext/mfp/username";
+        MFP_PASSWORD = "ext/mfp/password";
+        VKJ_TOKEN = "ext/vkj_bearer";
+        HERMES_WEBHOOK_SECRET = "apps/grocy/hermes_webhook_hmac";
       };
     };
   }

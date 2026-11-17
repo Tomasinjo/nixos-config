@@ -149,6 +149,7 @@
           ip saddr 10.0.31.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # pgadmin to fafi-db
           ip saddr 10.0.31.2 ip daddr 10.0.22.3 tcp dport 5432 accept   # pgadmin to hass-db
           ip saddr 10.0.10.2 ip daddr 10.0.1.2  tcp dport 443 accept    # opencloud to traefik, for oidc, see OC service.nix
+          ip saddr 10.0.9.2  ip daddr 10.0.10.2 tcp dport 9300 accept   # euro-office to opencloud
           ip saddr 10.0.42.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # hermes to ollama
           ip saddr 10.0.42.2 ip daddr 10.0.45.2 tcp dport 8000 accept   # hermes to fatracker MCP
           ip saddr 10.0.43.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # dr sre to ollama 
@@ -158,6 +159,9 @@
           ip saddr 10.0.18.2 ip daddr 10.0.45.3 tcp dport 5432 accept   # grafana to fatracker-db
           ip saddr 10.0.31.2 ip daddr 10.0.45.3 tcp dport 5432 accept   # pgadmin to fatracker-db
           ip saddr 10.0.17.2 ip daddr 10.0.47.2 tcp dport 2375 accept   # glance to dockerproxy
+          ip saddr 10.0.42.2 ip daddr 10.0.19.2 tcp dport 80   accept   # hermes to grocy
+          ip saddr 10.0.42.2 ip daddr 10.0.19.4 tcp dport 8000 accept   # hermes to b2g
+          ip saddr 10.0.19.4 ip daddr 10.0.42.2 tcp dport 8644 accept   # b2g to hermes webhook 
 
           # containers cant talk with each other unless overriden above
           ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} drop
@@ -190,6 +194,7 @@
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1015::3 tcp dport 5432 accept     # pgadmin to fafi-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::3 tcp dport 5432 accept     # pgadmin to hass-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1010::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport 443 accept      # opencloud to traefik, for oidc, see OC service.nix
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1009::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1010::2 tcp dport 9300 accept     # euro-office to opencloud
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # hermes to ollama
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1045::2 tcp dport 8000 accept     # hermes to fatracker MCP
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1043::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # dr_sre to ollama
@@ -197,6 +202,9 @@
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1044::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # mealie to ollama
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1018::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1045::3 tcp dport 5432 accept     # grafana to fatracker-db
           ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1045::3 tcp dport 5432 accept     # pgadmin to fatracker-db
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1019::2 tcp dport 80 accept       # hermes to grocy
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1019::4 tcp dport 8000 accept     # hermes to b2g
+          ip6 saddr ${vars.net.zenki.containers.prefix6}:1019::4 ip6 daddr ${vars.net.zenki.containers.prefix6}:1042::2 tcp dport 8644 accept     # b2g to hermes webhook
 
 
           # containers cant talk with each other unless overriden above
