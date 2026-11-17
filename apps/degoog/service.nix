@@ -13,7 +13,7 @@ in
         expose = "gatekeeper";
       };
       internet = true; # search engines
-      image = "ghcr.io/degoog-org/degoog:1.1.1";
+      image = "ghcr.io/degoog-org/degoog:1.2.0";
       mounts = [ "/app/data" ];
       environment = {
         DEGOOG_DISTRUST_PROXY = "0";
