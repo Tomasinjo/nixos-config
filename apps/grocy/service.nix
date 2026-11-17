@@ -28,7 +28,7 @@ in
         expose = "internal";
       };
       internet = true;
-      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.3.4";
+      image = "ghcr.io/tomasinjo/barcode-to-grocy:1.4.3";
       mounts = [];
       environment = {
         "GROCY_BASE_URL" = "http://${svc.containerName "app"}";
