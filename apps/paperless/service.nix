@@ -17,7 +17,7 @@ in
         expose = "gatekeeper";
       };
       internet = false;
-      image = "ghcr.io/paperless-ngx/paperless-ngx:3.4.2";
+      image = "ghcr.io/paperless-ngx/paperless-ngx:3.5.1";
       mounts = [
         "data:/usr/src/paperless/data"
         "media:/usr/src/paperless/media"
