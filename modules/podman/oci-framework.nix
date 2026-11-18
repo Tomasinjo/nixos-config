@@ -11,6 +11,9 @@ let
   # create static ipv6 address  - aaaa:aaaa:aaaa:ff00:1XXX::Y)
   mkIp6 = serviceId: containerId: "${ip6Prefix}:${formatService6 serviceId}::${toString containerId}";
 
+  # container dns hostname, replace _ with -
+  dnsHost = cname: lib.replaceStrings ["_"] ["-"] cname;
+
   # default container ids by role (app and db follow the network conventions)
   idRoles = { app = 2; db = 3; };
 
@@ -177,6 +180,7 @@ let
               "requires.internet" = lib.boolToString internet; # evaluated by sensei to allow outbound connections
               "address.ipv4" = mkIp serviceId containerId;
               "address.ipv6" = mkIp6 serviceId containerId;
+              "dns.name" = dnsHost cname; # read by sensei, appends internal domain
             } // webLabels // labels; # merge, sjallow, e.g. glance.hide = "false" will override it
           };
         };
@@ -227,4 +231,7 @@ let
 
 in {
   inherit service;
+  # enables references in service.nix file
+  # oci.dns "ollama-app" 
+  dns = cname: "${dnsHost cname}.${vars.net.zenki.containers.dnsDomain}";
 }

@@ -1,5 +1,66 @@
-{ config, pkgs, vars, ... }:
+{ config, lib, pkgs, vars, ... }:
 
+let
+  containers = config.virtualisation.oci-containers.containers;
+  cip4 = name: containers.${name}.labels."address.ipv4";
+  cip6 = name: containers.${name}.labels."address.ipv6";
+
+  # inter-stack policy: which containers may talk to each other directly.
+  # names are oci-containers attrset keys and match the *.zenki.internal dns
+  # records served by sensei, everything not listed here is dropped below.
+  # to = null means all containers, port is tcp only.
+  interStack = [
+    { from = "traefik-app"; to = null; }
+    { from = "traefik-gatekeeper"; to = "opencloud-app"; port = 9200; }
+    { from = "traefik-gatekeeper"; to = "immich-app"; port = 2283; }
+    { from = "traefik-gatekeeper"; to = "mealie-app"; port = 9000; }
+    { from = "prowlarr-app"; to = "radarr-app"; port = 7878; }
+    { from = "radarr-app"; to = "prowlarr-app"; port = 9696; }
+    { from = "prowlarr-app"; to = "sonarr-app"; port = 8989; }
+    { from = "sonarr-app"; to = "prowlarr-app"; port = 9696; }
+    { from = "radarr-app"; to = "qbittorrent-app"; port = 8888; }
+    { from = "sonarr-app"; to = "qbittorrent-app"; port = 8888; }
+    { from = "dawarich-app"; to = "immich-app"; port = 2283; }
+    { from = "frigate-app"; to = "home-assistant-mqtt"; port = 1883; }
+    { from = "home-assistant-app"; to = "frigate-app"; port = 5000; }
+    { from = "grafana-app"; to = "victoriametrics-app"; port = 9428; }
+    { from = "appdaemon-app"; to = "home-assistant-app"; port = 8123; }
+    { from = "appdaemon-app"; to = "home-assistant-mqtt"; port = 1883; }
+    { from = "qdrant-app"; to = "ollama-app"; port = 11434; }
+    { from = "paperless-paperllama"; to = "ollama-app"; port = 11434; }
+    { from = "teslamate-app"; to = "home-assistant-mqtt"; port = 1883; }
+    { from = "home-assistant-app"; to = "music-assistant-app"; port = 8095; }
+    { from = "music-assistant-app"; to = "home-assistant-app"; port = 8123; }  # TTS
+    { from = "music-assistant-app"; to = "jellyfin-app"; port = 8096; }
+    { from = "metabase-app"; to = "nocodb-db"; port = 5432; }
+    { from = "jupyter-app"; to = "nocodb-db"; port = 5432; }
+    { from = "pgadmin-app"; to = "nocodb-db"; port = 5432; }
+    { from = "pgadmin-app"; to = "home-assistant-db"; port = 5432; }
+    { from = "opencloud-app"; to = "traefik-app"; port = 443; }  # oidc, see OC service.nix
+    { from = "euro-office-app"; to = "opencloud-app"; port = 9300; }
+    { from = "hermes-app"; to = "ollama-app"; port = 11434; }
+    { from = "hermes-app"; to = "fatracker-ng-app"; port = 8000; }  # MCP
+    { from = "dr_sre-app"; to = "ollama-app"; port = 11434; }
+    { from = "dr_sre-app"; to = "victoriametrics-app"; port = 9428; }
+    { from = "mealie-app"; to = "ollama-app"; port = 11434; }
+    { from = "grafana-app"; to = "fatracker-ng-db"; port = 5432; }
+    { from = "pgadmin-app"; to = "fatracker-ng-db"; port = 5432; }
+    { from = "glance-app"; to = "dockerproxy-app"; port = 2375; }
+    { from = "hermes-app"; to = "grocy-app"; port = 80; }
+    { from = "hermes-app"; to = "grocy-b2g"; port = 8000; }
+    { from = "grocy-b2g"; to = "hermes-app"; port = 8644; } # webhook
+  ];
+
+  mkInterStack = family: ip: subnet:
+    lib.concatMapStringsSep "\n    " (r:
+      let
+        dst = if r.to == null then subnet else ip r.to;
+        port = lib.optionalString (r ? port) "tcp dport ${toString r.port} ";
+      in
+      "${family} saddr ${ip r.from} ${family} daddr ${dst} ${port}accept"
+    ) interStack;
+
+in
 {
   networking.hostName = vars.net.zenki.hostname;
   networking.useNetworkd = true;
@@ -122,97 +183,19 @@
           ct state { established, related } accept
           meta l4proto ipv6-icmp accept
 
-          # ==== inter-stack policy ====
-          ip saddr 10.0.1.2 ip daddr 10.0.0.0/16 accept                 # traefik to all containers
-          ip saddr 10.0.1.6 ip daddr 10.0.10.2 tcp dport 9200 accept   # gatekeeper to opencloud
-          ip saddr 10.0.1.6 ip daddr 10.0.23.2 tcp dport 2283 accept   # gatekeeper to immich
-          ip saddr 10.0.3.2 ip daddr 10.0.5.2 tcp dport 7878 accept     # prowlar to radarr
-          ip saddr 10.0.5.2 ip daddr 10.0.3.2 tcp dport 9696 accept     # radarr to prowlarr
-          ip saddr 10.0.3.2 ip daddr 10.0.6.2 tcp dport 8989 accept     # prowlar to sonarr
-          ip saddr 10.0.6.2 ip daddr 10.0.3.2 tcp dport 9696 accept     # sonarr to prowlarr
-          ip saddr 10.0.5.2 ip daddr 10.0.4.2 tcp dport 8888 accept     # radarr to qbittorrent
-          ip saddr 10.0.6.2 ip daddr 10.0.4.2 tcp dport 8888 accept     # sonarr to qbittorrent
-          ip saddr 10.0.11.2 ip daddr 10.0.23.2 tcp dport 2283 accept   # dawarich to immich
-          ip saddr 10.0.16.2 ip daddr 10.0.22.4 tcp dport 1883 accept   # frigate to mqtt
-          ip saddr 10.0.22.2 ip daddr 10.0.16.2 tcp dport 5000 accept   # hass to frigate
-          ip saddr 10.0.18.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # grafana to victoria
-          ip saddr 10.0.20.2 ip daddr 10.0.22.2 tcp dport 8123 accept   # appdaemon to hass
-          ip saddr 10.0.20.2 ip daddr 10.0.22.4 tcp dport 1883 accept   # appdaemon to mqtt
-          ip saddr 10.0.28.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # qdrant to ollama
-          ip saddr 10.0.30.5 ip daddr 10.0.27.2 tcp dport 11434 accept  # paperllama to ollama
-          ip saddr 10.0.32.2 ip daddr 10.0.22.4 tcp dport 1883 accept   # teslamate to mqtt
-          ip saddr 10.0.22.2 ip daddr 10.0.39.2 tcp dport 8095 accept   # hass to mass
-          ip saddr 10.0.39.2 ip daddr 10.0.22.2 tcp dport 8123 accept   # mass to hass, for TTS
-          ip saddr 10.0.39.2 ip daddr 10.0.33.2 tcp dport 8096 accept   # mass to jellyfin
-          ip saddr 10.0.14.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # metabase to fafi-db
-          ip saddr 10.0.24.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # jupyter to fafi-db
-          ip saddr 10.0.31.2 ip daddr 10.0.15.3 tcp dport 5432 accept   # pgadmin to fafi-db
-          ip saddr 10.0.31.2 ip daddr 10.0.22.3 tcp dport 5432 accept   # pgadmin to hass-db
-          ip saddr 10.0.10.2 ip daddr 10.0.1.2  tcp dport 443 accept    # opencloud to traefik, for oidc, see OC service.nix
-          ip saddr 10.0.9.2  ip daddr 10.0.10.2 tcp dport 9300 accept   # euro-office to opencloud
-          ip saddr 10.0.42.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # hermes to ollama
-          ip saddr 10.0.42.2 ip daddr 10.0.45.2 tcp dport 8000 accept   # hermes to fatracker MCP
-          ip saddr 10.0.43.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # dr sre to ollama 
-          ip saddr 10.0.43.2 ip daddr 10.0.37.2 tcp dport 9428 accept   # dr sre to victoria
-          ip saddr 10.0.44.2 ip daddr 10.0.27.2 tcp dport 11434 accept  # mealie to ollama
-          ip saddr 10.0.1.6  ip daddr 10.0.44.2 tcp dport 9000 accept   # gatekeeper to mealie
-          ip saddr 10.0.18.2 ip daddr 10.0.45.3 tcp dport 5432 accept   # grafana to fatracker-db
-          ip saddr 10.0.31.2 ip daddr 10.0.45.3 tcp dport 5432 accept   # pgadmin to fatracker-db
-          ip saddr 10.0.17.2 ip daddr 10.0.47.2 tcp dport 2375 accept   # glance to dockerproxy
-          ip saddr 10.0.42.2 ip daddr 10.0.19.2 tcp dport 80   accept   # hermes to grocy
-          ip saddr 10.0.42.2 ip daddr 10.0.19.4 tcp dport 8000 accept   # hermes to b2g
-          ip saddr 10.0.19.4 ip daddr 10.0.42.2 tcp dport 8644 accept   # b2g to hermes webhook 
+          # inter-stack policy, generated from the interStack list 
+          ${mkInterStack "ip" cip4 vars.net.zenki.containers.subnet}
+          ${mkInterStack "ip6" cip6 vars.net.zenki.containers.subnet6}
 
           # containers cant talk with each other unless overriden above
           ip saddr ${vars.net.zenki.containers.subnet} ip daddr ${vars.net.zenki.containers.subnet} drop
+          ip6 saddr ${vars.net.zenki.containers.subnet6} ip6 daddr ${vars.net.zenki.containers.subnet6} drop
 
           # allow inbound and outbound from everywhere (policy is on sensei)
           ip daddr ${vars.net.zenki.containers.subnet} accept
           ip saddr ${vars.net.zenki.containers.subnet} accept
-
-
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1001::2 ip6 daddr ${vars.net.zenki.containers.subnet6} accept                           # traefik to all containers
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1003::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1005::2 tcp dport 7878 accept     # prowlar to radarr
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1005::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1003::2 tcp dport 9696 accept     # radarr to prowlarr
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1003::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1006::2 tcp dport 8989 accept     # prowlar to sonarr
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1006::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1003::2 tcp dport 9696 accept     # sonarr to prowlarr
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1005::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1004::2 tcp dport 8888 accept     # radarr to qbittorrent
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1006::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1004::2 tcp dport 8888 accept     # sonarr to qbittorrent
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1011::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1023::2 tcp dport 2283 accept     # dawarich to immich
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1016::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::4 tcp dport 1883 accept     # frigate to mqtt
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1022::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1016::2 tcp dport 5000 accept     # hass to frigate
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1018::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1037::2 tcp dport 9428 accept     # grafana to victoria
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1020::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::2 tcp dport 8123 accept     # appdaemon to hass
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1020::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::4 tcp dport 1883 accept     # appdaemon to mqtt
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1028::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # qdrant to ollama
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1030::5 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # paperllama to ollama
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1032::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::4 tcp dport 1883 accept     # teslamate to mqtt
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1022::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1039::2 tcp dport 8095 accept     # hass to mass
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1039::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1033::2 tcp dport 8096 accept     # mass to jellyfin
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1014::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1015::3 tcp dport 5432 accept     # metabase to fafi-db
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1024::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1015::3 tcp dport 5432 accept     # jupyter to fafi-db
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1015::3 tcp dport 5432 accept     # pgadmin to fafi-db
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1022::3 tcp dport 5432 accept     # pgadmin to hass-db
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1010::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1001::2 tcp dport 443 accept      # opencloud to traefik, for oidc, see OC service.nix
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1009::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1010::2 tcp dport 9300 accept     # euro-office to opencloud
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # hermes to ollama
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1045::2 tcp dport 8000 accept     # hermes to fatracker MCP
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1043::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # dr_sre to ollama
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1043::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1037::2 tcp dport 9428 accept     # dr_sre to victoria
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1044::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1027::2 tcp dport 11434 accept    # mealie to ollama
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1018::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1045::3 tcp dport 5432 accept     # grafana to fatracker-db
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1031::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1045::3 tcp dport 5432 accept     # pgadmin to fatracker-db
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1019::2 tcp dport 80 accept       # hermes to grocy
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1042::2 ip6 daddr ${vars.net.zenki.containers.prefix6}:1019::4 tcp dport 8000 accept     # hermes to b2g
-          ip6 saddr ${vars.net.zenki.containers.prefix6}:1019::4 ip6 daddr ${vars.net.zenki.containers.prefix6}:1042::2 tcp dport 8644 accept     # b2g to hermes webhook
-
-
-          # containers cant talk with each other unless overriden above
-          ip6 saddr ${vars.net.zenki.containers.subnet6} ip6 daddr ${vars.net.zenki.containers.subnet6} drop
-
-          # allow inbound and outbound from everywhere (policy is on sensei)
-          ip6 daddr ${vars.net.zenki.containers.subnet6} accept   # allow inbound from everywhere (policy is on sensei)
-          ip6 saddr ${vars.net.zenki.containers.subnet6} accept   # allow outbound to everywhere (policy is on sensei)
+          ip6 daddr ${vars.net.zenki.containers.subnet6} accept
+          ip6 saddr ${vars.net.zenki.containers.subnet6} accept
         }
       }
     '';
