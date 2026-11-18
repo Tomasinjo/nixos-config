@@ -42,7 +42,7 @@ in
         expose = "internal";
       };
       internet = false;
-      image = "teslamate/grafana:4.4.0";
+      image = "teslamate/grafana:4.5.0";
       mounts = [ "/var/lib/grafana" ];
       environment = {
         DATABASE_USER = dbUser;
