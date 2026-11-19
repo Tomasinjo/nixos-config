@@ -35,7 +35,7 @@ in
         GROCY_VERIFY_TLS = "false";
         APP_LOG_FILE = ""; # log to stdout
         LOG_LEVEL = "DEBUG";
-        HERMES_WEBHOOK_URL = "http://10.0.42.2:8644/p/zdenka/webhooks/b2g-unknown";
+        HERMES_WEBHOOK_URL = "http://${oci.dns "hermes-app"}:8644/p/zdenka/webhooks/b2g-unknown";
       };
       secrets = {
         GROCY_API_KEY = "apps/grocy/api_key";

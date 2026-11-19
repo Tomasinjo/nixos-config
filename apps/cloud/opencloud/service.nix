@@ -45,7 +45,7 @@ in
         COLLABORATION_APP_ADDR = "https://office.${vars.net.domain}";
         COLLABORATION_APP_INSECURE = "false";
         COLLABORATION_CS3API_DATAGATEWAY_INSECURE = "false";
-        COLLABORATION_WOPI_SRC = "http://10.0.10.2:9300"; # euro-office calls this for fetching and saving documents
+        COLLABORATION_WOPI_SRC = "http://${oci.dns "opencloud-app"}.zenki.internal:9300"; # euro-office calls this for fetching and saving documents
         COLLABORATION_HTTP_ADDR = "0.0.0.0:9300";
 	      COLLABORATION_APP_PROOF_DISABLE = "true";
       };
