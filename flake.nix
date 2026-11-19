@@ -40,9 +40,11 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-  #  polaris = {
-  #    url = "git+https://github.com/papi-ux/polaris?ref=refs/tags/v1.4.13&submodules=1";
-  #  };
+    polaris = {
+      # plain github: form does not fetch submodules, which the cmake build needs
+      url = "git+https://github.com/papi-ux/polaris?ref=refs/tags/v1.5.0&submodules=1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -57,7 +59,7 @@
     noctalia,
     noctalia-greeter,
     sops-nix,
-    #polaris,
+    polaris,
     ...
   }@inputs: let
     vars = import ./vars.nix;
@@ -68,8 +70,8 @@
         specialArgs = { inherit inputs vars self; };
         modules = [
           ./hosts/zenki/configuration.nix
-          #polaris.nixosModules.overlay
-          #polaris.nixosModules.polaris
+          polaris.nixosModules.overlay
+          polaris.nixosModules.polaris
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

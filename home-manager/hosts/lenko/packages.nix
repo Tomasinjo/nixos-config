@@ -15,6 +15,7 @@
     imagemagick
     rofi-bluetooth
     networkmanager_dmenu
+    moonlight-qt # game stream client
     #realvnc-vnc-viewer
     opencloud-desktop
     arduino-ide

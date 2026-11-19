@@ -41,11 +41,12 @@
 
   programs.nix-ld.enable = true; # allow unsigned links, requred for connecting with vscode remote ssh
 
-#  # game stream https://papi-ux.com/docs/nixos/
-#  services.polaris = {
-#    enable = true;
-#    users = [ vars.username ];
-#  };
+  # game stream https://papi-ux.com/docs/nixos/
+  nixpkgs.config.cudaSupport = true; # polaris NVENC encoder
+  services.polaris = {
+    enable = true;
+    users = [ vars.username ];
+  };
 
   system.stateVersion = "25.11";
 }
