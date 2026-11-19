@@ -16,7 +16,7 @@ in
       image = "ghcr.io/open-webui/open-webui:0.13-cuda";
       mounts = [ "/app/backend/data" ];
       environment = {
-        OLLAMA_BASE_URLS = "http://10.0.27.2:11434";
+        OLLAMA_BASE_URLS = "http://${oci.dns "ollama-app"}:11434";
         ENV = "prod";
         WEBUI_AUTH = "True";
         WEBUI_NAME = "Fikus AI Chat";

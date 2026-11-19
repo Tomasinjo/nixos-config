@@ -25,7 +25,7 @@ in
 
     victorialogsUri = lib.mkOption {
       type = lib.types.str;
-      default = "http://10.0.37.2:9428/insert/jsonline?_stream_fields=host,source_type&_msg_field=message&_time_field=timestamp";
+      default = "http://victoriametrics-app.zenki.internal:9428/insert/jsonline?_stream_fields=host,source_type&_msg_field=message&_time_field=timestamp";
       description = "VictoriaLogs jsonline insert endpoint.";
     };
   };

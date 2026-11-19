@@ -16,7 +16,7 @@ in
       image = "acockburn/appdaemon:4.5.16";
       mounts = [ "/conf" ];
       environment = {
-        HA_URL = "http://10.0.22.2:8123";
+        HA_URL = "http://${oci.dns "home-assistant-app"}:8123";
       };
       secrets = {
         HA_KEY = "apps/appdaemon/hass_key";

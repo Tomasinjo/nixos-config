@@ -5,7 +5,7 @@ let
   svc = oci.service { name = "unifi"; id = 35; dir = ./.; };
 
   # controller settings
-  #set-inform http://10.0.35.2:8080/inform
+  # set-inform unifi-app.zenki.internal:8080/inform
 
   mongoUser = "unifi";
   mongoName = "unifi";

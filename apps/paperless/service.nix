@@ -63,7 +63,7 @@ in
       mounts = [ "prompt.txt:/app/prompt.txt" ];
       environment = {
         PAPERLESS_URL = "http://${svc.containerName "app"}:8000";
-        OLLAMA_URL = "http://10.0.27.2:11434";
+        OLLAMA_URL = "http://${oci.dns "ollama-app"}:11434";
         OLLAMA_MODEL = "qwen3.8:27b-262k";
         SCAN_INTERVAL = "3600";
         OVERRIDE_EXISTING_TAGS = "True";

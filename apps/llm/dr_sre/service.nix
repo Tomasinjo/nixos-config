@@ -11,9 +11,9 @@ in
       image = "ghcr.io/tomasinjo/dr_sre:0.1.0";
       mounts = [ "/app/data" ];
       environment = {
-        OLLAMA_BASE_URL = "http://10.0.27.2:11434";
+        OLLAMA_BASE_URL = "http://${oci.dns "ollama-app"}:11434";
         OLLAMA_MODEL = "qwen3.8:27b-262k";
-        VICTORIALOGS_URL = "http://10.0.37.2:9428";
+        VICTORIALOGS_URL = "http://${oci.dns "victoriametrics-app"}:9428";
         VICTORIALOGS_TIMEOUT = "120";
         REPORT_HOURS = "8,19";
       };

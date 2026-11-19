@@ -250,7 +250,7 @@
         victorialogs = {
           type = "http";
           inputs = [ "parse_eve" ];
-          uri = "http://10.0.37.2:9428/insert/jsonline?_stream_fields=service,event_type,host&_time_field=timestamp";
+          uri = "http://victoriametrics-app.zenki.internal:9428/insert/jsonline?_stream_fields=service,event_type,host&_time_field=timestamp";
           encoding = {
             codec = "json";
           };

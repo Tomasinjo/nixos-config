@@ -1,5 +1,17 @@
 { config, lib, pkgs, vars, inputs, ... }:
 
+let
+  # create zenki.internal dns entries for containers
+  getContainers = import ../../helpers/get-containers.nix { inherit inputs lib; };
+  containers = getContainers {};
+  dnsDomain = vars.net.zenki.containers.dnsDomain;
+  dnsRecords = lib.concatLists (
+    lib.mapAttrsToList (_: c: [
+      ''"${c.labels."dns.name"}.${dnsDomain}. IN A ${c.labels."address.ipv4"}"''
+      ''"${c.labels."dns.name"}.${dnsDomain}. IN AAAA ${c.labels."address.ipv6"}"''
+    ]) containers
+  );
+in
 {
   services.unbound = {
     enable = true;
@@ -16,6 +28,7 @@
         access-control = [
           "192.168.0.0/16 allow"
           "${vars.net.sensei.ipv6_prefix} allow"
+          "${vars.net.zenki.containers.subnet} allow" # # allow containers to use dns (but that should be rare, they can resolve with aardvark)
         ];
       
 	      module-config = "'respip validator iterator'"; # respip-enables rpz blocklist. validator=enables dnssec. iterator=queries upstream, necessary.
@@ -40,6 +53,10 @@
           ''"reo-sredina.${vars.net.domain}. IN A 192.168.30.58"''
           ''"reo-doorbell.${vars.net.domain}. IN A 192.168.30.158"''
           ''"boarder.${vars.net.domain}. IN A 192.168.10.164"''
+        ] ++ dnsRecords;
+
+        local-zone = [
+          ''"${dnsDomain}." static'' # return nxdomain for internal domains so they dont leak outside
         ];
 
         # Prevents upstream from returning private addresses, protects from DNS rebinding

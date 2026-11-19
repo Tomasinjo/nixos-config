@@ -21,7 +21,7 @@ in
         "DATABASE_USER" = dbUser;
         "DATABASE_NAME" = dbName;
         "DATABASE_HOST" = svc.containerName "db";
-        "MQTT_HOST"     = "10.0.22.4";
+        "MQTT_HOST"     = oci.dns "home-assistant-mqtt";
       };
       secrets = { 
         ENCRYPTION_KEY = "apps/teslamate/app/key"; 
