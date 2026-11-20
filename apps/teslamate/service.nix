@@ -16,7 +16,7 @@ in
         expose = "internal";
       };
       internet = true;
-      image = "teslamate/teslamate:4.4.0";
+      image = "teslamate/teslamate:4.5.0";
       environment = {
         "DATABASE_USER" = dbUser;
         "DATABASE_NAME" = dbName;
