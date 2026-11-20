@@ -37,7 +37,7 @@ in
       labels = {
         "traefik.enable" = "true";
         
-        "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.address" = "http://${oci.dns "traefik-gatekeeper"}:5000/verify_share_request?protocol=http&container_name_port=${oci.dns "immcih-app"}:2283";
+        "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.address" = "http://${oci.dns "traefik-gatekeeper"}:5000/verify_share_request?protocol=http&container_name_port=${oci.dns "immich-app"}:2283";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.trustForwardHeader" = "true";
         "traefik.http.middlewares.gatekeeper_immich_share.forwardauth.maxResponseBodySize" = "10485760";
 
