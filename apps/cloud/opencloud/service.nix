@@ -77,7 +77,7 @@ in
     radicale = svc.container {
       id = 4;
       internet = false;
-      image = "opencloudeu/radicale:v3.9.0";
+      image = "opencloudeu/radicale:v3.9.2";
       mounts = [
         "config:/etc/radicale/config"
         "data:/var/lib/radicale"

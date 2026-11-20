@@ -13,7 +13,7 @@ in
         expose = "internal";
       };
       internet = false;
-      image = "ghcr.io/blakeblackshear/frigate:0.18.2";
+      image = "ghcr.io/blakeblackshear/frigate:0.18.3";
       mounts = [ "/config" ];
       extraMounts = [
         "${vars.dir.hoarder_data}/Recordings/:/media/frigate/"
