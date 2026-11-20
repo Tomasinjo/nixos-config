@@ -13,7 +13,7 @@ in
         expose = "internal";
       };
       internet = true;
-      image = "ghcr.io/qdrant/qdrant/qdrant:v1.20.1-unprivileged";
+      image = "ghcr.io/qdrant/qdrant/qdrant:v1.20.2-unprivileged";
       mounts = [
         "storage:/qdrant/storage"
         "snapshots:/qdrant/snapshots"

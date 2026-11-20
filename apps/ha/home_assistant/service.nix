@@ -16,7 +16,7 @@ in
         expose = "mtls";
       };
       internet = true;  # cloud integrations, weather
-      image = "homeassistant/home-assistant:2026.11.1";
+      image = "homeassistant/home-assistant:2026.11.2";
       mounts = [
         "config:/config"
         "media:/media"
