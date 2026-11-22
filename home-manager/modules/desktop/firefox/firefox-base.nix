@@ -57,17 +57,7 @@
       };
       search = {
         force = true;
-        default = "Fikus";
-        engines = {
-          "Fikus" = {
-            urls = [{ 
-              template = "https://search.${vars.net.domain}/search?q={searchTerms}"; 
-            }];
-            icon = "https://search.${vars.net.domain}/favicon.ico";
-            updateInterval = 24 * 60 * 60 * 1000; # daily update
-            definedAliases = [ "@s" ];
-          };
-        };
+        default = "ddg";
       };
     };
   };

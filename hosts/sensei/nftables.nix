@@ -225,20 +225,6 @@ in
               }
             }
 
-            table ip6 nat {
-              chain postrouting {
-                type nat hook postrouting priority srcnat; policy accept;
-                
-                # to avoid blocking search requests
-                ip6 saddr ${cip6 "degoog-app"} oifname "ppp0" snat ip6 to ${vars.net.sensei.ipv6}9a:: - ${vars.net.sensei.ipv6}ff:ffff:ffff:ffff:ffff random
-                
-                # to avoid banning because youtube scraping
-                ip6 saddr ${cip6 "piped-backend"}  oifname "ppp0" snat ip6 to ${vars.net.sensei.ipv6}9a:: - ${vars.net.sensei.ipv6}ff:ffff:ffff:ffff:ffff random
-                ip6 saddr ${cip6 "piped-proxy"}    oifname "ppp0" snat ip6 to ${vars.net.sensei.ipv6}9a:: - ${vars.net.sensei.ipv6}ff:ffff:ffff:ffff:ffff random
-                ip6 saddr ${cip6 "piped-bghelper"} oifname "ppp0" snat ip6 to ${vars.net.sensei.ipv6}9a:: - ${vars.net.sensei.ipv6}ff:ffff:ffff:ffff:ffff random
-              }
-            }
-
             table inet mss-clamp {
                 chain forward {
                     type filter hook forward priority filter; policy accept;
