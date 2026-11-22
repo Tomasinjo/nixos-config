@@ -6,7 +6,7 @@ let
       .[] | select(.containers != null and (.containers | length > 0)) |
       (
         .containers[] | 
-        "\([.interfaces[].subnets[].ipnet | select(contains("."))] | join(", ")) - \(.name)"
+        "\([.interfaces[].subnets[].ipnet] | join(", ")) - \(.name)"
       ),
       ""
     '
