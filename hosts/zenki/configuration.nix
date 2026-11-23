@@ -44,7 +44,7 @@
   # game stream https://papi-ux.com/docs/nixos/
   nixpkgs.config.cudaSupport = true; # polaris NVENC encoder
   services.polaris = {
-    enable = true;
+    enable = false;
     users = [ vars.username ];
   };
 
