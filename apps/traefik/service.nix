@@ -8,7 +8,7 @@ in
   svc.build {
     app = svc.container {
       internet = true;  # acme cert renewals
-      image = "traefik:v3.7.19";
+      image = "traefik:v3.8.0";
       mounts = [
         "config:/etc/traefik"
         "plugins:/plugins-storage"  # to set correct permissions. fails to write if non-root
