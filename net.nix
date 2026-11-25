@@ -26,12 +26,12 @@
           dhcp_pool = "192.168.10.150 - 192.168.10.250";
         };
         ipv6 = {
-          subnet =  "${secrets.net.ipv6}10::";
+          subnet  = "${secrets.net.ipv6}10::";
           gateway = "${secrets.net.ipv6}10::1";
           mask = "64";
         };
         members = {
-          beyondtv2  = { mac = "34:51:80:c0:48:9a"; ip = "192.168.10.251"; hostname = "beyondtv2"; };
+          tvbox      = { mac = "b6:82:72:10:17:78"; ip = "192.168.10.160"; hostname = "tv-box"; };
           boarder    = { mac = "d4:f3:2d:81:20:d6"; ip = "192.168.10.164"; hostname = "boarder"; };
           t14g6_wifi = { mac = "10:f6:0a:db:d6:fc"; ip = "192.168.10.188"; hostname = "t14g6_wifi"; };
           t14g6      = { mac = "e8:80:88:d3:7e:0d"; ip = "192.168.10.186"; hostname = "t14g6"; };
@@ -47,7 +47,7 @@
           dhcp_pool = "192.168.20.150 - 192.168.20.250";
         };
         ipv6 = {
-          subnet =  "${secrets.net.ipv6}20::";
+          subnet  = "${secrets.net.ipv6}20::";
           gateway = "${secrets.net.ipv6}20::1";
           mask = "64";
         };

@@ -2,11 +2,11 @@
 
 let
   gameStart = pkgs.writeShellScriptBin "game-start" ''
-    /run/current-system/sw/bin/systemctl stop podman-ollama.service
+    /run/current-system/sw/bin/systemctl stop podman-ollama-app.service
   '';
 
   gameEnd = pkgs.writeShellScriptBin "game-end" ''
-    /run/current-system/sw/bin/systemctl start podman-ollama.service
+    /run/current-system/sw/bin/systemctl start podman-ollama-app.service
   '';
 in
 {
