@@ -7,7 +7,7 @@ let
 in
   svc.build {
     app = svc.container {
-      image = "wollomatic/socket-proxy:1.13.2";
+      image = "wollomatic/socket-proxy:1.14.0";
       extraMounts = [ "/var/run/docker.sock:/var/run/docker.sock:ro" ];
       user = "0:0";  # run as root so it can read the socket
       extraOptions = [
