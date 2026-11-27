@@ -79,6 +79,7 @@
           sesalec-pritlicje =     { mac = "70:c9:32:53:3d:16"; ip = "192.168.30.167"; allow_out = false; hostname = "sesalec-pritlicje"; };
           pomivalc =              { mac = "68:a4:0e:0f:59:cd"; ip = "192.168.30.168"; allow_out = true;  hostname = "bosch-smv68tx06e-68a40e0f59cd"; };
           charger_leaf =          { mac = "bc:35:1e:da:2d:0f"; ip = "192.168.30.212"; allow_out = false; hostname = "tuya-leaf-charger"; };
+          tv =                    { mac = "1c:30:08:ce:49:45"; ip = "192.168.30.211"; allow_out = false; hostname = "tv"; };
         };
       };
       server-vlan = {
