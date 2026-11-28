@@ -13,7 +13,7 @@ in
         expose = "internal";
       };
       internet = true;
-      image = "esphome/esphome:2026.11.0";
+      image = "esphome/esphome:2026.11.1";
       mounts = [ "/config" ];
       environment = { 
         ESPHOME_DASHBOARD_USE_PING = "true"; 
