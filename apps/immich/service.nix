@@ -19,7 +19,7 @@ in
         expose = "mtls";
       };
       internet = false;
-      image = "ghcr.io/immich-app/immich-server:v3.4.1";
+      image = "ghcr.io/immich-app/immich-server:v3.4.2";
       mounts = [
         "thumbs:/data/thumbs"
       ];

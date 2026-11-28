@@ -8,7 +8,7 @@ in
   svc.build {
     app = svc.container {
       internet = true;  # model pull
-      image = "ollama/ollama:0.40.16";
+      image = "ollama/ollama:0.40.19";
       mounts = [ "/root/.ollama" ];
       environment = {
         OLLAMA_KEEP_ALIVE = "1h";

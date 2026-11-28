@@ -13,7 +13,7 @@ in
         expose = "internal";
       };
       internet = true;
-      image = "grafana/grafana:13.3.1";
+      image = "grafana/grafana:13.3.2";
       mounts = [ "/var/lib/grafana" ];
       environment = {
         GF_SERVER_ROOT_URL = "https://graf.${vars.net.domain}/";
